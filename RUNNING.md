@@ -9,6 +9,11 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 - **Dashboard** (`/dashboard`, Georgian): usage tiles, API-key issue/revoke, a live **test-chat**, plus:
   - **File upload** — PDF / CSV / XLSX / TXT, stored in the DB via the chunk→embed pipeline (PDF text via Gemini multimodal; CSV/XLSX rows → one document each).
   - **AI config management** — create / edit / delete configurations (name, model tier, Georgian system prompt, tools). The 3 presets are just starters.
+- **Embeddable widget (each AI config = a deployable chatbot):**
+  - Every config has a browser-safe **public key** + optional **domain allowlist** + widget on/off.
+  - The config edit page shows a copy-paste snippet: `<script src="<host>/embed.js?key=pk_gtuh_..." async></script>` — drop it on any site to get a floating Georgian chat bubble.
+  - Public endpoint `POST /public/chat` (CORS, throttled) answers via the same RAG pipeline and **stores every conversation + message**.
+  - **საუბრები** (Conversations) in the dashboard: list of chats per chatbot, message log, and per-chat token usage.
 - **API (`/v1`, API-key auth):**
   - `POST /v1/ingest` — text or structured `records` (the WordPress plugin will reuse this).
   - `POST /v1/query` — hybrid retrieve → Claude answer in Georgian **with citations**.

@@ -58,18 +58,18 @@ class ConfigController extends Controller
             'system_prompt' => ['required', 'string'],
             'model_tier' => ['required', 'in:fast,standard,max'],
             'enabled_tools' => ['nullable', 'string'],
+            'allowed_domains' => ['nullable', 'string'],
         ]);
 
-        $tools = array_values(array_filter(array_map(
-            'trim',
-            explode(',', $data['enabled_tools'] ?? '')
-        )));
+        $split = fn (?string $s) => array_values(array_filter(array_map('trim', explode(',', $s ?? ''))));
 
         return [
             'name' => $data['name'],
             'system_prompt' => $data['system_prompt'],
             'model_tier' => $data['model_tier'],
-            'enabled_tools' => $tools,
+            'enabled_tools' => $split($data['enabled_tools'] ?? ''),
+            'allowed_domains' => $split($data['allowed_domains'] ?? ''),
+            'widget_enabled' => $request->boolean('widget_enabled'),
         ];
     }
 }

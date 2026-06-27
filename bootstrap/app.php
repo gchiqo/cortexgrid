@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'apikey' => \App\Http\Middleware\ApiKeyAuth::class,
         ]);
+
+        // The embeddable widget posts cross-origin and cannot carry a CSRF token.
+        $middleware->validateCsrfTokens(except: ['public/chat']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -55,6 +55,20 @@
                     <p class="text-xs text-slate-400 mt-1">მძიმით გამოყოფილი სია (function calling — მომავალში).</p>
                 </div>
 
+                <div class="border-t pt-5 space-y-4">
+                    <label class="flex items-center gap-2 text-sm font-medium">
+                        <input type="checkbox" name="widget_enabled" value="1" @checked(old('widget_enabled', $config->widget_enabled ?? true))>
+                        ვებ-ვიჯეტი ჩართულია (საიტზე ჩასასმელად)
+                    </label>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">დაშვებული დომენები (არასავალდებულო)</label>
+                        <input name="allowed_domains" value="{{ old('allowed_domains', implode(', ', $config->allowed_domains ?? [])) }}"
+                               placeholder="example.ge, shop.example.ge"
+                               class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        <p class="text-xs text-slate-400 mt-1">ცარიელი = ნებისმიერი დომენი. შეავსე უსაფრთხოებისთვის.</p>
+                    </div>
+                </div>
+
                 <div class="flex items-center gap-3">
                     <button class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-5 py-2.5 font-medium">
                         {{ $config->exists ? 'შენახვა' : 'შექმნა' }}
@@ -62,6 +76,23 @@
                     <a href="/dashboard" class="text-slate-500 hover:text-slate-700">გაუქმება</a>
                 </div>
             </form>
+
+            @if ($config->exists && $config->public_key)
+                <div class="mt-6 pt-6 border-t">
+                    <h3 class="font-medium mb-2">ინტეგრაცია საიტზე</h3>
+                    <p class="text-sm text-slate-500 mb-2">ჩასვი ეს კოდი შენი საიტის HTML-ში:</p>
+                    <div class="relative">
+                        <pre id="snippet" class="bg-slate-900 text-slate-100 text-xs rounded-lg p-3 pr-20 overflow-x-auto"><code>&lt;script src="{{ url('/embed.js') }}?key={{ $config->public_key }}" async&gt;&lt;/script&gt;</code></pre>
+                        <button type="button" onclick="copySnippet()" class="absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded px-2 py-1">კოპირება</button>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">საჯარო გასაღები: <code>{{ $config->public_key }}</code></p>
+                </div>
+                <script>
+                    function copySnippet() {
+                        navigator.clipboard.writeText(document.getElementById('snippet').innerText.trim());
+                    }
+                </script>
+            @endif
         </div>
     </main>
 </div>
