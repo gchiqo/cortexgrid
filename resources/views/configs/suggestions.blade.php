@@ -53,8 +53,39 @@
                 <input type="hidden" name="dataset_id" value="{{ $dataset->id }}">
                 <button class="text-indigo-600 hover:underline text-sm">↻ თავიდან გენერაცია</button>
             </form>
-            <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-slate-500 hover:text-slate-700 text-sm">დასრულება</a>
+            <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-slate-500 hover:text-slate-700 text-sm">დასრულება ({{ count($configs) }}-დან არჩეული)</a>
         </div>
     </main>
 </div>
+
+<script>
+const csrf = document.querySelector('meta[name=csrf-token]').content;
+let added = 0;
+document.querySelectorAll('form[action="/dashboard/configs"]').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = form.querySelector('button[type=submit], button:not([type])');
+        btn.disabled = true; btn.textContent = 'ემატება…';
+        try {
+            const res = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+                body: new FormData(form),
+            });
+            if (res.ok) {
+                form.classList.add('opacity-60');
+                form.querySelectorAll('input,textarea,select').forEach(el => el.disabled = true);
+                btn.textContent = '✓ დამატებულია';
+                btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                btn.classList.add('bg-emerald-600');
+                added++;
+            } else {
+                btn.disabled = false; btn.textContent = 'დამატება';
+            }
+        } catch (_) {
+            btn.disabled = false; btn.textContent = 'დამატება';
+        }
+    });
+});
+</script>
 @endsection

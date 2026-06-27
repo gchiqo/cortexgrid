@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\AiConfig;
 use App\Models\Dataset;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,14 +22,18 @@ class ConfigController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $dataset = $this->dataset($request, $request->integer('dataset_id'));
 
-        AiConfig::create($this->validated($request) + [
+        $config = AiConfig::create($this->validated($request) + [
             'tenant_id' => $request->user()->tenant_id,
             'dataset_id' => $dataset->id,
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true, 'id' => $config->id, 'name' => $config->name]);
+        }
 
         return redirect("/dashboard/datasets/{$dataset->id}")->with('status', 'ჩატბოტი შეიქმნა.');
     }
