@@ -15,7 +15,7 @@ use App\Http\Controllers\Web\UploadController;
 use App\Http\Controllers\WidgetController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => auth()->check() ? redirect()->route('dashboard') : view('landing'));
+Route::get('/', fn () => view('landing'));
 
 // --- Public embeddable widget (no auth; browser-facing) ---
 Route::get('/embed.js', [WidgetController::class, 'embed']);

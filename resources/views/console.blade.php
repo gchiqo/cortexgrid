@@ -4,7 +4,7 @@
 <div class="h-screen flex flex-col">
     <header class="bg-white border-b shrink-0">
         <div class="px-4 h-14 flex items-center justify-between gap-4">
-            <div class="font-bold">GTUH <span class="text-indigo-600">AI</span> · ტესტ-კონსოლი</div>
+            <div class="font-bold"><a href="/">GTUH <span class="text-indigo-600">AI</span></a> · ტესტ-კონსოლი</div>
             <div class="flex items-center gap-3">
                 <select id="config" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
                     @foreach ($configs as $cfg)

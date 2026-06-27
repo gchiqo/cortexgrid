@@ -64,6 +64,13 @@ Then upload the matching file from **`examples/`** into each dataset and watch t
 (extract → chunk → store → embed → ready). Run `php artisan queue:work` so embeddings finish and the
 animation reaches "ready".
 
+**Pre-loaded demo** — import the 3 example datasets (hardware / news / movies) and configure a
+user-helper + admin-helper agent for each (Travel left empty), with synchronous embedding:
+
+```bash
+php artisan db:seed --class=DemoContentSeeder
+```
+
 Open http://127.0.0.1:8000 → log in → dashboard.
 
 ## Try the API

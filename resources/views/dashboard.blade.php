@@ -4,7 +4,7 @@
 <div class="min-h-screen">
     <header class="bg-white border-b">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></div>
+            <a href="/" class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></a>
             <div class="flex items-center gap-4 text-sm">
                 <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">ტესტ-კონსოლი</a>
                 <a href="/dashboard/insights" class="text-slate-600 hover:text-indigo-600">ანალიტიკა</a>

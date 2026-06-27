@@ -4,7 +4,7 @@
 <div class="min-h-screen">
     <header class="bg-white border-b">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></div>
+            <a href="/" class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></a>
             <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-sm text-slate-600 hover:text-slate-900">← {{ $dataset->name }}</a>
         </div>
     </header>
