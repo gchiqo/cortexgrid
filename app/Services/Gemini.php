@@ -100,4 +100,13 @@ class Gemini
     {
         return $this->generate([['text' => $prompt]], $system);
     }
+
+    /** Extract the full text of a PDF (multimodal) — used for file uploads. */
+    public function extractPdfText(string $binary): string
+    {
+        return $this->generate([
+            ['inlineData' => ['mimeType' => 'application/pdf', 'data' => base64_encode($binary)]],
+            ['text' => 'ამოიღე ამ დოკუმენტის სრული ტექსტი ზუსტად, ცხრილების ჩათვლით. დააბრუნე მხოლოდ ტექსტი, კომენტარების გარეშე.'],
+        ]);
+    }
 }

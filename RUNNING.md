@@ -6,7 +6,9 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 ## What's implemented
 
 - **Auth:** email/password + Google (Socialite). Registration auto-provisions a tenant, an API key, and 3 Georgian preset AI configs.
-- **Dashboard** (`/dashboard`, Georgian): usage tiles, API-key issue/revoke, sources, AI configs, and a live **test-chat** against your data.
+- **Dashboard** (`/dashboard`, Georgian): usage tiles, API-key issue/revoke, a live **test-chat**, plus:
+  - **File upload** — PDF / CSV / XLSX / TXT, stored in the DB via the chunk→embed pipeline (PDF text via Gemini multimodal; CSV/XLSX rows → one document each).
+  - **AI config management** — create / edit / delete configurations (name, model tier, Georgian system prompt, tools). The 3 presets are just starters.
 - **API (`/v1`, API-key auth):**
   - `POST /v1/ingest` — text or structured `records` (the WordPress plugin will reuse this).
   - `POST /v1/query` — hybrid retrieve → Claude answer in Georgian **with citations**.

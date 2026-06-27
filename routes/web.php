@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\ConfigController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\GoogleController;
+use App\Http\Controllers\Web\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -22,5 +24,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/keys', [DashboardController::class, 'issueKey']);
     Route::post('/dashboard/keys/{apiKey}/revoke', [DashboardController::class, 'revokeKey']);
     Route::post('/dashboard/ask', [DashboardController::class, 'ask']);
+    Route::post('/dashboard/upload', [UploadController::class, 'store']);
+
+    Route::get('/dashboard/configs/create', [ConfigController::class, 'create']);
+    Route::post('/dashboard/configs', [ConfigController::class, 'store']);
+    Route::get('/dashboard/configs/{config}/edit', [ConfigController::class, 'edit']);
+    Route::put('/dashboard/configs/{config}', [ConfigController::class, 'update']);
+    Route::delete('/dashboard/configs/{config}', [ConfigController::class, 'destroy']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
 });

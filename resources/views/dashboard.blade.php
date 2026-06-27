@@ -24,7 +24,13 @@
         @endif
 
         @if (session('status'))
-            <div class="rounded-lg bg-slate-100 px-4 py-2 text-sm text-slate-700">{{ session('status') }}</div>
+            <div class="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-800">{{ session('status') }}</div>
+        @endif
+
+        @if ($errors->any())
+            <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                @foreach ($errors->all() as $error)<div>{{ $error }}</div>@endforeach
+            </div>
         @endif
 
         {{-- Usage --}}
@@ -95,7 +101,11 @@
 
             {{-- Configs --}}
             <section class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="font-semibold text-lg mb-4">AI კონფიგურაციები</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-semibold text-lg">AI კონფიგურაციები</h2>
+                    <a href="/dashboard/configs/create"
+                       class="bg-slate-800 text-white rounded-lg px-3 py-1.5 text-sm font-medium">+ ახალი</a>
+                </div>
                 <ul class="space-y-3">
                     @foreach ($configs as $cfg)
                         <li class="border rounded-lg p-3">
@@ -104,6 +114,14 @@
                                 <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">{{ $cfg->model_tier }}</span>
                             </div>
                             <p class="text-sm text-slate-500 mt-1 line-clamp-2">{{ \Illuminate\Support\Str::limit($cfg->system_prompt, 120) }}</p>
+                            <div class="flex items-center gap-3 mt-2 text-sm">
+                                <a href="/dashboard/configs/{{ $cfg->id }}/edit" class="text-indigo-600 hover:underline">რედაქტირება</a>
+                                <form method="POST" action="/dashboard/configs/{{ $cfg->id }}"
+                                      onsubmit="return confirm('წავშალო ეს კონფიგურაცია?')">
+                                    @csrf @method('DELETE')
+                                    <button class="text-red-500 hover:underline">წაშლა</button>
+                                </form>
+                            </div>
                         </li>
                     @endforeach
                 </ul>
@@ -112,6 +130,21 @@
             {{-- Sources --}}
             <section class="bg-white rounded-xl shadow-sm p-6">
                 <h2 class="font-semibold text-lg mb-4">წყაროები</h2>
+
+                <form method="POST" action="/dashboard/upload" enctype="multipart/form-data"
+                      class="border-2 border-dashed border-slate-200 rounded-lg p-4 mb-5 space-y-3">
+                    @csrf
+                    <input type="text" name="source_name" placeholder="წყაროს სახელი (არასავალდებულო)"
+                           class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                    <input type="file" name="file" required
+                           accept=".pdf,.csv,.xlsx,.xls,.txt,.md"
+                           class="w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-indigo-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400">PDF, CSV, XLSX, TXT — მაქს. 20MB</span>
+                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 text-sm font-medium">ატვირთვა</button>
+                    </div>
+                </form>
+
                 @if ($sources->isEmpty())
                     <p class="text-slate-400 text-sm">ჯერ არაფერი ჩაგიტვირთავს. გამოიყენე <code>POST /v1/ingest</code>.</p>
                 @else
