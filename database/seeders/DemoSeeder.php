@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AiConfig;
 use App\Models\ApiKey;
+use App\Models\Dataset;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,6 +27,8 @@ class DemoSeeder extends Seeder
         );
 
         [, $secret] = ApiKey::issue($tenant, 'Demo key');
+
+        $dataset = Dataset::firstOrCreate(['tenant_id' => $tenant->id, 'name' => 'ჩემი მონაცემები']);
 
         $configs = [
             [
@@ -58,7 +61,7 @@ class DemoSeeder extends Seeder
         foreach ($configs as $cfg) {
             AiConfig::updateOrCreate(
                 ['tenant_id' => $tenant->id, 'name' => $cfg['name']],
-                $cfg + ['tenant_id' => $tenant->id]
+                $cfg + ['tenant_id' => $tenant->id, 'dataset_id' => $dataset->id]
             );
         }
 

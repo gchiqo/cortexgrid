@@ -22,10 +22,11 @@ class IngestService
      * @param  list<array<string,mixed>>  $records  each: ['title'=>?, 'text'=>?, ...fields]
      * @return array{source_id:int,documents:int,chunks:int}
      */
-    public function ingest(int $tenantId, string $type, string $sourceName, array $records, ?int $apiKeyId = null): array
+    public function ingest(int $tenantId, int $datasetId, string $type, string $sourceName, array $records, ?int $apiKeyId = null): array
     {
         $source = Source::create([
             'tenant_id' => $tenantId,
+            'dataset_id' => $datasetId,
             'type' => $type,
             'name' => $sourceName,
             'status' => 'processing',
@@ -43,6 +44,7 @@ class IngestService
             $document = Document::create([
                 'source_id' => $source->id,
                 'tenant_id' => $tenantId,
+                'dataset_id' => $datasetId,
                 'title' => $record['title'] ?? ($record['name'] ?? null),
                 'raw_text' => $text,
                 'structured' => Arr::except($record, ['text']) ?: null,
@@ -52,6 +54,7 @@ class IngestService
                 Chunk::create([
                     'document_id' => $document->id,
                     'tenant_id' => $tenantId,
+                    'dataset_id' => $datasetId,
                     'content' => $piece,
                     'metadata' => ['title' => $document->title, 'chunk_index' => $i, 'source_id' => $source->id],
                 ]);

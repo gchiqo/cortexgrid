@@ -39,8 +39,7 @@ class DashboardController extends Controller
             'user' => $user,
             'tenant' => $tenant,
             'apiKeys' => $tenant->apiKeys()->orderByDesc('id')->get(),
-            'configs' => $tenant->aiConfigs()->orderBy('id')->get(),
-            'sources' => $tenant->sources()->orderByDesc('id')->limit(20)->get(),
+            'datasets' => $tenant->datasets()->withCount(['sources', 'aiConfigs'])->orderBy('id')->get(),
             'usage' => $usage,
         ]);
     }

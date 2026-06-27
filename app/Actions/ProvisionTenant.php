@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\AiConfig;
 use App\Models\ApiKey;
+use App\Models\Dataset;
 use App\Models\Tenant;
 use App\Models\User;
 
@@ -24,14 +25,16 @@ class ProvisionTenant
 
         $user->forceFill(['tenant_id' => $tenant->id, 'role' => 'admin'])->save();
 
-        $this->seedConfigs($tenant);
+        $dataset = Dataset::create(['tenant_id' => $tenant->id, 'name' => 'ჩემი მონაცემები']);
+
+        $this->seedConfigs($tenant, $dataset);
 
         [, $secret] = ApiKey::issue($tenant, 'Default key');
 
         return $secret;
     }
 
-    private function seedConfigs(Tenant $tenant): void
+    private function seedConfigs(Tenant $tenant, Dataset $dataset): void
     {
         $presets = [
             [
@@ -59,7 +62,7 @@ class ProvisionTenant
         ];
 
         foreach ($presets as $cfg) {
-            AiConfig::create($cfg + ['tenant_id' => $tenant->id]);
+            AiConfig::create($cfg + ['tenant_id' => $tenant->id, 'dataset_id' => $dataset->id]);
         }
     }
 }

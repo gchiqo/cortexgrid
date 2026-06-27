@@ -19,6 +19,11 @@ class Tenant extends Model
         return $this->hasMany(ApiKey::class);
     }
 
+    public function datasets(): HasMany
+    {
+        return $this->hasMany(Dataset::class);
+    }
+
     public function sources(): HasMany
     {
         return $this->hasMany(Source::class);

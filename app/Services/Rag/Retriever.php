@@ -14,14 +14,16 @@ class Retriever
     public function __construct(private Gemini $gemini) {}
 
     /**
+     * @param  int|null  $datasetId  when set, restricts retrieval to that dataset
      * @param  array|null  $trace  when passed by reference, filled with a glass-box trace
      * @return list<array{id:int,document_id:int,content:string,metadata:?array,score:float}>
      */
-    public function retrieve(int $tenantId, string $query, int $k = 6, ?array &$trace = null): array
+    public function retrieve(int $tenantId, string $query, int $k = 6, ?int $datasetId = null, ?array &$trace = null): array
     {
         $k = max(1, min($k, 50));
         $pool = $k * 3;
-        $collect = func_num_args() >= 4;
+        $collect = func_num_args() >= 5;
+        $dsClause = $datasetId !== null ? ' and dataset_id = ?' : '';
 
         // --- semantic (degrades to lexical-only if embeddings are unavailable) ---
         $semantic = [];
@@ -34,15 +36,18 @@ class Retriever
             $dims = count($qvec);
             if ($qvec !== []) {
                 $literal = '['.implode(',', $qvec).']';
+                $bindings = $datasetId !== null
+                    ? [$literal, $tenantId, $datasetId, $literal]
+                    : [$literal, $tenantId, $literal];
                 $t0 = microtime(true);
                 $semantic = DB::select(
-                    'select id, document_id, content, metadata,
+                    "select id, document_id, content, metadata,
                             1 - (embedding <=> ?::vector) as score
                      from chunks
-                     where tenant_id = ? and embedding is not null
+                     where tenant_id = ? and embedding is not null{$dsClause}
                      order by embedding <=> ?::vector
-                     limit '.(int) $pool,
-                    [$literal, $tenantId, $literal]
+                     limit ".(int) $pool,
+                    $bindings
                 );
                 $semMs = (microtime(true) - $t0) * 1000;
             }
@@ -51,15 +56,18 @@ class Retriever
         }
 
         // --- lexical (BM25-ish) ---
+        $lexBindings = $datasetId !== null
+            ? [$query, $tenantId, $query, $datasetId]
+            : [$query, $tenantId, $query];
         $t0 = microtime(true);
         $lexical = DB::select(
             "select id, document_id, content, metadata,
                     ts_rank(content_tsv, plainto_tsquery('simple', ?)) as score
              from chunks
-             where tenant_id = ? and content_tsv @@ plainto_tsquery('simple', ?)
+             where tenant_id = ? and content_tsv @@ plainto_tsquery('simple', ?){$dsClause}
              order by score desc
              limit ".(int) $pool,
-            [$query, $tenantId, $query]
+            $lexBindings
         );
         $lexMs = (microtime(true) - $t0) * 1000;
 

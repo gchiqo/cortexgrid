@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\ConfigSuggestionController;
 use App\Http\Controllers\Web\ConsoleController;
 use App\Http\Controllers\Web\ConversationController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\DatasetController;
 use App\Http\Controllers\Web\GoogleController;
 use App\Http\Controllers\Web\UploadController;
 use App\Http\Controllers\WidgetController;
@@ -31,6 +32,11 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::post('/dashboard/datasets', [DatasetController::class, 'store']);
+    Route::get('/dashboard/datasets/{dataset}', [DatasetController::class, 'show'])->name('dataset');
+    Route::delete('/dashboard/datasets/{dataset}', [DatasetController::class, 'destroy']);
+
     Route::post('/dashboard/keys', [DashboardController::class, 'issueKey']);
     Route::post('/dashboard/keys/{apiKey}/revoke', [DashboardController::class, 'revokeKey']);
     Route::post('/dashboard/ask', [DashboardController::class, 'ask']);

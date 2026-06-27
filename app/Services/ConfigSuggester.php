@@ -15,9 +15,9 @@ class ConfigSuggester
     /**
      * @return array{business_summary:?string, configs:list<array{name:string,system_prompt:string,model_tier:string,rationale:string}>}
      */
-    public function suggest(int $tenantId, int $count = 3): array
+    public function suggest(int $datasetId, int $count = 3): array
     {
-        $samples = Chunk::where('tenant_id', $tenantId)
+        $samples = Chunk::where('dataset_id', $datasetId)
             ->inRandomOrder()
             ->limit(10)
             ->pluck('content')

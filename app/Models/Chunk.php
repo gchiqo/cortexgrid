@@ -8,7 +8,7 @@ use Pgvector\Laravel\Vector;
 
 class Chunk extends Model
 {
-    protected $fillable = ['document_id', 'tenant_id', 'content', 'metadata', 'embedding'];
+    protected $fillable = ['document_id', 'tenant_id', 'dataset_id', 'content', 'metadata', 'embedding'];
 
     protected $casts = [
         'metadata' => 'array',
@@ -21,6 +21,11 @@ class Chunk extends Model
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function dataset(): BelongsTo
+    {
+        return $this->belongsTo(Dataset::class);
     }
 
     public function document(): BelongsTo

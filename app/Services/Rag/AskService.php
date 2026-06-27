@@ -55,11 +55,12 @@ class AskService
             ];
         }
 
-        // 2) Hybrid retrieval (with trace when requested).
+        // 2) Hybrid retrieval, scoped to this chatbot's dataset (with trace when requested).
+        $datasetId = $config?->dataset_id;
         $retrievalTrace = null;
         $hits = $withTrace
-            ? $this->retriever->retrieve($tenantId, $searchQuery, $k, $retrievalTrace)
-            : $this->retriever->retrieve($tenantId, $searchQuery, $k);
+            ? $this->retriever->retrieve($tenantId, $searchQuery, $k, $datasetId, $retrievalTrace)
+            : $this->retriever->retrieve($tenantId, $searchQuery, $k, $datasetId);
 
         if ($hits === []) {
             UsageEvent::record($tenantId, 'query', 1, $apiKeyId);

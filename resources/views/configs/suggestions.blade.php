@@ -26,6 +26,7 @@
                 <form method="POST" action="/dashboard/configs" class="bg-white rounded-xl shadow-sm p-5 space-y-3 flex flex-col">
                     @csrf
                     <input type="hidden" name="widget_enabled" value="1">
+                    <input type="hidden" name="dataset_id" value="{{ $dataset->id }}">
                     <input name="name" value="{{ $cfg['name'] }}" required
                            class="w-full rounded-lg border border-slate-300 px-3 py-2 font-medium">
 
@@ -49,9 +50,10 @@
 
         <div class="flex items-center gap-3">
             <form method="POST" action="/dashboard/configs/suggest">@csrf
+                <input type="hidden" name="dataset_id" value="{{ $dataset->id }}">
                 <button class="text-indigo-600 hover:underline text-sm">↻ თავიდან გენერაცია</button>
             </form>
-            <a href="/dashboard" class="text-slate-500 hover:text-slate-700 text-sm">დასრულება</a>
+            <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-slate-500 hover:text-slate-700 text-sm">დასრულება</a>
         </div>
     </main>
 </div>

@@ -91,13 +91,18 @@ We use three providers via env vars: `GROQ_API_KEY`, `GEMINI_API_KEY`, `ANTHROPI
 tenants(id, name, created_at)
 users(id, tenant_id, email, password_hash, role)
 api_keys(id, tenant_id, key_hash, label, created_at, last_used_at, revoked)
-sources(id, tenant_id, type[pdf|xlsx|csv|api|wordpress], name, status, created_at)
-documents(id, source_id, tenant_id, title, raw_text, structured jsonb, created_at)
-chunks(id, document_id, tenant_id, content, metadata jsonb, embedding vector(N))   -- pgvector
+datasets(id, tenant_id, name, description)                                         -- a tenant has many datasets
+sources(id, tenant_id, dataset_id, type[pdf|xlsx|csv|api|wordpress], name, status) -- many sources per dataset
+documents(id, source_id, tenant_id, dataset_id, title, raw_text, structured jsonb)
+chunks(id, document_id, tenant_id, dataset_id, content, metadata jsonb, embedding vector(N))  -- pgvector
                                                                                      -- + tsvector col for BM25/full-text
-ai_configs(id, tenant_id, name, system_prompt, data_scope jsonb, enabled_tools jsonb, model_tier)
+ai_configs(id, tenant_id, dataset_id, name, system_prompt, enabled_tools jsonb, model_tier,   -- chatbot, scoped to a dataset
+           public_key, allowed_domains jsonb, widget_enabled)                                 -- embeddable widget
+conversations(id, tenant_id, ai_config_id, visitor_id, title)
+messages(id, conversation_id, tenant_id, role, content, sources jsonb, input_tokens, output_tokens)
 usage_events(id, tenant_id, api_key_id, kind[ingest|query|tokens], qty, cost, created_at)
 ```
+- **Retrieval is scoped by `dataset_id`** — a chatbot only searches its own dataset's chunks.
 - `chunks.embedding` → pgvector index (HNSW/IVFFlat).
 - `chunks` also has a `tsvector` column + GIN index for **BM25-style** lexical search (`ts_rank`, or ParadeDB/VectorChord BM25 if available).
 - **Every query is tenant-scoped** (`WHERE tenant_id = ?`) — non-negotiable for multi-tenant isolation.
@@ -134,7 +139,7 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 
 ### Status & recommended next steps
 
-**Done:** DB + pgvector, auth (email/password + Google), API keys, ingestion (text/records API + PDF/CSV/XLSX/TXT upload), hybrid RAG, Georgian cited answers, AI config CRUD + presets, **auto-generate configs from the user's data** (Claude samples the data and proposes editable chatbots), dashboard with usage + test-chat, **embeddable widget** (public key + CORS + `/embed.js`), **conversation/message storage + viewer**, **conversational memory** (Groq history-aware query rewrite + multi-turn), and the **glass-box test console (§3.7)** showing the live pipeline trace across all three providers.
+**Done:** DB + pgvector, auth (email/password + Google), API keys, **datasets** (a tenant has many datasets; one dataset is fed by many sources — PDF + CSV + API together — and has many chatbots; retrieval is scoped per dataset), ingestion (text/records API + PDF/CSV/XLSX/TXT upload, all dataset-targeted), hybrid RAG, Georgian cited answers, dataset-scoped chatbot CRUD + presets, **auto-generate chatbots from a dataset's data** (Claude samples the data and proposes editable chatbots), dataset-centric dashboard (datasets list → dataset workspace), **embeddable widget** (public key + CORS + `/embed.js`), **conversation/message storage + viewer**, **conversational memory** (Groq history-aware query rewrite + multi-turn), and the **glass-box test console (§3.7)** showing the live pipeline trace across all three providers.
 
 **Recommended order from here:**
 1. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last).

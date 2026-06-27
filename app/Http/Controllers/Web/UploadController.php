@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dataset;
 use App\Services\Gemini;
 use App\Services\Ingest\IngestService;
 use Illuminate\Http\RedirectResponse;
@@ -21,11 +22,14 @@ class UploadController extends Controller
         $request->validate([
             'file' => ['required', 'file', 'max:20480', 'mimes:pdf,csv,txt,md,xlsx,xls'],
             'source_name' => ['nullable', 'string', 'max:255'],
+            'dataset_id' => ['required', 'integer'],
         ]);
+
+        $tenantId = (int) $request->user()->tenant_id;
+        $dataset = Dataset::where('tenant_id', $tenantId)->findOrFail($request->integer('dataset_id'));
 
         $file = $request->file('file');
         $ext = strtolower($file->getClientOriginalExtension());
-        $tenantId = (int) $request->user()->tenant_id;
         $name = $request->input('source_name') ?: $file->getClientOriginalName();
         $path = $file->getRealPath();
 
@@ -54,7 +58,7 @@ class UploadController extends Controller
             return back()->withErrors(['file' => 'ფაილიდან მონაცემები ვერ ამოვიღე.']);
         }
 
-        $summary = $ingest->ingest($tenantId, $type, $name, $records);
+        $summary = $ingest->ingest($tenantId, $dataset->id, $type, $name, $records);
 
         return back()->with('status',
             "ჩაიტვირთა «{$name}»: {$summary['documents']} დოკუმენტი, {$summary['chunks']} ჩანკი — ემბედინგი მუშავდება."

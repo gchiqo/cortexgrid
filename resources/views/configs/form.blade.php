@@ -5,7 +5,7 @@
     <header class="bg-white border-b">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></div>
-            <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">← პანელი</a>
+            <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-sm text-slate-600 hover:text-slate-900">← {{ $dataset->name }}</a>
         </div>
     </header>
 
@@ -24,6 +24,7 @@
             <form method="POST" action="{{ $config->exists ? "/dashboard/configs/{$config->id}" : '/dashboard/configs' }}" class="space-y-5">
                 @csrf
                 @if ($config->exists) @method('PUT') @endif
+                <input type="hidden" name="dataset_id" value="{{ $config->dataset_id }}">
 
                 <div>
                     <label class="block text-sm font-medium mb-1">სახელი</label>
@@ -73,7 +74,7 @@
                     <button class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-5 py-2.5 font-medium">
                         {{ $config->exists ? 'შენახვა' : 'შექმნა' }}
                     </button>
-                    <a href="/dashboard" class="text-slate-500 hover:text-slate-700">გაუქმება</a>
+                    <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-slate-500 hover:text-slate-700">გაუქმება</a>
                 </div>
             </form>
 

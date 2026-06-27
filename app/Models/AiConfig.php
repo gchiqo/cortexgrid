@@ -12,7 +12,7 @@ class AiConfig extends Model
     protected $table = 'ai_configs';
 
     protected $fillable = [
-        'tenant_id', 'name', 'system_prompt', 'data_scope', 'enabled_tools', 'model_tier',
+        'tenant_id', 'dataset_id', 'name', 'system_prompt', 'data_scope', 'enabled_tools', 'model_tier',
         'public_key', 'allowed_domains', 'widget_enabled',
     ];
 
@@ -33,6 +33,11 @@ class AiConfig extends Model
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function dataset(): BelongsTo
+    {
+        return $this->belongsTo(Dataset::class);
     }
 
     public function conversations(): HasMany
