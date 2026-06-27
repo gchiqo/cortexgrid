@@ -35,4 +35,35 @@ return [
         ],
     ],
 
+    'anthropic' => [
+        'key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-4-6'),
+        // model_tier -> model id mapping used by AiConfig
+        'tiers' => [
+            'fast' => 'claude-haiku-4-5',
+            'standard' => 'claude-sonnet-4-6',
+            'max' => 'claude-opus-4-8',
+        ],
+    ],
+
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+        'embedding_model' => env('GEMINI_EMBEDDING_MODEL', 'gemini-embedding-001'),
+        'embedding_dim' => (int) env('EMBEDDING_DIM', 768),
+        'base_url' => 'https://generativelanguage.googleapis.com/v1beta',
+    ],
+
+    'groq' => [
+        'key' => env('GROQ_API_KEY'),
+        'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+        'base_url' => 'https://api.groq.com/openai/v1',
+    ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
 ];

@@ -97,11 +97,13 @@ usage_events(id, tenant_id, api_key_id, kind[ingest|query|tokens], qty, cost, cr
 
 ---
 
-## 6. Suggested tech stack
+## 6. Tech stack (implemented)
 
-- **DB:** PostgreSQL + `pgvector` (+ full-text / BM25).
-- **Backend/API:** one service exposing `/v1/ingest`, `/v1/query`, `/v1/configs`, auth, usage. (Node/TypeScript or Python/FastAPI — pick one and stay in it.)
-- **Frontend:** web app for the public site + user panel + embeddable chat widget (Georgian UI).
+- **Framework:** Laravel 13 (PHP 8.3) — one repo for the panel, API, and Blade UI. UI styled with Tailwind (CDN). See [RUNNING.md](RUNNING.md).
+- **DB:** PostgreSQL 18 + `pgvector` (cosine HNSW) + Postgres full-text (`tsvector`/GIN) for BM25-ish lexical search.
+- **Auth:** email/password + Google (Laravel Socialite). API auth via per-tenant API keys (`ApiKeyAuth` middleware).
+- **LLM:** Anthropic PHP SDK (Claude answers/agent); Gemini via HTTP (`gemini-embedding-001` embeddings + multimodal); Groq via HTTP (fast path / Whisper).
+- **API:** `POST /v1/ingest`, `POST /v1/query` (the WordPress plugin will reuse `/v1/ingest`, built last).
 - **WordPress plugin:** PHP plugin that calls `/v1/ingest` with the user's API key (built last).
 
 ---
