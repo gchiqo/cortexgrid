@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/datasets', [DatasetController::class, 'store']);
     Route::get('/dashboard/datasets/{dataset}', [DatasetController::class, 'show'])->name('dataset');
     Route::delete('/dashboard/datasets/{dataset}', [DatasetController::class, 'destroy']);
+    Route::get('/dashboard/sources/{source}/status', [DatasetController::class, 'sourceStatus']);
 
     Route::post('/dashboard/keys', [DashboardController::class, 'issueKey']);
     Route::post('/dashboard/keys/{apiKey}/revoke', [DashboardController::class, 'revokeKey']);

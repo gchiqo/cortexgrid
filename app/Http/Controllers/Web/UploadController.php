@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dataset;
 use App\Services\Gemini;
 use App\Services\Ingest\IngestService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -17,7 +18,7 @@ class UploadController extends Controller
 {
     private const MAX_RECORDS = 1000;
 
-    public function store(Request $request, IngestService $ingest, Gemini $gemini): RedirectResponse
+    public function store(Request $request, IngestService $ingest, Gemini $gemini): RedirectResponse|JsonResponse
     {
         $request->validate([
             'file' => ['required', 'file', 'max:20480', 'mimes:pdf,csv,txt,md,xlsx,xls'],
@@ -48,17 +49,28 @@ class UploadController extends Controller
             };
         } catch (\Throwable $e) {
             report($e);
+            $msg = 'ფაილის დამუშავება ვერ მოხერხდა: '.$e->getMessage();
 
-            return back()->withErrors(['file' => 'ფაილის დამუშავება ვერ მოხერხდა: '.$e->getMessage()]);
+            return $request->expectsJson()
+                ? response()->json(['error' => $msg], 422)
+                : back()->withErrors(['file' => $msg]);
         }
 
         $records = array_slice($records, 0, self::MAX_RECORDS);
 
         if ($records === []) {
-            return back()->withErrors(['file' => 'ფაილიდან მონაცემები ვერ ამოვიღე.']);
+            $msg = 'ფაილიდან მონაცემები ვერ ამოვიღე.';
+
+            return $request->expectsJson()
+                ? response()->json(['error' => $msg], 422)
+                : back()->withErrors(['file' => $msg]);
         }
 
         $summary = $ingest->ingest($tenantId, $dataset->id, $type, $name, $records);
+
+        if ($request->expectsJson()) {
+            return response()->json($summary + ['name' => $name, 'status' => 'processing']);
+        }
 
         return back()->with('status',
             "ჩაიტვირთა «{$name}»: {$summary['documents']} დოკუმენტი, {$summary['chunks']} ჩანკი — ემბედინგი მუშავდება."

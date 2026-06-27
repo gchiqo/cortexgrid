@@ -46,9 +46,20 @@ php artisan queue:work            # processes EmbedChunks jobs
 Seed demo data (prints a one-time API key + login):
 
 ```bash
-php artisan db:seed --class=DemoSeeder
+php artisan db:seed --class=DemoSeeder      # admin + 3 preset chatbots in one dataset
 # Login: admin@gtuh.local / password
 ```
+
+**Clean start for a demo** — wipes everything and creates the admin + four empty datasets
+(კომპიუტერული მაღაზია / ახალი ამბების პორტალი / ფილმების საიტი / ტურისტული სააგენტო):
+
+```bash
+php artisan migrate:fresh --seed --seeder=DemoResetSeeder
+```
+
+Then upload the matching file from **`examples/`** into each dataset and watch the pipeline animation
+(extract → chunk → store → embed → ready). Run `php artisan queue:work` so embeddings finish and the
+animation reaches "ready".
 
 Open http://127.0.0.1:8000 → log in → dashboard.
 

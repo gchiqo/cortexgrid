@@ -35,6 +35,14 @@
     </div>
 </div>
 
+<style>
+@keyframes traceIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#trace .trace-card{animation:traceIn .42s ease both}
+@keyframes thinkPulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+.think-step{display:flex;align-items:center;gap:8px;padding:9px 11px;margin-bottom:8px;border-radius:8px;background:#1e293b;border-left:3px solid #334155;opacity:.5;transition:all .3s ease}
+.think-step.on{opacity:1;border-left-color:#6366f1;background:#27344b;transform:translateX(4px)}
+.think-dot{width:9px;height:9px;border-radius:50%;background:#6366f1;animation:thinkPulse 1s ease-in-out infinite;flex:0 0 auto}
+</style>
 <script>
 const csrf = document.querySelector('meta[name=csrf-token]').content;
 const chat = document.getElementById('chat');
@@ -63,7 +71,7 @@ function badge(p){
   return '<span style="background:'+(colors[p]||'#64748b')+'" class="text-white text-[10px] px-1.5 py-0.5 rounded">'+label+'</span>';
 }
 function card(title, badgeHtml, bodyHtml, ms){
-  return '<div class="bg-slate-800 rounded-lg p-3 mb-2 border-l-4 border-indigo-500">' +
+  return '<div class="trace-card bg-slate-800 rounded-lg p-3 mb-2 border-l-4 border-indigo-500">' +
     '<div class="flex items-center justify-between mb-1"><div class="flex items-center gap-2 text-sm font-medium">'+esc(title)+' '+(badgeHtml||'')+'</div>' +
     (ms!=null?'<span class="text-[11px] text-slate-400">'+ms+' ms</span>':'') + '</div>' +
     '<div class="text-xs text-slate-300">'+bodyHtml+'</div></div>';
@@ -118,13 +126,28 @@ function renderTrace(t){
   }
   html += '<div class="text-[11px] text-slate-400 mt-2">სულ: '+t.total_ms+' ms · მეხსიერება: '+t.history_turns+' წინა შეტყობინება</div>';
   trace.innerHTML = html;
+  [...trace.querySelectorAll('.trace-card')].forEach((el,i)=>el.style.animationDelay=(i*70)+'ms');
 }
+
+let thinkTimer = null;
+function showThinking(hasHistory){
+  const steps = [];
+  if(hasHistory) steps.push(['groq','საძიებო ფრაზის გადაწერა']);
+  steps.push(['gemini','კითხვის ემბედინგი'],['','სემანტიკური ძებნა (pgvector)'],['','ლექსიკური ძებნა (BM25)'],['','შერწყმა (RRF)'],['anthropic','პასუხის გენერაცია (Claude)']);
+  trace.innerHTML = steps.map(s => '<div class="think-step"><span class="think-dot"></span>'+
+    (s[0]?badge(s[0])+' ':'')+'<span class="text-slate-300 text-sm">'+esc(s[1])+'</span></div>').join('');
+  const els = [...trace.querySelectorAll('.think-step')];
+  let i = 0; els.forEach((e,idx)=>e.classList.toggle('on', idx===0));
+  thinkTimer = setInterval(()=>{ i=(i+1)%els.length; els.forEach((e,idx)=>e.classList.toggle('on', idx===i)); }, 600);
+}
+function stopThinking(){ if(thinkTimer){ clearInterval(thinkTimer); thinkTimer=null; } }
 
 async function send(){
   const q = qEl.value.trim(); if(!q) return;
   qEl.value = ''; bubble('user', q);
   const thinking = bubble('assistant', '…');
   sendBtn.disabled = true;
+  showThinking(history.length > 0);
   try {
     const res = await fetch('/dashboard/console/ask', {
       method:'POST',
@@ -136,10 +159,12 @@ async function send(){
     if(data.sources && data.sources.length){
       answer += '\n\nწყაროები: ' + data.sources.map(s => '[#'+s.ref+'] '+(s.title||'')).join('  ');
     }
+    stopThinking();
     thinking.textContent = answer;
     renderTrace(data.trace);
     history.push({role:'user', content:q}, {role:'assistant', content:data.answer || ''});
   } catch(e){
+    stopThinking();
     thinking.textContent = 'შეცდომა: ' + e;
   } finally {
     sendBtn.disabled = false; qEl.focus();

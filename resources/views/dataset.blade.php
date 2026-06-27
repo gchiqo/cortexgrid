@@ -36,7 +36,7 @@
             {{-- Sources --}}
             <section class="bg-white rounded-xl shadow-sm p-6">
                 <h2 class="font-semibold text-lg mb-4">წყაროები (ფაილები / იმპორტი)</h2>
-                <form method="POST" action="/dashboard/upload" enctype="multipart/form-data"
+                <form method="POST" action="/dashboard/upload" enctype="multipart/form-data" id="uploadForm"
                       class="border-2 border-dashed border-slate-200 rounded-lg p-4 mb-5 space-y-3">
                     @csrf
                     <input type="hidden" name="dataset_id" value="{{ $dataset->id }}">
@@ -130,6 +130,43 @@
     </main>
 </div>
 
+{{-- Upload pipeline animation overlay --}}
+<div id="upOverlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-xl mx-4">
+        <h3 class="font-bold text-lg text-center mb-1">მონაცემები მუშავდება</h3>
+        <p class="text-center text-slate-400 text-sm mb-7" id="upFile"></p>
+        <div class="up-pipe">
+            <div class="up-stage" data-s="0"><div class="up-dot">📄</div><span>ამოღება</span></div>
+            <div class="up-line" data-l="0"></div>
+            <div class="up-stage" data-s="1"><div class="up-dot">✂️</div><span>დაყოფა</span></div>
+            <div class="up-line" data-l="1"></div>
+            <div class="up-stage" data-s="2"><div class="up-dot">💾</div><span>შენახვა</span></div>
+            <div class="up-line" data-l="2"></div>
+            <div class="up-stage" data-s="3"><div class="up-dot">🧠</div><span>ემბედინგი</span></div>
+            <div class="up-line" data-l="3"></div>
+            <div class="up-stage" data-s="4"><div class="up-dot">✅</div><span>მზადაა</span></div>
+        </div>
+        <p class="text-center text-sm text-slate-500 mt-7" id="upStatus">იწყება…</p>
+        <div class="text-center mt-4 hidden" id="upClose">
+            <button onclick="location.reload()" class="bg-indigo-600 text-white rounded-lg px-5 py-2 text-sm font-medium">გვერდის განახლება</button>
+        </div>
+    </div>
+</div>
+<style>
+.up-pipe{display:flex;align-items:flex-start;justify-content:space-between}
+.up-stage{display:flex;flex-direction:column;align-items:center;gap:8px;width:64px;flex:0 0 auto}
+.up-stage span{font-size:12px;color:#94a3b8;text-align:center}
+.up-dot{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;
+        background:#f1f5f9;border:2px solid #e2e8f0;transition:all .35s ease;filter:grayscale(1);opacity:.55}
+.up-stage.active .up-dot{border-color:#6366f1;background:#eef2ff;filter:none;opacity:1;transform:scale(1.12);animation:upPulse 1s ease-in-out infinite}
+.up-stage.done .up-dot{border-color:#10b981;background:#ecfdf5;filter:none;opacity:1}
+.up-stage.active span,.up-stage.done span{color:#334155;font-weight:600}
+.up-line{flex:1;height:3px;background:#e2e8f0;margin-top:23px;border-radius:2px;position:relative;overflow:hidden}
+.up-line.fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#6366f1,#10b981);animation:upFlow .5s ease forwards}
+@keyframes upPulse{0%,100%{box-shadow:0 0 0 6px rgba(99,102,241,.15)}50%{box-shadow:0 0 0 11px rgba(99,102,241,.04)}}
+@keyframes upFlow{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+</style>
+
 <script>
 const csrf = document.querySelector('meta[name=csrf-token]').content;
 const askBtn = document.getElementById('ask');
@@ -154,6 +191,73 @@ if (askBtn) {
             document.getElementById('answerText').textContent = 'შეცდომა: ' + e;
         } finally {
             askBtn.disabled = false; askBtn.textContent = 'კითხვა';
+        }
+    });
+}
+
+// --- Upload pipeline animation ---
+const uploadForm = document.getElementById('uploadForm');
+if (uploadForm) {
+    const overlay = document.getElementById('upOverlay');
+    const stages = [...document.querySelectorAll('.up-stage')];
+    const lines = [...document.querySelectorAll('.up-line')];
+    const upStatus = document.getElementById('upStatus');
+    const upFile = document.getElementById('upFile');
+    const upClose = document.getElementById('upClose');
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const active = i => stages.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    const done = i => { stages[i].classList.remove('active'); stages[i].classList.add('done'); if (lines[i]) lines[i].classList.add('fill'); };
+
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = uploadForm.querySelector('input[type=file]').files[0];
+        if (!file) return;
+        stages.forEach(s => s.classList.remove('active', 'done'));
+        lines.forEach(l => l.classList.remove('fill'));
+        upClose.classList.add('hidden');
+        overlay.classList.remove('hidden'); overlay.classList.add('flex');
+        upFile.textContent = file.name;
+        upStatus.textContent = 'ფაილის წაკითხვა…';
+        active(0); await sleep(550);
+
+        try {
+            const res = await fetch(uploadForm.action, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
+                body: new FormData(uploadForm),
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({ error: 'ატვირთვა ვერ მოხერხდა' }));
+                upStatus.textContent = '❌ ' + (err.error || 'შეცდომა');
+                upClose.classList.remove('hidden');
+                return;
+            }
+            const data = await res.json();
+            done(0); active(1); upStatus.textContent = 'ტექსტის დაყოფა ჩანკებად…'; await sleep(500);
+            done(1); active(2); upStatus.textContent = `${data.documents} დოკუმენტი · ${data.chunks} ჩანკი შენახულია`; await sleep(500);
+            done(2); active(3); upStatus.textContent = 'ვექტორული ემბედინგების შექმნა (Gemini)…';
+
+            let tries = 0;
+            while (tries++ < 24) {
+                await sleep(1500);
+                try {
+                    const s = await (await fetch(`/dashboard/sources/${data.source_id}/status`, { headers: { 'Accept': 'application/json' } })).json();
+                    if (s.status === 'ready') {
+                        done(3); active(4); done(4);
+                        upStatus.textContent = '✅ მზადაა — მონაცემები ძებნადია!';
+                        await sleep(950); location.reload(); return;
+                    }
+                    if (s.status === 'failed') {
+                        upStatus.textContent = '❌ ემბედინგი ჩაიშალა — შეამოწმე Gemini გასაღები.';
+                        upClose.classList.remove('hidden'); return;
+                    }
+                } catch (_) { /* keep polling */ }
+            }
+            upStatus.textContent = 'შენახულია ✓ — ემბედინგი ფონურად დასრულდება (გაუშვი queue:work).';
+            upClose.classList.remove('hidden');
+        } catch (err) {
+            upStatus.textContent = '❌ ' + err;
+            upClose.classList.remove('hidden');
         }
     });
 }
