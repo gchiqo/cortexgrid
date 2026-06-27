@@ -19,6 +19,7 @@ class ConfigController extends Controller
         return view('configs.form', [
             'config' => new AiConfig(['model_tier' => 'standard', 'dataset_id' => $dataset->id]),
             'dataset' => $dataset,
+            'datasets' => Dataset::where('tenant_id', $request->user()->tenant_id)->orderBy('id')->get(),
         ]);
     }
 
@@ -42,7 +43,11 @@ class ConfigController extends Controller
     {
         $this->authorizeOwner($request, $config);
 
-        return view('configs.form', ['config' => $config, 'dataset' => $config->dataset]);
+        return view('configs.form', [
+            'config' => $config,
+            'dataset' => $config->dataset,
+            'datasets' => Dataset::where('tenant_id', $request->user()->tenant_id)->orderBy('id')->get(),
+        ]);
     }
 
     public function update(Request $request, AiConfig $config): RedirectResponse
@@ -81,9 +86,18 @@ class ConfigController extends Controller
             'model_tier' => ['required', 'in:fast,standard,max'],
             'enabled_tools' => ['nullable', 'string'],
             'allowed_domains' => ['nullable', 'string'],
+            'additional_datasets' => ['nullable', 'array'],
         ]);
 
         $split = fn (?string $s) => array_values(array_filter(array_map('trim', explode(',', $s ?? ''))));
+
+        // Extra datasets this agent may also search (within the tenant, excluding its home dataset).
+        $tenantDatasetIds = Dataset::where('tenant_id', $request->user()->tenant_id)->pluck('id')->all();
+        $home = $request->integer('dataset_id');
+        $extra = collect($request->input('additional_datasets', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id !== $home && in_array($id, $tenantDatasetIds, true))
+            ->unique()->values()->all();
 
         return [
             'name' => $data['name'],
@@ -92,6 +106,7 @@ class ConfigController extends Controller
             'enabled_tools' => $split($data['enabled_tools'] ?? ''),
             'allowed_domains' => $split($data['allowed_domains'] ?? ''),
             'widget_enabled' => $request->boolean('widget_enabled'),
+            'data_scope' => $extra ? ['dataset_ids' => $extra] : null,
         ];
     }
 }

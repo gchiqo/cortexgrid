@@ -44,6 +44,24 @@
                     </select>
                 </div>
 
+                @if ($datasets->count() > 1)
+                    <div>
+                        <label class="block text-sm font-medium mb-1">დამატებითი დატასეტები (აგენტი ასევე ეძებს)</label>
+                        @php $extra = $config->data_scope['dataset_ids'] ?? []; @endphp
+                        <div class="space-y-1.5 border border-slate-200 rounded-lg p-3">
+                            @foreach ($datasets as $ds)
+                                @if ($ds->id !== $config->dataset_id)
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" name="additional_datasets[]" value="{{ $ds->id }}" @checked(in_array($ds->id, $extra))>
+                                        {{ $ds->name }}
+                                    </label>
+                                @endif
+                            @endforeach
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">მთავარი დატასეტი: <b>{{ $dataset->name }}</b>. მონიშნე სხვებიც, რომ აგენტმა ერთად მოძებნოს (მაგ. პროდუქტები + ბლოგი + გვერდები).</p>
+                    </div>
+                @endif
+
                 <div>
                     <label class="block text-sm font-medium mb-1">სისტემური ინსტრუქცია (ქართულად)</label>
                     <textarea name="system_prompt" rows="6" required

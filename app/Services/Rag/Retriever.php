@@ -14,16 +14,16 @@ class Retriever
     public function __construct(private Gemini $gemini) {}
 
     /**
-     * @param  int|null  $datasetId  when set, restricts retrieval to that dataset
+     * @param  int|list<int>|null  $datasetId  restrict retrieval to one or several datasets
      * @param  array|null  $trace  when passed by reference, filled with a glass-box trace
      * @return list<array{id:int,document_id:int,content:string,metadata:?array,score:float}>
      */
-    public function retrieve(int $tenantId, string $query, int $k = 6, ?int $datasetId = null, ?array &$trace = null): array
+    public function retrieve(int $tenantId, string $query, int $k = 6, int|array|null $datasetId = null, ?array &$trace = null): array
     {
         $k = max(1, min($k, 50));
         $pool = $k * 3;
         $collect = func_num_args() >= 5;
-        $dsClause = $datasetId !== null ? ' and dataset_id = ?' : '';
+        [$dsClause, $dsBindings] = $this->datasetClause($datasetId);
 
         // --- semantic (degrades to lexical-only if embeddings are unavailable) ---
         $semantic = [];
@@ -36,9 +36,7 @@ class Retriever
             $dims = count($qvec);
             if ($qvec !== []) {
                 $literal = '['.implode(',', $qvec).']';
-                $bindings = $datasetId !== null
-                    ? [$literal, $tenantId, $datasetId, $literal]
-                    : [$literal, $tenantId, $literal];
+                $bindings = array_merge([$literal, $tenantId], $dsBindings, [$literal]);
                 $t0 = microtime(true);
                 $semantic = DB::select(
                     "select id, document_id, content, metadata,
@@ -56,9 +54,7 @@ class Retriever
         }
 
         // --- lexical (BM25-ish) ---
-        $lexBindings = $datasetId !== null
-            ? [$query, $tenantId, $query, $datasetId]
-            : [$query, $tenantId, $query];
+        $lexBindings = array_merge([$query, $tenantId, $query], $dsBindings);
         $t0 = microtime(true);
         $lexical = DB::select(
             "select id, document_id, content, metadata,
@@ -113,6 +109,29 @@ class Retriever
             'score' => round((float) $r->score, 4),
             'snippet' => mb_substr((string) $r->content, 0, 90),
         ], array_slice($rows, 0, $limit));
+    }
+
+    /**
+     * @param  int|list<int>|null  $datasetId
+     * @return array{0:string,1:list<int>}  [sql clause, bindings]
+     */
+    private function datasetClause(int|array|null $datasetId): array
+    {
+        if ($datasetId === null) {
+            return ['', []];
+        }
+
+        $ids = array_values(array_unique(array_filter(array_map('intval', (array) $datasetId))));
+        if ($ids === []) {
+            return ['', []];
+        }
+        if (count($ids) === 1) {
+            return [' and dataset_id = ?', [$ids[0]]];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        return [" and dataset_id in ({$placeholders})", $ids];
     }
 
     /**

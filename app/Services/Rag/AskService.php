@@ -64,8 +64,8 @@ class AskService
             ];
         }
 
-        // 2) Hybrid retrieval, scoped to this chatbot's dataset (with trace when requested).
-        $datasetId = $config?->dataset_id;
+        // 2) Hybrid retrieval, scoped to this agent's dataset(s) (with trace when requested).
+        $datasetId = $config ? $config->datasetIds() : null;
         $retrievalTrace = null;
         $hits = $withTrace
             ? $this->retriever->retrieve($tenantId, $searchQuery, $k, $datasetId, $retrievalTrace)

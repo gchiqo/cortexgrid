@@ -147,8 +147,10 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 
 **Also done:** **marketing landing page** at `/` (hero + animated "how data flows" pipeline + features + CTA; guests see it, authed users go to the dashboard) and the **feedback loop** — 👍/👎 on every widget answer (`messages.feedback`), and an **ანალიტიკა / Insights** page with satisfaction %, unanswered-question count, and the recent 👎 answers (question + answer + retrieved sources) for debugging bad data/chunking/prompts.
 
+**Also done:** **multi-dataset agents** (an agent searches its home dataset + extra datasets via `data_scope`), **theme switcher in header** (light/dark), **API/integration docs page** (`/dashboard/docs`, tabbed), **idempotent ingest** (`external_id` upsert — re-sync updates instead of duplicating), and the **WordPress plugin** (`wordpress-plugin/gtuh-ai-sync.zip`) — manual "Sync now" for WooCommerce products / posts / pages → `/v1/ingest`, each to its own dataset, payload validated against the live API.
+
 **Recommended order from here:**
-1. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last; deferred per request).
+1. **WordPress plugin v2** — scheduled (WP-Cron) + real-time (save_post / WooCommerce hooks) sync; webhooks; delete-on-trash.
 2. **More tools** — link-related-items, delete-item, generate-description, etc. (extend `ToolRegistry`).
 3. **Structured extraction for PDFs** — entity extraction into typed fields (the Knowledge Explorer already aggregates structured CSV/XLSX fields).
 

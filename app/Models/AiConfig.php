@@ -53,6 +53,21 @@ class AiConfig extends Model
         return $tiers[$this->model_tier] ?? config('services.anthropic.model');
     }
 
+    /**
+     * All dataset ids this agent searches: its home dataset + any extra ones in data_scope.
+     *
+     * @return list<int>
+     */
+    public function datasetIds(): array
+    {
+        $ids = [(int) $this->dataset_id];
+        foreach ((array) ($this->data_scope['dataset_ids'] ?? []) as $id) {
+            $ids[] = (int) $id;
+        }
+
+        return array_values(array_unique(array_filter($ids)));
+    }
+
     /** Is this browser Origin allowed to embed this chatbot? Empty allowlist = any domain. */
     public function isDomainAllowed(?string $origin): bool
     {
