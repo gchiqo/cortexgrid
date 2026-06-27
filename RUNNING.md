@@ -6,6 +6,7 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 ## What's implemented
 
 - **Auth:** email/password + Google (Socialite). Registration auto-provisions a tenant, an API key, and 3 Georgian preset AI configs.
+- **Knowledge Explorer** (`📊 ცოდნის მკვლევარი` on a dataset) — shows what the platform *understood*: entity facets (brands, categories, price ranges) aggregated from the structured fields, plus a one-click **AI analysis** (Claude) that detects relationships (`socket → compatible_with`) and missing info. Reinforces "platform, not chatbot."
 - **Datasets** — a tenant has many datasets (e.g. "computer store", "news portal"). **One dataset is fed by many sources** (PDF + CSV + API together) and has **many chatbots**; each chatbot only searches **its own dataset** (verified isolation). The dashboard is a datasets list → each opens a dataset workspace (sources + upload + chatbots + test-chat). `POST /v1/ingest` takes an optional `"dataset"` (id or name) to target one.
 - **Dashboard** (`/dashboard`, Georgian): usage tiles, API-key issue/revoke; the dataset workspace has a live **test-chat**, plus:
   - **File upload** — PDF / CSV / XLSX / TXT into a dataset, stored in the DB via the chunk→embed pipeline (PDF text via Gemini multimodal; CSV/XLSX rows → one document each).

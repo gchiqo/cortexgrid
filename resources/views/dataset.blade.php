@@ -10,6 +10,7 @@
                 <span class="text-xs text-slate-400">{{ $docCount }} დოკ. · {{ $chunkCount }} ჩანკი</span>
             </div>
             <div class="flex items-center gap-4 text-sm">
+                <a href="/dashboard/datasets/{{ $dataset->id }}/explorer" class="text-slate-600 hover:text-indigo-600">📊 ცოდნის მკვლევარი</a>
                 <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">ტესტ-კონსოლი</a>
                 <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">საუბრები</a>
             </div>

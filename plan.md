@@ -143,6 +143,8 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 
 **Also done:** **tool execution / function calling** — admin chatbots can run `add_item` / `update_item` / `find_items` against their own dataset via chat (added items embed synchronously and are instantly searchable). Tools run only on trusted surfaces (dashboard / console / API key) — the **public widget never executes tools**. The glass-box console shows each tool call + result.
 
+**Also done:** **Knowledge Explorer** — a per-dataset page showing what the platform *understood*: entity facets (brands, categories, price ranges) aggregated straight from the structured fields, plus an optional **AI analysis** (Claude) that detects **relationships** (e.g. `socket → compatible_with`) and missing information. The "platform that understands, not a chatbot" differentiator. **Animated upload pipeline** + animated glass-box console. Four example datasets in `examples/`; clean-start via `DemoResetSeeder`.
+
 **Recommended order from here:**
 1. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last).
 2. **Marketing landing page** — public funnel with the "how data flows" animation.

@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\ConsoleController;
 use App\Http\Controllers\Web\ConversationController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DatasetController;
+use App\Http\Controllers\Web\ExplorerController;
 use App\Http\Controllers\Web\GoogleController;
 use App\Http\Controllers\Web\UploadController;
 use App\Http\Controllers\WidgetController;
@@ -37,6 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/datasets/{dataset}', [DatasetController::class, 'show'])->name('dataset');
     Route::delete('/dashboard/datasets/{dataset}', [DatasetController::class, 'destroy']);
     Route::get('/dashboard/sources/{source}/status', [DatasetController::class, 'sourceStatus']);
+    Route::get('/dashboard/datasets/{dataset}/explorer', [ExplorerController::class, 'show'])->name('explorer');
+    Route::post('/dashboard/datasets/{dataset}/analyze', [ExplorerController::class, 'analyze']);
 
     Route::post('/dashboard/keys', [DashboardController::class, 'issueKey']);
     Route::post('/dashboard/keys/{apiKey}/revoke', [DashboardController::class, 'revokeKey']);
