@@ -30,7 +30,7 @@ class DatasetController extends Controller
 
         return view('dataset', [
             'dataset' => $dataset,
-            'sources' => $dataset->sources()->latest()->limit(50)->get(),
+            'sources' => $dataset->sources()->withCount('documents')->latest()->limit(50)->get(),
             'configs' => $dataset->aiConfigs()->orderBy('id')->get(),
             'docCount' => $dataset->documents()->count(),
             'chunkCount' => $dataset->chunks()->count(),

@@ -25,6 +25,7 @@ class AskService
         private Anthropic $anthropic,
         private Groq $groq,
         private ToolRegistry $tools,
+        private Reranker $reranker,
     ) {}
 
     /**
@@ -66,10 +67,18 @@ class AskService
 
         // 2) Hybrid retrieval, scoped to this agent's dataset(s) (with trace when requested).
         $datasetId = $config ? $config->datasetIds() : null;
+        $rerank = $config && $config->rerankEnabled();
+        $retrieveK = $rerank ? min($k * 3, 18) : $k;
         $retrievalTrace = null;
         $hits = $withTrace
-            ? $this->retriever->retrieve($tenantId, $searchQuery, $k, $datasetId, $retrievalTrace)
-            : $this->retriever->retrieve($tenantId, $searchQuery, $k, $datasetId);
+            ? $this->retriever->retrieve($tenantId, $searchQuery, $retrieveK, $datasetId, $retrievalTrace)
+            : $this->retriever->retrieve($tenantId, $searchQuery, $retrieveK, $datasetId);
+
+        // 2b) Optional reranking (Groq) over the fused pool → best $k.
+        if ($rerank && count($hits) > 1) {
+            [$hits, $rr] = $this->reranker->rerank($searchQuery, $hits, $k);
+            $steps[] = ['step' => 'rerank'] + $rr;
+        }
 
         // No data AND no tools to act with → nothing to do.
         if ($hits === [] && ! $useTools) {
@@ -121,6 +130,48 @@ class AskService
             $withTrace ? $this->trace($searchQuery, $steps, $retrievalTrace, $generate, count($history), $startedAt) : null,
             $result['tool_calls'],
         );
+    }
+
+    /**
+     * Streaming variant for the widget (no tools). Calls $onToken per delta.
+     *
+     * @param  list<array{role:string,content:string}>  $history
+     * @return array{answer:string,sources:list<array<string,mixed>>,usage:array{input_tokens:int,output_tokens:int},answered:bool}
+     */
+    public function answerStream(int $tenantId, string $question, ?AiConfig $config, array $history, callable $onToken, ?int $apiKeyId = null): array
+    {
+        $searchQuery = $history !== [] ? $this->rewriteQuery($question, $history) : $question;
+        $datasetId = $config ? $config->datasetIds() : null;
+        $rerank = $config && $config->rerankEnabled();
+
+        $hits = $this->retriever->retrieve($tenantId, $searchQuery, $rerank ? 18 : 6, $datasetId);
+        if ($rerank && count($hits) > 1) {
+            [$hits] = $this->reranker->rerank($searchQuery, $hits, 6);
+        }
+
+        if ($hits === []) {
+            UsageEvent::record($tenantId, 'query', 1, $apiKeyId);
+            $msg = 'ბოდიში, ამ კითხვაზე პასუხი თქვენს მონაცემებში ვერ მოვძებნე.';
+            $onToken($msg);
+
+            return ['answer' => $msg, 'sources' => [], 'usage' => ['input_tokens' => 0, 'output_tokens' => 0], 'answered' => false];
+        }
+
+        [$contextBlock, $sources] = $this->buildContext($hits);
+        $system = $this->systemPrompt($config, $contextBlock);
+        $messages = $this->buildMessages($history, $question);
+
+        $result = $this->anthropic->stream($system, $messages, $config?->modelId(), 1500, $onToken);
+
+        UsageEvent::record($tenantId, 'query', 1, $apiKeyId);
+        UsageEvent::record($tenantId, 'tokens', $result['input_tokens'] + $result['output_tokens'], $apiKeyId);
+
+        return [
+            'answer' => $result['text'],
+            'sources' => $sources,
+            'usage' => ['input_tokens' => $result['input_tokens'], 'output_tokens' => $result['output_tokens']],
+            'answered' => true,
+        ];
     }
 
     private function rewriteQuery(string $question, array $history): string
@@ -215,9 +266,15 @@ class AskService
         $lines = [];
         $sources = [];
 
+        // Pull title + url from the source documents for clickable citations.
+        $docIds = array_values(array_unique(array_map(fn ($h) => $h['document_id'], $hits)));
+        $docs = \App\Models\Document::whereIn('id', $docIds)->get(['id', 'title', 'structured'])->keyBy('id');
+
         foreach ($hits as $i => $hit) {
             $ref = $i + 1;
-            $title = $hit['metadata']['title'] ?? null;
+            $doc = $docs[$hit['document_id']] ?? null;
+            $title = $hit['metadata']['title'] ?? $doc?->title;
+            $url = $doc?->structured['url'] ?? null;
             $header = $title ? "[#{$ref}] {$title}" : "[#{$ref}]";
             $lines[] = $header."\n".$hit['content'];
 
@@ -225,6 +282,7 @@ class AskService
                 'ref' => $ref,
                 'document_id' => $hit['document_id'],
                 'title' => $title,
+                'url' => $url,
                 'snippet' => mb_substr($hit['content'], 0, 200),
                 'score' => $hit['score'],
             ];

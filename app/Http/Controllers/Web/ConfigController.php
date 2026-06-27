@@ -107,6 +107,16 @@ class ConfigController extends Controller
             'allowed_domains' => $split($data['allowed_domains'] ?? ''),
             'widget_enabled' => $request->boolean('widget_enabled'),
             'data_scope' => $extra ? ['dataset_ids' => $extra] : null,
+            'settings' => [
+                'rerank' => $request->boolean('rerank'),
+                'widget' => [
+                    'color' => $request->string('widget_color')->toString() ?: '#4f46e5',
+                    'position' => $request->input('widget_position') === 'left' ? 'left' : 'right',
+                    'greeting' => $request->string('widget_greeting')->toString() ?: 'გამარჯობა! რით დაგეხმაროთ?',
+                    'title' => $request->string('widget_title')->toString() ?: $data['name'],
+                    'launcher' => $request->string('widget_launcher')->toString() ?: '💬',
+                ],
+            ],
         ];
     }
 }

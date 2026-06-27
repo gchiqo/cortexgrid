@@ -58,8 +58,18 @@
                     <ul class="space-y-2 text-sm">
                         @foreach ($sources as $src)
                             <li class="flex items-center justify-between border-t py-2">
-                                <span>{{ $src->name }} <span class="text-slate-400">({{ $src->type }})</span></span>
-                                <span class="text-xs px-2 py-0.5 rounded {{ $src->status === 'ready' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">{{ $src->status }}</span>
+                                <span>{{ $src->name }} <span class="text-slate-400">({{ $src->type }} · {{ $src->documents_count }} ჩანაწ.)</span></span>
+                                <span class="flex items-center gap-2">
+                                    <span class="text-xs px-2 py-0.5 rounded {{ $src->status === 'ready' ? 'bg-emerald-50 text-emerald-700' : ($src->status === 'failed' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700') }}">{{ $src->status }}</span>
+                                    @if ($src->status !== 'ready')
+                                        <form method="POST" action="/dashboard/sources/{{ $src->id }}/reprocess">@csrf
+                                            <button class="text-indigo-600 hover:underline text-xs" title="ხელახლა დამუშავება">↻</button>
+                                        </form>
+                                    @endif
+                                    <form method="POST" action="/dashboard/sources/{{ $src->id }}" onsubmit="return confirm('წავშალო ეს წყარო?')">@csrf @method('DELETE')
+                                        <button class="text-red-400 hover:text-red-600 text-xs" title="წაშლა">✕</button>
+                                    </form>
+                                </span>
                             </li>
                         @endforeach
                     </ul>
@@ -185,9 +195,15 @@ if (askBtn) {
             });
             const data = await res.json();
             document.getElementById('answer').classList.remove('hidden');
-            document.getElementById('answerText').textContent = data.answer || JSON.stringify(data);
-            const srcs = (data.sources || []).map(s => `[#${s.ref}] ${s.title ?? ''}`).join('  ');
-            document.getElementById('answerSources').textContent = srcs ? ('წყაროები: ' + srcs) : '';
+            const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+            // typing reveal
+            const at = document.getElementById('answerText');
+            const full = data.answer || JSON.stringify(data); at.textContent = '';
+            let i = 0; (function step(){ if (i < full.length){ at.textContent += full.slice(i, i+4); i += 4; setTimeout(step, 10); } })();
+            const sources = data.sources || [];
+            document.getElementById('answerSources').innerHTML = sources.length
+                ? 'წყაროები: ' + sources.map(s => { const l = '[#'+s.ref+'] '+esc(s.title||''); return s.url ? '<a href="'+esc(s.url)+'" target="_blank" class="text-indigo-600 underline">'+l+'</a>' : l; }).join('  ')
+                : '';
         } catch (e) {
             document.getElementById('answer').classList.remove('hidden');
             document.getElementById('answerText').textContent = 'შეცდომა: ' + e;

@@ -113,6 +113,10 @@ function renderTrace(t){
       '<span class="text-emerald-300 w-16 shrink-0">'+c.score+'</span><span class="text-slate-300">'+esc(c.title||'')+'</span></div>').join('');
     html += card('შერწყმა — '+esc(r.fused.method), '', chosen, null);
   }
+  const rr = (t.steps||[]).find(s => s.step === 'rerank');
+  if(rr && rr.used){
+    html += card('reranker (გადარანჟირება)', badge('groq'), '<div>'+rr.pool+' → '+rr.kept+' საუკეთესო პასაჟი</div>', rr.ms);
+  }
   if(t.generate){
     html += card('პასუხის გენერაცია', badge('anthropic'),
       '<div>მოდელი: '+esc(t.generate.model)+'</div>' +
@@ -156,12 +160,18 @@ async function send(){
       body: JSON.stringify({ question:q, config_id: configEl.value, history })
     });
     const data = await res.json();
-    let answer = data.answer || (data.message ? ('შეცდომა: '+data.message) : 'ბოდიში, ვერ ვუპასუხე.');
-    if(data.sources && data.sources.length){
-      answer += '\n\nწყაროები: ' + data.sources.map(s => '[#'+s.ref+'] '+(s.title||'')).join('  ');
-    }
     stopThinking();
-    thinking.textContent = answer;
+    const answer = data.answer || (data.message ? ('შეცდომა: '+data.message) : 'ბოდიში, ვერ ვუპასუხე.');
+    thinking.textContent = '';
+    let i = 0;
+    (function step(){
+      if (i < answer.length) { thinking.textContent += answer.slice(i, i+4); i += 4; chat.scrollTop = chat.scrollHeight; setTimeout(step, 10); }
+      else if (data.sources && data.sources.length) {
+        const sd = document.createElement('div'); sd.className = 'mt-1 text-xs text-slate-500';
+        sd.innerHTML = 'წყაროები: ' + data.sources.map(s => { const l='[#'+s.ref+'] '+esc(s.title||''); return s.url ? '<a href="'+esc(s.url)+'" target="_blank" class="underline text-indigo-600">'+l+'</a>' : l; }).join('  ');
+        thinking.appendChild(sd);
+      }
+    })();
     renderTrace(data.trace);
     history.push({role:'user', content:q}, {role:'assistant', content:data.answer || ''});
   } catch(e){

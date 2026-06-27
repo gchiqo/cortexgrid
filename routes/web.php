@@ -11,6 +11,8 @@ use App\Http\Controllers\Web\DatasetController;
 use App\Http\Controllers\Web\DocsController;
 use App\Http\Controllers\Web\ExplorerController;
 use App\Http\Controllers\Web\InsightsController;
+use App\Http\Controllers\Web\LeadController;
+use App\Http\Controllers\Web\SourceController;
 use App\Http\Controllers\Web\GoogleController;
 use App\Http\Controllers\Web\UploadController;
 use App\Http\Controllers\WidgetController;
@@ -24,6 +26,10 @@ Route::options('/public/chat', [PublicChatController::class, 'preflight']);
 Route::post('/public/chat', [PublicChatController::class, 'chat'])->middleware('throttle:60,1');
 Route::options('/public/feedback', [PublicChatController::class, 'preflight']);
 Route::post('/public/feedback', [PublicChatController::class, 'feedback'])->middleware('throttle:120,1');
+Route::options('/public/chat/stream', [PublicChatController::class, 'preflight']);
+Route::post('/public/chat/stream', [PublicChatController::class, 'chatStream'])->middleware('throttle:60,1');
+Route::options('/public/lead', [PublicChatController::class, 'preflight']);
+Route::post('/public/lead', [PublicChatController::class, 'lead'])->middleware('throttle:30,1');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -42,6 +48,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/datasets/{dataset}', [DatasetController::class, 'show'])->name('dataset');
     Route::delete('/dashboard/datasets/{dataset}', [DatasetController::class, 'destroy']);
     Route::get('/dashboard/sources/{source}/status', [DatasetController::class, 'sourceStatus']);
+    Route::post('/dashboard/sources/{source}/reprocess', [SourceController::class, 'reprocess']);
+    Route::delete('/dashboard/sources/{source}', [SourceController::class, 'destroy']);
+    Route::get('/dashboard/leads', [LeadController::class, 'index'])->name('leads');
     Route::get('/dashboard/datasets/{dataset}/explorer', [ExplorerController::class, 'show'])->name('explorer');
     Route::post('/dashboard/datasets/{dataset}/analyze', [ExplorerController::class, 'analyze']);
 

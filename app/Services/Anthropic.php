@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Anthropic\Client;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Anthropic Claude — the main reasoning brain: grounded Georgian answers,
@@ -58,6 +59,61 @@ class Anthropic
             'stop_reason' => $message->stopReason ?? null,
             'message' => $message,
         ];
+    }
+
+    /**
+     * Streaming completion via raw SSE. Calls $onText($delta) per token; returns final usage + text.
+     *
+     * @param  array<int,array{role:string,content:string}>  $messages
+     */
+    public function stream(string $system, array $messages, ?string $model, int $maxTokens, callable $onText): array
+    {
+        $response = Http::withHeaders([
+            'x-api-key' => (string) config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+            'content-type' => 'application/json',
+        ])->withOptions(['stream' => true])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+            'model' => $model ?? config('services.anthropic.model'),
+            'max_tokens' => $maxTokens,
+            'system' => $system,
+            'messages' => array_values($messages),
+            'stream' => true,
+        ]);
+
+        $body = $response->toPsrResponse()->getBody();
+        $text = '';
+        $in = 0;
+        $out = 0;
+        $buf = '';
+
+        while (! $body->eof()) {
+            $buf .= $body->read(2048);
+            while (($pos = strpos($buf, "\n\n")) !== false) {
+                $chunk = substr($buf, 0, $pos);
+                $buf = substr($buf, $pos + 2);
+                if (! preg_match('/data: (.*)/s', $chunk, $m)) {
+                    continue;
+                }
+                $data = json_decode(trim($m[1]), true);
+                if (! is_array($data)) {
+                    continue;
+                }
+                $type = $data['type'] ?? '';
+                if ($type === 'content_block_delta' && (($data['delta']['type'] ?? '') === 'text_delta')) {
+                    $t = $data['delta']['text'] ?? '';
+                    if ($t !== '') {
+                        $text .= $t;
+                        $onText($t);
+                    }
+                } elseif ($type === 'message_start') {
+                    $in = $data['message']['usage']['input_tokens'] ?? 0;
+                } elseif ($type === 'message_delta') {
+                    $out = $data['usage']['output_tokens'] ?? $out;
+                }
+            }
+        }
+
+        return ['text' => $text, 'input_tokens' => $in, 'output_tokens' => $out];
     }
 
     /**

@@ -9,6 +9,7 @@
                 <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">ტესტ-კონსოლი</a>
                 <a href="/dashboard/docs" class="text-slate-600 hover:text-indigo-600">API</a>
                 <a href="/dashboard/insights" class="text-slate-600 hover:text-indigo-600">ანალიტიკა</a>
+                <a href="/dashboard/leads" class="text-slate-600 hover:text-indigo-600">ლიდები</a>
                 <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">საუბრები</a>
                 @include('partials.theme-toggle')
                 <span class="text-slate-500">{{ $user->email }}</span>

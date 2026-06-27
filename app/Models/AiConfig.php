@@ -13,7 +13,7 @@ class AiConfig extends Model
 
     protected $fillable = [
         'tenant_id', 'dataset_id', 'name', 'system_prompt', 'data_scope', 'enabled_tools', 'model_tier',
-        'public_key', 'allowed_domains', 'widget_enabled',
+        'public_key', 'allowed_domains', 'widget_enabled', 'settings',
     ];
 
     protected $casts = [
@@ -21,6 +21,7 @@ class AiConfig extends Model
         'enabled_tools' => 'array',
         'allowed_domains' => 'array',
         'widget_enabled' => 'boolean',
+        'settings' => 'array',
     ];
 
     protected static function booted(): void
@@ -66,6 +67,26 @@ class AiConfig extends Model
         }
 
         return array_values(array_unique(array_filter($ids)));
+    }
+
+    /** Whether to run the reranker over retrieved chunks. */
+    public function rerankEnabled(): bool
+    {
+        return (bool) ($this->settings['rerank'] ?? false);
+    }
+
+    /** Resolved widget appearance settings (with defaults). */
+    public function widget(): array
+    {
+        $w = $this->settings['widget'] ?? [];
+
+        return [
+            'color' => $w['color'] ?? '#4f46e5',
+            'position' => ($w['position'] ?? 'right') === 'left' ? 'left' : 'right',
+            'greeting' => $w['greeting'] ?? 'გამარჯობა! რით დაგეხმაროთ?',
+            'title' => $w['title'] ?? $this->name,
+            'launcher' => $w['launcher'] ?? '💬',
+        ];
     }
 
     /** Is this browser Origin allowed to embed this chatbot? Empty allowlist = any domain. */

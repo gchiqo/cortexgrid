@@ -77,6 +77,14 @@
                     <p class="text-xs text-slate-400 mt-1">ხელმისაწვდომი: <code>add_item</code>, <code>update_item</code>, <code>find_items</code> (მძიმით). ჩატბოტი მათით მონაცემებს ცვლის — ეშვება მხოლოდ პანელში/API-ში, არა საჯარო ვიჯეტში.</p>
                 </div>
 
+                <div class="border-t pt-5">
+                    @php $w = $config->widget(); @endphp
+                    <label class="flex items-center gap-2 text-sm font-medium">
+                        <input type="checkbox" name="rerank" value="1" @checked(old('rerank', $config->rerankEnabled()))>
+                        🎯 reranker — შედეგების გადარანჟირება Groq-ით (უკეთესი სიზუსტე, ოდნავ ნელი)
+                    </label>
+                </div>
+
                 <div class="border-t pt-5 space-y-4">
                     <label class="flex items-center gap-2 text-sm font-medium">
                         <input type="checkbox" name="widget_enabled" value="1" @checked(old('widget_enabled', $config->widget_enabled ?? true))>
@@ -88,6 +96,32 @@
                                placeholder="example.ge, shop.example.ge"
                                class="w-full rounded-lg border border-slate-300 px-3 py-2">
                         <p class="text-xs text-slate-400 mt-1">ცარიელი = ნებისმიერი დომენი. შეავსე უსაფრთხოებისთვის.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">ვიჯეტის ფერი</label>
+                            <input type="color" name="widget_color" value="{{ old('widget_color', $w['color']) }}" class="h-10 w-full rounded-lg border border-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">პოზიცია</label>
+                            <select name="widget_position" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                                <option value="right" @selected($w['position']==='right')>მარჯვნივ</option>
+                                <option value="left" @selected($w['position']==='left')>მარცხნივ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">სათაური</label>
+                            <input name="widget_title" value="{{ old('widget_title', $w['title']) }}" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">ღილაკის ემოჯი</label>
+                            <input name="widget_launcher" value="{{ old('widget_launcher', $w['launcher']) }}" maxlength="4" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium mb-1">მისალმება</label>
+                            <input name="widget_greeting" value="{{ old('widget_greeting', $w['greeting']) }}" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        </div>
                     </div>
                 </div>
 

@@ -149,6 +149,8 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 
 **Also done:** **multi-dataset agents** (an agent searches its home dataset + extra datasets via `data_scope`), **theme switcher in header** (light/dark), **API/integration docs page** (`/dashboard/docs`, tabbed), **idempotent ingest** (`external_id` upsert — re-sync updates instead of duplicating), and the **WordPress plugin** (`wordpress-plugin/gtuh-ai-sync.zip`) — manual "Sync now" for WooCommerce products / posts / pages → `/v1/ingest`, each to its own dataset, payload validated against the live API.
 
+**Also done:** **streaming widget** (SSE token streaming + typing reveal on dashboard/console), **clickable citations** (sources link to their url), **per-agent widget customization** (color/position/greeting/title/launcher), **Groq reranker** (opt-in per agent, shown in the console trace), **source management** (doc counts + reprocess + delete), and **lead capture** (widget contact form on no-answer → ლიდები page).
+
 **Recommended order from here:**
 1. **WordPress plugin v2** — scheduled (WP-Cron) + real-time (save_post / WooCommerce hooks) sync; webhooks; delete-on-trash.
 2. **More tools** — link-related-items, delete-item, generate-description, etc. (extend `ToolRegistry`).
