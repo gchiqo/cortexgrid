@@ -5,7 +5,10 @@
     <header class="bg-white border-b">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></a>
-            <a href="/dashboard/conversations" class="text-sm text-slate-600 hover:text-slate-900">← საუბრები</a>
+            <div class="flex items-center gap-2">
+                @include('partials.theme-toggle')
+                <a href="/dashboard/conversations" class="text-sm text-slate-600 hover:text-slate-900">← საუბრები</a>
+            </div>
         </div>
     </header>
 

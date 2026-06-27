@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\ConsoleController;
 use App\Http\Controllers\Web\ConversationController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DatasetController;
+use App\Http\Controllers\Web\DocsController;
 use App\Http\Controllers\Web\ExplorerController;
 use App\Http\Controllers\Web\InsightsController;
 use App\Http\Controllers\Web\GoogleController;
@@ -59,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/console', [ConsoleController::class, 'index'])->name('console');
     Route::post('/dashboard/console/ask', [ConsoleController::class, 'ask']);
 
+    Route::get('/dashboard/docs', [DocsController::class, 'index'])->name('docs');
     Route::get('/dashboard/insights', [InsightsController::class, 'index'])->name('insights');
     Route::get('/dashboard/conversations', [ConversationController::class, 'index'])->name('conversations');
     Route::get('/dashboard/conversations/{conversation}', [ConversationController::class, 'show']);

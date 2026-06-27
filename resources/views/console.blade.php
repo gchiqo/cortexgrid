@@ -12,6 +12,7 @@
                     @endforeach
                 </select>
                 <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">← პანელი</a>
+                @include('partials.theme-toggle')
             </div>
         </div>
     </header>

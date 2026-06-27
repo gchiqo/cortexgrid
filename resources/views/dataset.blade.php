@@ -13,6 +13,7 @@
                 <a href="/dashboard/datasets/{{ $dataset->id }}/explorer" class="text-slate-600 hover:text-indigo-600">📊 ცოდნის მკვლევარი</a>
                 <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">ტესტ-კონსოლი</a>
                 <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">საუბრები</a>
+                @include('partials.theme-toggle')
             </div>
         </div>
     </header>

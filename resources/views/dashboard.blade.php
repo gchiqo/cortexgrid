@@ -7,8 +7,10 @@
             <a href="/" class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></a>
             <div class="flex items-center gap-4 text-sm">
                 <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">ტესტ-კონსოლი</a>
+                <a href="/dashboard/docs" class="text-slate-600 hover:text-indigo-600">API</a>
                 <a href="/dashboard/insights" class="text-slate-600 hover:text-indigo-600">ანალიტიკა</a>
                 <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">საუბრები</a>
+                @include('partials.theme-toggle')
                 <span class="text-slate-500">{{ $user->email }}</span>
                 <form method="POST" action="/logout">@csrf
                     <button class="text-slate-600 hover:text-red-600">გასვლა</button>

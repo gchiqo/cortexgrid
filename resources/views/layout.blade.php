@@ -41,17 +41,26 @@
         html.dark input::placeholder, html.dark textarea::placeholder { color:#64748b; }
         html.dark code { background:#334155; color:#e2e8f0; }
         html.dark table thead { color:#64748b; }
-        /* theme toggle button */
-        #themeToggle { position:fixed; left:18px; bottom:18px; width:44px; height:44px; border-radius:50%;
-            background:#fff; border:1px solid #e2e8f0; box-shadow:0 4px 14px rgba(0,0,0,.12); cursor:pointer;
-            font-size:18px; display:flex; align-items:center; justify-content:center; z-index:2147482000; }
-        html.dark #themeToggle { background:#1e293b; border-color:#334155; }
+        html.dark .js-theme-toggle:hover { background:#334155 !important; }
+        .js-theme-toggle { cursor:pointer; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
     @yield('body')
 
-    <button id="themeToggle" onclick="(function(){var d=document.documentElement.classList.toggle('dark');localStorage.theme=d?'dark':'light';document.getElementById('themeToggle').textContent=d?'☀️':'🌙';})()" title="თემის გადართვა">🌙</button>
-    <script>document.getElementById('themeToggle').textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';</script>
+    <script>
+        (function () {
+            function ico() { return document.documentElement.classList.contains('dark') ? '☀️' : '🌙'; }
+            function sync() { document.querySelectorAll('.js-theme-toggle').forEach(function (b) { b.textContent = ico(); }); }
+            document.addEventListener('click', function (e) {
+                var b = e.target.closest('.js-theme-toggle');
+                if (!b) return;
+                var d = document.documentElement.classList.toggle('dark');
+                localStorage.theme = d ? 'dark' : 'light';
+                sync();
+            });
+            sync();
+        })();
+    </script>
 </body>
 </html>

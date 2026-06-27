@@ -5,6 +5,7 @@
     <header class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <a href="/" class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></a>
         <div class="flex items-center gap-3 text-sm">
+            @include('partials.theme-toggle')
             <a href="#how" class="text-slate-600 hover:text-slate-900 px-3 py-2 hidden sm:inline">როგორ მუშაობს</a>
             @auth
                 <a href="/dashboard" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 font-medium">პანელი</a>

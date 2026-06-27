@@ -9,6 +9,7 @@
                 <div class="font-bold text-lg">📊 ცოდნის მკვლევარი</div>
                 <span class="text-slate-400 text-sm">{{ $dataset->name }}</span>
             </div>
+            @include('partials.theme-toggle')
         </div>
     </header>
 

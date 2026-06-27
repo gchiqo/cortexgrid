@@ -1,6 +1,7 @@
 @extends('layout')
 @section('title', 'რეგისტრაცია')
 @section('body')
+<div class="fixed top-4 right-4 z-10">@include('partials.theme-toggle')</div>
 <div class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white rounded-2xl shadow p-8">
         <h1 class="text-2xl font-bold mb-1">რეგისტრაცია</h1>

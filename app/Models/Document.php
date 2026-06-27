@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Document extends Model
 {
-    protected $fillable = ['source_id', 'tenant_id', 'dataset_id', 'title', 'raw_text', 'structured'];
+    protected $fillable = ['source_id', 'tenant_id', 'dataset_id', 'external_id', 'title', 'raw_text', 'structured'];
 
     protected $casts = ['structured' => 'array'];
 
