@@ -3,6 +3,7 @@
 use App\Http\Controllers\PublicChatController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\ConfigController;
+use App\Http\Controllers\Web\ConsoleController;
 use App\Http\Controllers\Web\ConversationController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\GoogleController;
@@ -39,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/configs/{config}/edit', [ConfigController::class, 'edit']);
     Route::put('/dashboard/configs/{config}', [ConfigController::class, 'update']);
     Route::delete('/dashboard/configs/{config}', [ConfigController::class, 'destroy']);
+
+    Route::get('/dashboard/console', [ConsoleController::class, 'index'])->name('console');
+    Route::post('/dashboard/console/ask', [ConsoleController::class, 'ask']);
 
     Route::get('/dashboard/conversations', [ConversationController::class, 'index'])->name('conversations');
     Route::get('/dashboard/conversations/{conversation}', [ConversationController::class, 'show']);

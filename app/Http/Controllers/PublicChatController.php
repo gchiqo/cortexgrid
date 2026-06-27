@@ -49,6 +49,13 @@ class PublicChatController extends Controller
             ]);
         }
 
+        // Prior turns (before inserting the current message) give the model memory.
+        $history = $conversation->messages()
+            ->orderBy('id')
+            ->get(['role', 'content'])
+            ->map(fn ($m) => ['role' => $m->role, 'content' => $m->content])
+            ->all();
+
         Message::create([
             'conversation_id' => $conversation->id,
             'tenant_id' => $config->tenant_id,
@@ -56,7 +63,7 @@ class PublicChatController extends Controller
             'content' => $data['message'],
         ]);
 
-        $result = $ask->answer($config->tenant_id, $data['message'], $config);
+        $result = $ask->answer($config->tenant_id, $data['message'], $config, history: $history);
 
         Message::create([
             'conversation_id' => $conversation->id,

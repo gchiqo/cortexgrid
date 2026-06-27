@@ -18,14 +18,15 @@ class Anthropic
     }
 
     /**
-     * Single-turn chat. Returns ['text' => string, 'input_tokens' => int, 'output_tokens' => int, 'stop_reason' => ?string].
+     * Chat completion. Returns ['text' => string, 'input_tokens' => int, 'output_tokens' => int, 'stop_reason' => ?string].
      *
      * @param  string|array<int,array<string,mixed>>  $system
+     * @param  array<int,array{role:string,content:string}>  $messages  full turn list (user/assistant)
      * @param  array<int,array<string,mixed>>|null  $tools
      */
     public function chat(
         string|array $system,
-        string $userMessage,
+        array $messages,
         ?string $model = null,
         int $maxTokens = 1500,
         ?array $tools = null,
@@ -34,7 +35,7 @@ class Anthropic
             'maxTokens' => $maxTokens,
             'model' => $model ?? config('services.anthropic.model'),
             'system' => $system,
-            'messages' => [['role' => 'user', 'content' => $userMessage]],
+            'messages' => array_values($messages),
         ];
 
         if ($tools !== null) {

@@ -60,6 +60,13 @@ A config is just: `{ system_prompt (Georgian), data_scope, enabled_tools, model_
 ### 3.6 Platform / control plane
 - Auth, tenants, **API-key issuing**, **usage metering**, data-overview dashboard.
 
+### 3.7 Glass-box test console (transparency)
+A split-screen test chat **on our platform** that lets the user try a chatbot and *see how the system thinks*:
+- **Right pane — chat:** the user talks to a selected AI config.
+- **Left pane — live logs:** a step-by-step trace of each request — query received → query embedded (model, dims) → **hybrid retrieval** (semantic vs lexical candidates with scores) → fusion/rerank → final chunks chosen → prompt assembled → Claude call (model, input/output tokens, latency) → answer.
+- **Why:** turns the invisible RAG pipeline into a visible demo — strong for "technical depth" and live demos, and a real debugging tool for the user when tuning configs/data.
+- **How:** `AskService` returns an optional structured `trace` in debug mode; the console renders it as a timeline. (The public widget keeps the trace off.)
+
 ---
 
 ## 4. Models & providers
@@ -124,6 +131,15 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 10. **WordPress plugin (LAST / optional):** WooCommerce + blog + pages → `/v1/ingest`.
 
 > For the live hackathon demo, the must-haves are steps 1–7 working end-to-end in Georgian. Steps 8–10 are upside; pitch anything unfinished as the roadmap.
+
+### Status & recommended next steps
+
+**Done:** DB + pgvector, auth (email/password + Google), API keys, ingestion (text/records API + PDF/CSV/XLSX/TXT upload), hybrid RAG, Georgian cited answers, AI config CRUD + presets, dashboard with usage + test-chat, **embeddable widget** (public key + CORS + `/embed.js`), **conversation/message storage + viewer**, **conversational memory** (Groq history-aware query rewrite + multi-turn), and the **glass-box test console (§3.7)** showing the live pipeline trace across all three providers.
+
+**Recommended order from here:**
+1. **Auto-generate config from data** — after ingest, LLM proposes chatbot config(s).
+2. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last).
+3. **Marketing landing page** — public funnel with the "how data flows" animation.
 
 ---
 
