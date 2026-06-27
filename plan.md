@@ -134,12 +134,11 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 
 ### Status & recommended next steps
 
-**Done:** DB + pgvector, auth (email/password + Google), API keys, ingestion (text/records API + PDF/CSV/XLSX/TXT upload), hybrid RAG, Georgian cited answers, AI config CRUD + presets, dashboard with usage + test-chat, **embeddable widget** (public key + CORS + `/embed.js`), **conversation/message storage + viewer**, **conversational memory** (Groq history-aware query rewrite + multi-turn), and the **glass-box test console (§3.7)** showing the live pipeline trace across all three providers.
+**Done:** DB + pgvector, auth (email/password + Google), API keys, ingestion (text/records API + PDF/CSV/XLSX/TXT upload), hybrid RAG, Georgian cited answers, AI config CRUD + presets, **auto-generate configs from the user's data** (Claude samples the data and proposes editable chatbots), dashboard with usage + test-chat, **embeddable widget** (public key + CORS + `/embed.js`), **conversation/message storage + viewer**, **conversational memory** (Groq history-aware query rewrite + multi-turn), and the **glass-box test console (§3.7)** showing the live pipeline trace across all three providers.
 
 **Recommended order from here:**
-1. **Auto-generate config from data** — after ingest, LLM proposes chatbot config(s).
-2. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last).
-3. **Marketing landing page** — public funnel with the "how data flows" animation.
+1. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last).
+2. **Marketing landing page** — public funnel with the "how data flows" animation.
 
 ---
 

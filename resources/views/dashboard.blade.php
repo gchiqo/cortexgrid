@@ -105,8 +105,13 @@
             <section class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="font-semibold text-lg">AI კონფიგურაციები</h2>
-                    <a href="/dashboard/configs/create"
-                       class="bg-slate-800 text-white rounded-lg px-3 py-1.5 text-sm font-medium">+ ახალი</a>
+                    <div class="flex items-center gap-2">
+                        <form method="POST" action="/dashboard/configs/suggest">@csrf
+                            <button class="bg-indigo-50 text-indigo-700 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-indigo-100">✨ გენერაცია მონაცემებიდან</button>
+                        </form>
+                        <a href="/dashboard/configs/create"
+                           class="bg-slate-800 text-white rounded-lg px-3 py-1.5 text-sm font-medium">+ ახალი</a>
+                    </div>
                 </div>
                 <ul class="space-y-3">
                     @foreach ($configs as $cfg)

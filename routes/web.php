@@ -3,6 +3,7 @@
 use App\Http\Controllers\PublicChatController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\ConfigController;
+use App\Http\Controllers\Web\ConfigSuggestionController;
 use App\Http\Controllers\Web\ConsoleController;
 use App\Http\Controllers\Web\ConversationController;
 use App\Http\Controllers\Web\DashboardController;
@@ -36,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/upload', [UploadController::class, 'store']);
 
     Route::get('/dashboard/configs/create', [ConfigController::class, 'create']);
+    Route::post('/dashboard/configs/suggest', [ConfigSuggestionController::class, 'generate']);
     Route::post('/dashboard/configs', [ConfigController::class, 'store']);
     Route::get('/dashboard/configs/{config}/edit', [ConfigController::class, 'edit']);
     Route::put('/dashboard/configs/{config}', [ConfigController::class, 'update']);

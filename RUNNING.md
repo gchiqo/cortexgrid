@@ -9,6 +9,7 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 - **Dashboard** (`/dashboard`, Georgian): usage tiles, API-key issue/revoke, a live **test-chat**, plus:
   - **File upload** — PDF / CSV / XLSX / TXT, stored in the DB via the chunk→embed pipeline (PDF text via Gemini multimodal; CSV/XLSX rows → one document each).
   - **AI config management** — create / edit / delete configurations (name, model tier, Georgian system prompt, tools). The 3 presets are just starters.
+  - **Auto-generate configs from your data** (`✨ გენერაცია მონაცემებიდან`) — Claude samples your ingested content, infers the business, and proposes 2–3 ready-made chatbots (editable) you accept with one click.
 - **ტესტ-კონსოლი (glass-box console)** — split screen: chat on the right, a live pipeline trace on the left (Groq query-rewrite → Gemini embedding → semantic + lexical candidates with scores → RRF fusion → Claude generate, with timings + tokens). Built for demos and debugging.
 - **Conversational memory** — follow-ups keep context: Groq rewrites the follow-up into a standalone search query, and recent turns are fed to Claude (works in the widget, console, and stored conversations).
 - **Embeddable widget (each AI config = a deployable chatbot):**
