@@ -6,6 +6,8 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 ## What's implemented
 
 - **Auth:** email/password + Google (Socialite). Registration auto-provisions a tenant, an API key, and 3 Georgian preset AI configs.
+- **Marketing landing page** at `/` — guests see a hero + animated "how data flows" pipeline + features + register CTA; logged-in users are sent to the dashboard.
+- **Feedback loop** — 👍/👎 on every widget answer (stored on `messages`); the **ანალიტიკა / Insights** page shows satisfaction %, unanswered-question count, and the recent 👎 answers with their question + retrieved sources, so you can see whether a bad answer is a data, chunking, or prompt problem.
 - **Knowledge Explorer** (`📊 ცოდნის მკვლევარი` on a dataset) — shows what the platform *understood*: entity facets (brands, categories, price ranges) aggregated from the structured fields, plus a one-click **AI analysis** (Claude) that detects relationships (`socket → compatible_with`) and missing info. Reinforces "platform, not chatbot."
 - **Datasets** — a tenant has many datasets (e.g. "computer store", "news portal"). **One dataset is fed by many sources** (PDF + CSV + API together) and has **many chatbots**; each chatbot only searches **its own dataset** (verified isolation). The dashboard is a datasets list → each opens a dataset workspace (sources + upload + chatbots + test-chat). `POST /v1/ingest` takes an optional `"dataset"` (id or name) to target one.
 - **Dashboard** (`/dashboard`, Georgian): usage tiles, API-key issue/revoke; the dataset workspace has a live **test-chat**, plus:

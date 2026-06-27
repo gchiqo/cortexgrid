@@ -145,10 +145,12 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 
 **Also done:** **Knowledge Explorer** — a per-dataset page showing what the platform *understood*: entity facets (brands, categories, price ranges) aggregated straight from the structured fields, plus an optional **AI analysis** (Claude) that detects **relationships** (e.g. `socket → compatible_with`) and missing information. The "platform that understands, not a chatbot" differentiator. **Animated upload pipeline** + animated glass-box console. Four example datasets in `examples/`; clean-start via `DemoResetSeeder`.
 
+**Also done:** **marketing landing page** at `/` (hero + animated "how data flows" pipeline + features + CTA; guests see it, authed users go to the dashboard) and the **feedback loop** — 👍/👎 on every widget answer (`messages.feedback`), and an **ანალიტიკა / Insights** page with satisfaction %, unanswered-question count, and the recent 👎 answers (question + answer + retrieved sources) for debugging bad data/chunking/prompts.
+
 **Recommended order from here:**
-1. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last).
-2. **Marketing landing page** — public funnel with the "how data flows" animation.
-3. **More tools** — link-related-items, delete-item, generate-description, etc. (extend `ToolRegistry`).
+1. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last; deferred per request).
+2. **More tools** — link-related-items, delete-item, generate-description, etc. (extend `ToolRegistry`).
+3. **Structured extraction for PDFs** — entity extraction into typed fields (the Knowledge Explorer already aggregates structured CSV/XLSX fields).
 
 ---
 

@@ -65,7 +65,7 @@ class PublicChatController extends Controller
 
         $result = $ask->answer($config->tenant_id, $data['message'], $config, history: $history);
 
-        Message::create([
+        $assistant = Message::create([
             'conversation_id' => $conversation->id,
             'tenant_id' => $config->tenant_id,
             'role' => 'assistant',
@@ -77,9 +77,35 @@ class PublicChatController extends Controller
 
         return $this->cors(response()->json([
             'conversation_id' => $conversation->id,
+            'message_id' => $assistant->id,
             'answer' => $result['answer'],
             'sources' => $result['sources'],
         ]), $config, $origin);
+    }
+
+    /** 👍/👎 from the widget on an assistant message. */
+    public function feedback(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'public_key' => ['required', 'string'],
+            'message_id' => ['required', 'integer'],
+            'value' => ['required', 'integer', 'in:-1,1'],
+        ]);
+
+        $origin = $request->headers->get('Origin');
+
+        $config = AiConfig::where('public_key', $data['public_key'])->where('widget_enabled', true)->first();
+        if (! $config) {
+            return $this->cors(response()->json(['error' => 'invalid_key'], 404), null);
+        }
+
+        // The message must be an assistant message in a conversation of this chatbot.
+        $message = Message::where('id', $data['message_id'])->where('role', 'assistant')->first();
+        if ($message && Conversation::where('id', $message->conversation_id)->where('ai_config_id', $config->id)->exists()) {
+            $message->update(['feedback' => $data['value']]);
+        }
+
+        return $this->cors(response()->json(['ok' => true]), $config, $origin);
     }
 
     /** CORS preflight. */

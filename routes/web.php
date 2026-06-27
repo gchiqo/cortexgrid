@@ -9,17 +9,20 @@ use App\Http\Controllers\Web\ConversationController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DatasetController;
 use App\Http\Controllers\Web\ExplorerController;
+use App\Http\Controllers\Web\InsightsController;
 use App\Http\Controllers\Web\GoogleController;
 use App\Http\Controllers\Web\UploadController;
 use App\Http\Controllers\WidgetController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('dashboard'));
+Route::get('/', fn () => auth()->check() ? redirect()->route('dashboard') : view('landing'));
 
 // --- Public embeddable widget (no auth; browser-facing) ---
 Route::get('/embed.js', [WidgetController::class, 'embed']);
 Route::options('/public/chat', [PublicChatController::class, 'preflight']);
 Route::post('/public/chat', [PublicChatController::class, 'chat'])->middleware('throttle:60,1');
+Route::options('/public/feedback', [PublicChatController::class, 'preflight']);
+Route::post('/public/feedback', [PublicChatController::class, 'feedback'])->middleware('throttle:120,1');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -56,6 +59,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/console', [ConsoleController::class, 'index'])->name('console');
     Route::post('/dashboard/console/ask', [ConsoleController::class, 'ask']);
 
+    Route::get('/dashboard/insights', [InsightsController::class, 'index'])->name('insights');
     Route::get('/dashboard/conversations', [ConversationController::class, 'index'])->name('conversations');
     Route::get('/dashboard/conversations/{conversation}', [ConversationController::class, 'show']);
 

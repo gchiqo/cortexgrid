@@ -52,7 +52,10 @@ class WidgetController extends Controller
     '.gtuh-assistant{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a;border-bottom-left-radius:3px}' +
     '.gtuh-input{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff}' +
     '.gtuh-input textarea{flex:1;resize:none;border:1px solid #cbd5e1;border-radius:10px;padding:9px;font-size:14px;outline:none;font-family:inherit}' +
-    '.gtuh-input button{background:#4f46e5;color:#fff;border:0;border-radius:10px;width:42px;font-size:16px;cursor:pointer}';
+    '.gtuh-input button{background:#4f46e5;color:#fff;border:0;border-radius:10px;width:42px;font-size:16px;cursor:pointer}' +
+    '.gtuh-fb{display:flex;gap:6px;margin-top:6px}' +
+    '.gtuh-fb button{background:none;border:0;cursor:pointer;font-size:14px;opacity:.45;padding:1px 3px;width:auto;border-radius:6px}' +
+    '.gtuh-fb button:hover,.gtuh-fb button.sel{opacity:1;background:#eef2ff}';
   var style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
 
   function escapeHtml(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -75,6 +78,22 @@ class WidgetController extends Controller
     var d = document.createElement('div'); d.className = 'gtuh-msg gtuh-' + role; d.textContent = text;
     msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
   }
+  function addFeedback(el, msgId) {
+    var fb = document.createElement('div'); fb.className = 'gtuh-fb';
+    [['👍', 1], ['👎', -1]].forEach(function (pair) {
+      var b = document.createElement('button'); b.textContent = pair[0];
+      b.onclick = function () {
+        fb.querySelectorAll('button').forEach(function (x) { x.classList.remove('sel'); });
+        b.classList.add('sel');
+        fetch(BASE + '/public/feedback', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ public_key: KEY, message_id: msgId, value: pair[1] })
+        }).catch(function () {});
+      };
+      fb.appendChild(b);
+    });
+    el.appendChild(fb);
+  }
   addMsg('assistant', 'გამარჯობა! რით დაგეხმაროთ?');
 
   async function send() {
@@ -89,7 +108,8 @@ class WidgetController extends Controller
       var data = await res.json();
       typing.remove();
       if (data.conversation_id) { convId = data.conversation_id; localStorage.setItem(LS, convId); }
-      addMsg('assistant', data.answer || (data.error ? ('შეცდომა: ' + data.error) : 'ბოდიში, ვერ ვუპასუხე.'));
+      var ans = addMsg('assistant', data.answer || (data.error ? ('შეცდომა: ' + data.error) : 'ბოდიში, ვერ ვუპასუხე.'));
+      if (data.message_id && data.answer) addFeedback(ans, data.message_id);
     } catch (e) { typing.remove(); addMsg('assistant', 'კავშირის შეცდომა.'); }
   }
   panel.querySelector('button').onclick = send;
