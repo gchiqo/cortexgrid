@@ -10,4 +10,5 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('apikey')->group(function () {
     Route::post('/ingest', [IngestController::class, 'store']);
     Route::post('/query', [QueryController::class, 'store']);
+    Route::get('/agents', [AgentController::class, 'index']);
 });

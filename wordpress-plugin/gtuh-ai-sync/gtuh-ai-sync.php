@@ -23,12 +23,41 @@ function gtuh_ai_settings(): array
         'ds_products' => 'WooCommerce პროდუქტები',
         'ds_posts' => 'ბლოგი',
         'ds_pages' => 'გვერდები',
+        'widget_key' => '',
     ]);
 }
 
 /** Admin menu. */
 add_action('admin_menu', function () {
     add_menu_page('GTUH AI Sync', 'GTUH AI', 'manage_options', 'gtuh-ai', 'gtuh_ai_render_page', 'dashicons-rest-api', 80);
+});
+
+/** Fetch the tenant's widget-enabled agents (id, name, public_key, embed). */
+function gtuh_ai_fetch_agents(array $s)
+{
+    $response = wp_remote_get($s['base_url'].'/v1/agents', [
+        'timeout' => 20,
+        'headers' => ['Authorization' => 'Bearer '.$s['api_key'], 'Accept' => 'application/json'],
+    ]);
+    if (is_wp_error($response)) {
+        return $response;
+    }
+    $code = wp_remote_retrieve_response_code($response);
+    if ($code < 200 || $code >= 300) {
+        return new WP_Error('gtuh_http', 'HTTP '.$code);
+    }
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    return is_array($body['agents'] ?? null) ? $body['agents'] : [];
+}
+
+/** Auto-inject the selected widget into the site footer. */
+add_action('wp_footer', function () {
+    $s = gtuh_ai_settings();
+    if (empty($s['widget_key']) || empty($s['base_url'])) {
+        return;
+    }
+    echo '<script src="'.esc_url($s['base_url'].'/embed.js?key='.$s['widget_key']).'" async></script>';
 });
 
 /** Settings page + sync handling. */
@@ -48,6 +77,7 @@ function gtuh_ai_render_page(): void
             'ds_products' => sanitize_text_field($_POST['ds_products'] ?? ''),
             'ds_posts' => sanitize_text_field($_POST['ds_posts'] ?? ''),
             'ds_pages' => sanitize_text_field($_POST['ds_pages'] ?? ''),
+            'widget_key' => sanitize_text_field($_POST['widget_key'] ?? ''),
         ]);
         $notice = 'პარამეტრები შენახულია.';
     }
@@ -74,6 +104,28 @@ function gtuh_ai_render_page(): void
                 <tr><th>ბლოგის დატასეტი</th><td><input type="text" name="ds_posts" value="<?php echo esc_attr($s['ds_posts']); ?>" class="regular-text"></td></tr>
                 <tr><th>გვერდების დატასეტი</th><td><input type="text" name="ds_pages" value="<?php echo esc_attr($s['ds_pages']); ?>" class="regular-text"></td></tr>
             </table>
+
+            <h2>ჩატის ვიჯეტი საიტზე</h2>
+            <p>აირჩიე რომელი აგენტის ჩატ-ვიჯეტი გამოჩნდეს მთელ საიტზე — ავტომატურად ჩაისმება (footer-ში), თემის ფაილების რედაქტირების გარეშე.</p>
+            <?php
+            $agents = (empty($s['base_url']) || empty($s['api_key'])) ? [] : gtuh_ai_fetch_agents($s);
+            if (is_wp_error($agents)) {
+                echo '<p style="color:#b32d2e">აგენტების წამოღება ვერ მოხერხდა: '.esc_html($agents->get_error_message()).' (შეინახე Base URL + API Key ჯერ).</p>';
+                $agents = [];
+            }
+            ?>
+            <label style="display:block;margin:4px 0"><input type="radio" name="widget_key" value="" <?php checked($s['widget_key'], ''); ?>> — არცერთი (გამორთული)</label>
+            <?php foreach ($agents as $a): ?>
+                <label style="display:block;margin:8px 0;padding:8px;border:1px solid #dcdcde;border-radius:6px;max-width:680px">
+                    <input type="radio" name="widget_key" value="<?php echo esc_attr($a['public_key']); ?>" <?php checked($s['widget_key'], $a['public_key']); ?>>
+                    <strong><?php echo esc_html($a['name']); ?></strong>
+                    <br><code style="font-size:11px;word-break:break-all"><?php echo esc_html($a['embed']); ?></code>
+                </label>
+            <?php endforeach; ?>
+            <?php if (empty($agents)): ?>
+                <p class="description">აგენტები არ მოიძებნა. შექმენი widget-ჩართული აგენტი პლატფორმაზე და დააჭირე „შენახვა“.</p>
+            <?php endif; ?>
+
             <p><button class="button button-primary" name="gtuh_save" value="1">შენახვა</button></p>
         </form>
 
