@@ -7,6 +7,7 @@ use App\Models\UsageEvent;
 use App\Services\Anthropic;
 use App\Services\Groq;
 use App\Services\Tools\ToolRegistry;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Shared "ask my data" pipeline: (optional history-aware query rewrite) -> hybrid retrieve
@@ -44,6 +45,15 @@ class AskService
     ): array {
         $startedAt = microtime(true);
         $steps = [];
+
+        // Credit limit — block when the tenant's balance is exhausted.
+        if ($this->creditsLeft($tenantId) <= 0) {
+            return $this->wrap(
+                'ბოდიში, კრედიტები ამოიწურა. შეავსეთ ბალანსი ბილინგის გვერდზე.',
+                [], $config, 0, 0,
+                $withTrace ? $this->trace($question, $steps, null, null, count($history), $startedAt) : null,
+            );
+        }
 
         // Tools run only on trusted surfaces (not the public widget) and only for configs that enable them.
         $toolDefs = ($allowTools && $config && ! empty($config->enabled_tools))
@@ -114,6 +124,7 @@ class AskService
 
         UsageEvent::record($tenantId, 'query', 1, $apiKeyId);
         UsageEvent::record($tenantId, 'tokens', $result['input_tokens'] + $result['output_tokens'], $apiKeyId);
+        $this->deductCredits($tenantId, $result['input_tokens'] + $result['output_tokens']);
 
         $generate = [
             'provider' => 'anthropic',
@@ -140,6 +151,13 @@ class AskService
      */
     public function answerStream(int $tenantId, string $question, ?AiConfig $config, array $history, callable $onToken, ?int $apiKeyId = null): array
     {
+        if ($this->creditsLeft($tenantId) <= 0) {
+            $msg = 'ბოდიში, კრედიტები ამოიწურა.';
+            $onToken($msg);
+
+            return ['answer' => $msg, 'sources' => [], 'usage' => ['input_tokens' => 0, 'output_tokens' => 0], 'answered' => false];
+        }
+
         $searchQuery = $history !== [] ? $this->rewriteQuery($question, $history) : $question;
         $datasetId = $config ? $config->datasetIds() : null;
         $rerank = $config && $config->rerankEnabled();
@@ -165,6 +183,7 @@ class AskService
 
         UsageEvent::record($tenantId, 'query', 1, $apiKeyId);
         UsageEvent::record($tenantId, 'tokens', $result['input_tokens'] + $result['output_tokens'], $apiKeyId);
+        $this->deductCredits($tenantId, $result['input_tokens'] + $result['output_tokens']);
 
         return [
             'answer' => $result['text'],
@@ -172,6 +191,18 @@ class AskService
             'usage' => ['input_tokens' => $result['input_tokens'], 'output_tokens' => $result['output_tokens']],
             'answered' => true,
         ];
+    }
+
+    private function creditsLeft(int $tenantId): int
+    {
+        return (int) DB::table('tenants')->where('id', $tenantId)->value('credits');
+    }
+
+    private function deductCredits(int $tenantId, int $tokens): void
+    {
+        if ($tokens > 0) {
+            DB::table('tenants')->where('id', $tenantId)->decrement('credits', $tokens);
+        }
     }
 
     private function rewriteQuery(string $question, array $history): string

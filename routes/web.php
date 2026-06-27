@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\PublicChatController;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\BillingController;
 use App\Http\Controllers\Web\ConfigController;
+use App\Http\Controllers\Web\FlittPaymentController;
 use App\Http\Controllers\Web\ConfigSuggestionController;
 use App\Http\Controllers\Web\ConsoleController;
 use App\Http\Controllers\Web\ConversationController;
@@ -31,6 +33,10 @@ Route::post('/public/chat/stream', [PublicChatController::class, 'chatStream'])-
 Route::options('/public/lead', [PublicChatController::class, 'preflight']);
 Route::post('/public/lead', [PublicChatController::class, 'lead'])->middleware('throttle:30,1');
 
+// --- Flitt payment callbacks (external, CSRF-exempt) ---
+Route::post('/flitt/callback', [FlittPaymentController::class, 'callback'])->name('flitt.callback');
+Route::match(['get', 'post'], '/flitt/response', [FlittPaymentController::class, 'response'])->name('flitt.response');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -51,6 +57,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/sources/{source}/reprocess', [SourceController::class, 'reprocess']);
     Route::delete('/dashboard/sources/{source}', [SourceController::class, 'destroy']);
     Route::get('/dashboard/leads', [LeadController::class, 'index'])->name('leads');
+    Route::get('/dashboard/billing', [BillingController::class, 'index'])->name('billing');
+    Route::post('/flitt/buy', [FlittPaymentController::class, 'buy'])->name('flitt.buy');
     Route::get('/dashboard/datasets/{dataset}/explorer', [ExplorerController::class, 'show'])->name('explorer');
     Route::post('/dashboard/datasets/{dataset}/analyze', [ExplorerController::class, 'analyze']);
 

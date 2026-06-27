@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\IngestController;
 use App\Http\Controllers\Api\QueryController;
 use Illuminate\Support\Facades\Route;

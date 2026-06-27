@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tenant extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'credits'];
 
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function apiKeys(): HasMany

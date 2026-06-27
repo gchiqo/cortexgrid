@@ -10,6 +10,7 @@
                 <a href="/dashboard/docs" class="text-slate-600 hover:text-indigo-600">API</a>
                 <a href="/dashboard/insights" class="text-slate-600 hover:text-indigo-600">ანალიტიკა</a>
                 <a href="/dashboard/leads" class="text-slate-600 hover:text-indigo-600">ლიდები</a>
+                <a href="/dashboard/billing" class="text-slate-600 hover:text-indigo-600">ბილინგი</a>
                 <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">საუბრები</a>
                 @include('partials.theme-toggle')
                 <span class="text-slate-500">{{ $user->email }}</span>
@@ -25,7 +26,11 @@
         @if (session('new_api_key'))
             <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-4">
                 <div class="font-medium text-emerald-800">ახალი API გასაღები (ნაჩვენებია მხოლოდ ერთხელ):</div>
-                <code class="block mt-2 bg-white border rounded px-3 py-2 text-sm break-all">{{ session('new_api_key') }}</code>
+                <div class="flex items-center gap-2 mt-2">
+                    <code id="newApiKey" class="flex-1 bg-white border rounded px-3 py-2 text-sm break-all">{{ session('new_api_key') }}</code>
+                    <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('newApiKey').textContent).then(()=>{this.textContent='✓ დაკოპირდა';})"
+                            class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-3 py-2 text-sm font-medium">📋 კოპირება</button>
+                </div>
             </div>
         @endif
         @if (session('status'))
@@ -38,7 +43,12 @@
         @endif
 
         {{-- Usage --}}
-        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <section class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <a href="/dashboard/billing" class="bg-white rounded-xl shadow-sm p-5 hover:shadow transition">
+                <div class="text-slate-500 text-sm">კრედიტები 💳</div>
+                <div class="text-3xl font-bold mt-1">{{ number_format($tenant->credits) }}</div>
+                <div class="text-xs text-indigo-600 mt-1">შევსება →</div>
+            </a>
             <div class="bg-white rounded-xl shadow-sm p-5">
                 <div class="text-slate-500 text-sm">ჩატვირთული დოკუმენტები</div>
                 <div class="text-3xl font-bold mt-1">{{ $usage['ingest'] }}</div>

@@ -66,4 +66,18 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'flitt' => [
+        'merchant_id' => env('FLITT_MERCHANT_ID', '1549901'),
+        'secret_key' => env('FLITT_SECRET_KEY', 'test'),
+        'checkout_url' => 'https://pay.flitt.com/api/checkout/url',
+        'status_url' => 'https://pay.flitt.com/api/status/order_id',
+        'allowed_ips' => ['54.154.216.60', '3.75.125.89'],
+        // Credit packs (1 credit ≈ 1 token).
+        'packs' => [
+            ['gel' => 10, 'credits' => 1000000],
+            ['gel' => 25, 'credits' => 3000000],
+            ['gel' => 50, 'credits' => 7000000],
+        ],
+    ],
+
 ];

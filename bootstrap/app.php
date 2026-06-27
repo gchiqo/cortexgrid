@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // The embeddable widget posts cross-origin and cannot carry a CSRF token.
-        $middleware->validateCsrfTokens(except: ['public/chat', 'public/chat/stream', 'public/feedback', 'public/lead']);
+        $middleware->validateCsrfTokens(except: ['public/chat', 'public/chat/stream', 'public/feedback', 'public/lead', 'flitt/callback', 'flitt/response']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
