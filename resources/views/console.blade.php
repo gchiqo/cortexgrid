@@ -109,6 +109,13 @@ function renderTrace(t){
       '<div>მოდელი: '+esc(t.generate.model)+'</div>' +
       '<div>ტოკენები: in '+t.generate.input_tokens+' / out '+t.generate.output_tokens+'</div>', t.generate.ms);
   }
+  const tools = (t.generate && t.generate.tool_calls) || [];
+  if(tools.length){
+    const items = tools.map(tc => '<div class="py-1 border-b border-slate-700 last:border-0">' +
+      '<span class="text-amber-300">🔧 '+esc(tc.name)+'</span> <span class="text-slate-500">'+esc(JSON.stringify(tc.input))+'</span>' +
+      '<div class="text-slate-300 mt-0.5">→ '+esc(tc.result)+'</div></div>').join('');
+    html += card('ხელსაწყოები (შესრულებული მოქმედებები)', '', items, null);
+  }
   html += '<div class="text-[11px] text-slate-400 mt-2">სულ: '+t.total_ms+' ms · მეხსიერება: '+t.history_turns+' წინა შეტყობინება</div>';
   trace.innerHTML = html;
 }

@@ -49,11 +49,11 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium mb-1">ხელსაწყოები (არასავალდებულო)</label>
+                    <label class="block text-sm font-medium mb-1">ხელსაწყოები (მოქმედებები — admin ჩატბოტებისთვის)</label>
                     <input name="enabled_tools" value="{{ old('enabled_tools', implode(', ', $config->enabled_tools ?? [])) }}"
-                           placeholder="add_product, update_product"
+                           placeholder="add_item, update_item, find_items"
                            class="w-full rounded-lg border border-slate-300 px-3 py-2">
-                    <p class="text-xs text-slate-400 mt-1">მძიმით გამოყოფილი სია (function calling — მომავალში).</p>
+                    <p class="text-xs text-slate-400 mt-1">ხელმისაწვდომი: <code>add_item</code>, <code>update_item</code>, <code>find_items</code> (მძიმით). ჩატბოტი მათით მონაცემებს ცვლის — ეშვება მხოლოდ პანელში/API-ში, არა საჯარო ვიჯეტში.</p>
                 </div>
 
                 <div class="border-t pt-5 space-y-4">

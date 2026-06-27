@@ -22,7 +22,7 @@ class IngestService
      * @param  list<array<string,mixed>>  $records  each: ['title'=>?, 'text'=>?, ...fields]
      * @return array{source_id:int,documents:int,chunks:int}
      */
-    public function ingest(int $tenantId, int $datasetId, string $type, string $sourceName, array $records, ?int $apiKeyId = null): array
+    public function ingest(int $tenantId, int $datasetId, string $type, string $sourceName, array $records, ?int $apiKeyId = null, bool $syncEmbed = false): array
     {
         $source = Source::create([
             'tenant_id' => $tenantId,
@@ -62,7 +62,9 @@ class IngestService
             }
 
             $documentIds[] = $document->id;
-            EmbedChunks::dispatch($document->id);
+            $syncEmbed
+                ? EmbedChunks::dispatchSync($document->id)
+                : EmbedChunks::dispatch($document->id);
         }
 
         if ($documentIds === []) {

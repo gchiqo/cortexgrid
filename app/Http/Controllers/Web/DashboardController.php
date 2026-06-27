@@ -73,6 +73,6 @@ class DashboardController extends Controller
             ? AiConfig::where('tenant_id', $tenant->id)->find($data['config_id'])
             : AiConfig::where('tenant_id', $tenant->id)->orderBy('id')->first();
 
-        return response()->json($ask->answer($tenant->id, $data['question'], $config));
+        return response()->json($ask->answer($tenant->id, $data['question'], $config, allowTools: true));
     }
 }

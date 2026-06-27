@@ -141,9 +141,12 @@ Everything in §3 stays in scope. This is the order to build so we always have a
 
 **Done:** DB + pgvector, auth (email/password + Google), API keys, **datasets** (a tenant has many datasets; one dataset is fed by many sources — PDF + CSV + API together — and has many chatbots; retrieval is scoped per dataset), ingestion (text/records API + PDF/CSV/XLSX/TXT upload, all dataset-targeted), hybrid RAG, Georgian cited answers, dataset-scoped chatbot CRUD + presets, **auto-generate chatbots from a dataset's data** (Claude samples the data and proposes editable chatbots), dataset-centric dashboard (datasets list → dataset workspace), **embeddable widget** (public key + CORS + `/embed.js`), **conversation/message storage + viewer**, **conversational memory** (Groq history-aware query rewrite + multi-turn), and the **glass-box test console (§3.7)** showing the live pipeline trace across all three providers.
 
+**Also done:** **tool execution / function calling** — admin chatbots can run `add_item` / `update_item` / `find_items` against their own dataset via chat (added items embed synchronously and are instantly searchable). Tools run only on trusted surfaces (dashboard / console / API key) — the **public widget never executes tools**. The glass-box console shows each tool call + result.
+
 **Recommended order from here:**
 1. **Pull/sync connectors + WordPress plugin** — WooCommerce REST + cron delta-sync (heaviest; plugin last).
 2. **Marketing landing page** — public funnel with the "how data flows" animation.
+3. **More tools** — link-related-items, delete-item, generate-description, etc. (extend `ToolRegistry`).
 
 ---
 

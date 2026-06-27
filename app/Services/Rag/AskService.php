@@ -6,6 +6,7 @@ use App\Models\AiConfig;
 use App\Models\UsageEvent;
 use App\Services\Anthropic;
 use App\Services\Groq;
+use App\Services\Tools\ToolRegistry;
 
 /**
  * Shared "ask my data" pipeline: (optional history-aware query rewrite) -> hybrid retrieve
@@ -23,6 +24,7 @@ class AskService
         private Retriever $retriever,
         private Anthropic $anthropic,
         private Groq $groq,
+        private ToolRegistry $tools,
     ) {}
 
     /**
@@ -37,9 +39,16 @@ class AskService
         ?int $apiKeyId = null,
         array $history = [],
         bool $withTrace = false,
+        bool $allowTools = false,
     ): array {
         $startedAt = microtime(true);
         $steps = [];
+
+        // Tools run only on trusted surfaces (not the public widget) and only for configs that enable them.
+        $toolDefs = ($allowTools && $config && ! empty($config->enabled_tools))
+            ? $this->tools->definitions($config->enabled_tools)
+            : [];
+        $useTools = $toolDefs !== [];
 
         // 1) History-aware query rewrite (so follow-ups like "და ის?" retrieve correctly).
         $searchQuery = $question;
@@ -62,7 +71,8 @@ class AskService
             ? $this->retriever->retrieve($tenantId, $searchQuery, $k, $datasetId, $retrievalTrace)
             : $this->retriever->retrieve($tenantId, $searchQuery, $k, $datasetId);
 
-        if ($hits === []) {
+        // No data AND no tools to act with → nothing to do.
+        if ($hits === [] && ! $useTools) {
             UsageEvent::record($tenantId, 'query', 1, $apiKeyId);
 
             return $this->wrap(
@@ -72,14 +82,25 @@ class AskService
             );
         }
 
-        [$contextBlock, $sources] = $this->buildContext($hits);
+        [$contextBlock, $sources] = $hits !== []
+            ? $this->buildContext($hits)
+            : ['(მონაცემებში დამთხვევა არ მოიძებნა — საჭიროების შემთხვევაში გამოიყენე ხელსაწყოები)', []];
 
-        // 3) Grounded answer (with conversation memory).
+        // 3) Grounded answer (+ conversation memory, + tools for admin chatbots).
         $system = $this->systemPrompt($config, $contextBlock);
+        if ($useTools) {
+            $system .= "\n\nშეგიძლია გამოიყენო ხელსაწყოები მოქმედებების შესასრულებლად (ჩანაწერის დამატება/განახლება/ძებნა). იმოქმედე მხოლოდ მაშინ, როცა მომხმარებელი ამას ნათლად ითხოვს.";
+        }
         $messages = $this->buildMessages($history, $question);
 
         $t0 = microtime(true);
-        $result = $this->anthropic->chat(system: $system, messages: $messages, model: $config?->modelId());
+        if ($useTools) {
+            $execute = fn (string $n, array $in) => $this->tools->execute($n, $in, $tenantId, (int) $config->dataset_id);
+            $result = $this->anthropic->agentChat($system, $messages, $toolDefs, $execute, $config?->modelId());
+        } else {
+            $result = $this->anthropic->chat(system: $system, messages: $messages, model: $config?->modelId());
+            $result['tool_calls'] = [];
+        }
         $genMs = round((microtime(true) - $t0) * 1000);
 
         UsageEvent::record($tenantId, 'query', 1, $apiKeyId);
@@ -91,12 +112,14 @@ class AskService
             'input_tokens' => $result['input_tokens'],
             'output_tokens' => $result['output_tokens'],
             'ms' => $genMs,
+            'tool_calls' => $result['tool_calls'],
         ];
 
         return $this->wrap(
             $result['text'], $sources, $config,
             $result['input_tokens'], $result['output_tokens'],
             $withTrace ? $this->trace($searchQuery, $steps, $retrievalTrace, $generate, count($history), $startedAt) : null,
+            $result['tool_calls'],
         );
     }
 
@@ -153,7 +176,7 @@ class AskService
     /**
      * @return array{answer:string,sources:array,config:?string,usage:array{input_tokens:int,output_tokens:int},trace?:array}
      */
-    private function wrap(string $answer, array $sources, ?AiConfig $config, int $in, int $out, ?array $trace): array
+    private function wrap(string $answer, array $sources, ?AiConfig $config, int $in, int $out, ?array $trace, array $toolCalls = []): array
     {
         $payload = [
             'answer' => $answer,
@@ -161,6 +184,9 @@ class AskService
             'config' => $config?->name,
             'usage' => ['input_tokens' => $in, 'output_tokens' => $out],
         ];
+        if ($toolCalls !== []) {
+            $payload['tools'] = $toolCalls;
+        }
         if ($trace !== null) {
             $payload['trace'] = $trace;
         }

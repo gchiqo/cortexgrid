@@ -37,7 +37,7 @@ class DemoSeeder extends Seeder
                 'system_prompt' =>
                     'შენ ხარ მაღაზიის ადმინისტრატორის ასისტენტი. დაეხმარე პროდუქტების დამატებაში, '
                     .'აღწერების გაუმჯობესებაში და მონაცემების მართვაში. იყავი ზუსტი და პრაქტიკული.',
-                'enabled_tools' => ['add_product', 'update_product'],
+                'enabled_tools' => ['add_item', 'update_item', 'find_items'],
             ],
             [
                 'name' => 'მომხმარებლის ასისტენტი',

@@ -30,7 +30,7 @@ class QueryController extends Controller
             ? AiConfig::where('tenant_id', $tenantId)->find($data['config_id'])
             : AiConfig::where('tenant_id', $tenantId)->orderBy('id')->first();
 
-        $result = $ask->answer($tenantId, $data['question'], $config, $data['k'] ?? 6, $apiKeyId);
+        $result = $ask->answer($tenantId, $data['question'], $config, $data['k'] ?? 6, $apiKeyId, allowTools: true);
 
         return response()->json($result);
     }

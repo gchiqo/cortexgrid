@@ -45,6 +45,7 @@ class ConsoleController extends Controller
             null,
             $data['history'] ?? [],
             withTrace: true,
+            allowTools: true,
         );
 
         return response()->json($result);
