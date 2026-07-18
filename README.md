@@ -1,58 +1,170 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# GTUH AI — ცოდნის პლატფორმა (Knowledge AI Platform)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **Not a chatbot — a knowledge platform.** Connect your data (files, API, or a WordPress site), the platform *understands* it, and you get Georgian‑speaking AI agents you embed on any site with one line of code.
 
-## About Laravel
+Built for the **GTU Technological Hackathon 2026** (*Intelligent Systems: AI, Analytics & BI*). Multi‑tenant SaaS: **Laravel + PostgreSQL/pgvector**, hybrid RAG across **Groq · Gemini · Anthropic (Claude)**, Georgian‑first.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ What it does
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Datasets** — a tenant has many datasets (one per business/topic). One dataset is fed by **many sources** (PDF + CSV + XLSX + API together); retrieval is **scoped per dataset** (isolated).
+- **Multiple AI agents per dataset** — user‑helper, admin‑helper, etc., each with its own Georgian system prompt and model tier. **Auto‑generate** them from your data with one click.
+- **Hybrid RAG with citations** — vector (pgvector cosine) **+** lexical (Postgres BM25/`tsvector`), fused with **RRF**, optional **Groq reranker**; grounded, cited, Georgian answers.
+- **Embeddable widget** — every agent gets a public key + a `<script>` snippet. **Streaming** answers, **clickable citations**, per‑agent **appearance** (color/position/greeting), 👍/👎 **feedback**, and **lead capture**.
+- **Agentic admin tools** — admin agents can `add_item` / `update_item` / `find_items` on their dataset **by chat** (added items embed synchronously → instantly searchable). Blocked on the public widget for safety.
+- **Glass‑box console** — a split screen showing the live pipeline (Groq rewrite → Gemini embed → vector + BM25 → RRF → Claude) with tokens & timings.
+- **Knowledge Explorer** — what the platform *understood*: entity facets (brands, categories, price ranges) + one‑click **AI analysis** (relationships + missing info).
+- **Platform bits** — API keys, usage/credits, **Flitt billing**, feedback insights, conversation history, a REST API (`/v1/*`) and a **WordPress plugin**.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🧱 Tech stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Layer | Choice |
+|---|---|
+| Backend / UI | **Laravel 13** (PHP 8.3), Blade + Tailwind (CDN) |
+| Database | **PostgreSQL 18** + **pgvector** (HNSW cosine) + `tsvector`/GIN (BM25) |
+| Embeddings | **Gemini** `gemini-embedding-001` (768‑dim) |
+| Generation / agents | **Anthropic Claude** (Sonnet / Haiku / Opus tiers), official PHP SDK |
+| Fast path | **Groq** (Llama) — query rewrite + reranker |
+| Auth | Email/password + **Google** (Socialite) |
+| Payments | **Flitt** (credit top‑ups) |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+**Pipeline:** `Connect → Import → Document (+structured fields) → Chunk → Embed → (vector + BM25) index → Hybrid retrieve → Rerank → Claude → Answer / Action`.
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 🚀 Getting started
 
+### Prerequisites
+- **PHP 8.3+** and **Composer**
+- **PostgreSQL 16/17/18** with the **pgvector** extension
+- API keys: **Groq**, **Gemini**, **Anthropic** (free tiers work — see links below)
+
+### 1. Clone & install
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <your-repo-url> gtuh && cd gtuh
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. PostgreSQL + pgvector
+```bash
+# Debian/Ubuntu example (match your PG version, e.g. 18):
+sudo apt install -y postgresql-18-pgvector
+sudo -u postgres createdb gtuh
+sudo -u postgres psql -d gtuh -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+Set the DB connection in `.env` (`DB_DATABASE=gtuh`, plus host/user/password for your setup).
 
-## Contributing
+### 3. API keys → `.env`
+```env
+ANTHROPIC_API_KEY=sk-ant-...      # https://console.anthropic.com/
+GEMINI_API_KEY=...                # https://aistudio.google.com/apikey
+GROQ_API_KEY=gsk_...              # https://console.groq.com/keys
+# optional:
+GOOGLE_CLIENT_ID= / GOOGLE_CLIENT_SECRET=          # Google login (Socialite)
+FLITT_MERCHANT_ID=1549901 / FLITT_SECRET_KEY=test  # Flitt test creds
+```
+> **Gemini note:** the embedding model must exist for your key — this project uses `gemini-embedding-001` (768‑dim). Keep `EMBEDDING_DIM=768` in sync with the model.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Migrate & seed
+```bash
+php artisan migrate
 
-## Code of Conduct
+# Option A — empty clean start (admin + 4 empty datasets):
+php artisan db:seed --class=DemoResetSeeder
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Option B — full demo: also imports 3 example datasets + 6 agents (makes real
+# Gemini embedding calls, ~30s). Requires GEMINI_API_KEY to be set.
+php artisan db:seed --class=DemoContentSeeder
+```
+Each seeder prints a **login** and a one‑time **API key**. Default login: **`admin@gtuh.local` / `password`**.
 
-## Security Vulnerabilities
+### 5. Run
+```bash
+php artisan serve          # http://127.0.0.1:8000
+php artisan queue:work     # REQUIRED — embeddings run on the queue
+```
+> No `npm` build needed — the UI uses Tailwind via CDN.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🕹️ Using it
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Open **`/`** (landing) → **`/dashboard`** (login `admin@gtuh.local` / `password`).
+2. Open a **dataset** → **upload** a file (`examples/*.csv`) → watch the pipeline animation.
+3. Click **📊 ცოდნის მკვლევარი** to see what was understood; **✨ generate** agents from the data.
+4. Try an agent in the **ტესტ-კონსოლი** (glass‑box) or grab its **embed snippet** from the agent's edit page.
+5. Admin agent can **add products by chat**; watch **👍/👎**, **ლიდები** (leads), **ბილინგი** (credits) fill up.
+
+`examples/` contains ready datasets: computer store, news portal, movies, travel.
+
+---
+
+## 🔌 API (Bearer = tenant API key)
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/v1/ingest` | Ingest `text` or `records` into a `dataset` (id or name) |
+| `POST` | `/v1/query` | Grounded, cited answer over the tenant's data |
+| `GET`  | `/v1/agents` | List agents + embed snippets |
+| `POST` | `/public/chat` · `/public/chat/stream` | Widget chat (public key, CORS) |
+| `GET`  | `/embed.js?key=pk_...` | The embeddable widget script |
+
+```bash
+curl -X POST http://127.0.0.1:8000/v1/ingest \
+  -H "Authorization: Bearer <API_KEY>" -H "Content-Type: application/json" \
+  -d '{"dataset":"My store","records":[{"name":"RTX 4070","price_gel":2100,"url":"https://.../rtx-4070"}]}'
+```
+Full, tabbed docs are in‑app at **`/dashboard/docs`**.
+
+---
+
+## 🧩 WordPress plugin
+
+`wordpress-plugin/gtuh-ai-sync.zip` — install in WP, set Base URL + API Key, then:
+- **Sync** WooCommerce products / posts / pages into per‑type datasets (idempotent via `external_id`).
+- **Embed widget** — pick an agent in settings; the plugin auto‑injects the chat widget site‑wide (`wp_footer`).
+
+---
+
+## 📁 Project structure
+
+```
+app/
+  Http/Controllers/        Web/* (dashboard, datasets, configs, billing, …) · Api/* (ingest, query, agents) · PublicChatController · WidgetController
+  Services/                Anthropic · Gemini · Groq · KnowledgeProfiler · ConfigSuggester
+    Rag/                   AskService · Retriever · Reranker · Chunker
+    Ingest/                IngestService
+    Tools/                 ToolRegistry (add_item / update_item / find_items)
+  Jobs/EmbedChunks.php      async embedding
+  Models/                  Tenant · Dataset · Source · Document · Chunk · AiConfig · Conversation · Message · Lead · Payment · ApiKey
+database/migrations/        schema (pgvector, tsvector, datasets, credits, …)
+database/seeders/           DemoResetSeeder · DemoContentSeeder
+resources/views/            landing · dashboard · dataset · console · explorer · insights · billing · leads · …
+routes/                     web.php · api.php
+examples/                   4 ready demo datasets (CSV)
+wordpress-plugin/           the WP sync + embed plugin
+```
+
+---
+
+## 📚 More docs
+- **[plan.md](plan.md)** — architecture, data model, and full feature status.
+- **[RUNNING.md](RUNNING.md)** — detailed run notes & feature walkthrough.
+- **[PROMPTS.md](PROMPTS.md)** — every prompt used to build this (the build log).
+
+---
+
+## 🔐 Security notes
+- **Never commit `.env`** — it holds live API keys (it's git‑ignored by default here).
+- If a key was ever exposed, **rotate it** in the provider console.
+- API keys are stored **hashed** (SHA‑256); the plaintext is shown only once at creation. Chatbot **public keys** are browser‑safe and gated by a per‑agent **domain allowlist**; write **tools never run** on the public widget.
+- Flitt credentials shipped here are **test** creds; use real merchant creds + a public callback URL in production.
+
+---
+
+*Georgian‑first AI knowledge platform · Laravel · PostgreSQL/pgvector · Groq · Gemini · Claude.*
