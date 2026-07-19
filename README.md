@@ -1,8 +1,8 @@
-# GTUH AI — ცოდნის პლატფორმა (Knowledge AI Platform)
+# CortexGrid — ცოდნის პლატფორმა (Knowledge AI Platform)
 
 > **Not a chatbot — a knowledge platform.** Connect your data (files, API, or a WordPress site), the platform *understands* it, and you get Georgian‑speaking AI agents you embed on any site with one line of code.
 
-Built for the **GTU Technological Hackathon 2026** (*Intelligent Systems: AI, Analytics & BI*). Multi‑tenant SaaS: **Laravel + PostgreSQL/pgvector**, hybrid RAG across **Groq · Gemini · Anthropic (Claude)**, Georgian‑first.
+Live at **[cortexgrid.ge](https://gtu.cortexgrid.ge)** · originally built as *GTUH AI* for the **GTU Technological Hackathon 2026** (*Intelligent Systems: AI, Analytics & BI*). Multi‑tenant SaaS: **Laravel + PostgreSQL/pgvector**, hybrid RAG across **Groq · Gemini · Anthropic (Claude)**, Georgian‑first.
 
 ---
 
