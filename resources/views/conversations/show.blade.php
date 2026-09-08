@@ -1,13 +1,14 @@
 @extends('layout')
-@section('title', 'საუბარი')
+@section('title', __('conversations.one'))
 @section('body')
 <div class="min-h-screen">
     <header class="bg-white border-b">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="font-bold text-lg">CortexGrid <span class="text-indigo-600">AI</span></a>
             <div class="flex items-center gap-2">
+                @include('partials.lang-toggle')
                 @include('partials.theme-toggle')
-                <a href="/dashboard/conversations" class="text-sm text-slate-600 hover:text-slate-900">← საუბრები</a>
+                <a href="/dashboard/conversations" class="text-sm text-slate-600 hover:text-slate-900">{{ __('conversations.back') }}</a>
             </div>
         </div>
     </header>
@@ -15,12 +16,12 @@
     <main class="max-w-3xl mx-auto px-4 py-8 space-y-4">
         <div class="bg-white rounded-xl shadow-sm p-5 flex items-center justify-between">
             <div>
-                <div class="font-semibold">{{ $conversation->title ?: 'საუბარი #'.$conversation->id }}</div>
-                <div class="text-sm text-slate-500">ჩატბოტი: {{ $conversation->config?->name }}</div>
+                <div class="font-semibold">{{ $conversation->title ?: __('conversations.untitled', ['id' => $conversation->id]) }}</div>
+                <div class="text-sm text-slate-500">{{ __('conversations.chatbot_label') }}: {{ $conversation->config?->name }}</div>
             </div>
             <div class="text-right text-sm">
-                <div class="text-slate-500">{{ $conversation->messages->count() }} შეტყობინება</div>
-                <div class="text-slate-500">{{ number_format($tokens) }} ტოკენი</div>
+                <div class="text-slate-500">{{ trans_choice('conversations.message_count', $conversation->messages->count(), ['count' => $conversation->messages->count()]) }}</div>
+                <div class="text-slate-500">{{ trans_choice('conversations.token_count', $tokens, ['count' => number_format($tokens)]) }}</div>
             </div>
         </div>
 
@@ -32,7 +33,7 @@
                         {{ $m->content }}
                         @if ($m->role === 'assistant' && !empty($m->sources))
                             <div class="mt-1 text-xs text-slate-500">
-                                წყაროები: {{ collect($m->sources)->map(fn ($s) => '[#'.$s['ref'].'] '.($s['title'] ?? ''))->implode('  ') }}
+                                {{ __('conversations.sources') }}: {{ collect($m->sources)->map(fn ($s) => '[#'.$s['ref'].'] '.($s['title'] ?? ''))->implode('  ') }}
                             </div>
                         @endif
                     </div>

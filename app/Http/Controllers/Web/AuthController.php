@@ -26,7 +26,7 @@ class AuthController extends Controller
         ]);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()->withErrors(['email' => 'არასწორი მონაცემები.'])->onlyInput('email');
+            return back()->withErrors(['email' => __('messages.invalid_credentials')])->onlyInput('email');
         }
 
         $request->session()->regenerate();

@@ -57,7 +57,7 @@ class DashboardController extends Controller
 
         $apiKey->forceFill(['revoked_at' => now()])->save();
 
-        return back()->with('status', 'გასაღები გაუქმდა.');
+        return back()->with('status', __('messages.key_revoked'));
     }
 
     public function ask(Request $request, AskService $ask): JsonResponse

@@ -20,7 +20,7 @@ class ConfigSuggestionController extends Controller
 
         if (empty($result['configs'])) {
             return redirect("/dashboard/datasets/{$dataset->id}")->withErrors([
-                'suggest' => 'ჯერ ატვირთე მონაცემები ამ დატასეტში, რომ ჩატბოტი მათ მიხედვით დაგენერირდეს.',
+                'suggest' => __('messages.suggest_no_data'),
             ]);
         }
 

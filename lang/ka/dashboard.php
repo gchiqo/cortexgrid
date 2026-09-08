@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'title' => 'პანელი',
+    'new_key_notice' => 'ახალი API გასაღები (ნაჩვენებია მხოლოდ ერთხელ):',
+    'credits' => 'კრედიტები',
+    'top_up' => 'შევსება',
+    'documents_ingested' => 'ჩატვირთული დოკუმენტები',
+    'queries' => 'კითხვები',
+    'tokens_used' => 'გამოყენებული ტოკენები',
+    'datasets' => 'დატასეტები',
+    'datasets_hint' => 'თითო დატასეტი = ერთი ბიზნესი/თემა. შეიძლება მრავალი ფაილით/წყაროთი შეივსოს და მრავალი ჩატბოტი ჰქონდეს.',
+    'source_count' => ':count წყარო',
+    'chatbot_count' => ':count ჩატბოტი',
+    'new_dataset' => '+ ახალი დატასეტი',
+    'new_dataset_name_placeholder' => 'მაგ. კომპიუტერების მაღაზია',
+    'new_dataset_desc_placeholder' => 'აღწერა (არასავალდებულო)',
+    'api_keys' => 'API გასაღებები',
+    'key_label_placeholder' => 'სახელი (არასავალდებულო)',
+    'th_prefix' => 'პრეფიქსი',
+    'th_status' => 'სტატუსი',
+    'key_revoked' => 'გაუქმებული',
+    'key_active' => 'აქტიური',
+    'revoke' => 'გაუქმება',
+];

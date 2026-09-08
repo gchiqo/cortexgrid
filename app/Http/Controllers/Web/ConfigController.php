@@ -36,7 +36,7 @@ class ConfigController extends Controller
             return response()->json(['ok' => true, 'id' => $config->id, 'name' => $config->name]);
         }
 
-        return redirect("/dashboard/datasets/{$dataset->id}")->with('status', 'ჩატბოტი შეიქმნა.');
+        return redirect("/dashboard/datasets/{$dataset->id}")->with('status', __('messages.chatbot_created'));
     }
 
     public function edit(Request $request, AiConfig $config): View
@@ -55,7 +55,7 @@ class ConfigController extends Controller
         $this->authorizeOwner($request, $config);
         $config->update($this->validated($request));
 
-        return redirect("/dashboard/datasets/{$config->dataset_id}")->with('status', 'ჩატბოტი განახლდა.');
+        return redirect("/dashboard/datasets/{$config->dataset_id}")->with('status', __('messages.chatbot_updated'));
     }
 
     public function destroy(Request $request, AiConfig $config): RedirectResponse
@@ -64,7 +64,7 @@ class ConfigController extends Controller
         $datasetId = $config->dataset_id;
         $config->delete();
 
-        return redirect("/dashboard/datasets/{$datasetId}")->with('status', 'ჩატბოტი წაიშალა.');
+        return redirect("/dashboard/datasets/{$datasetId}")->with('status', __('messages.chatbot_deleted'));
     }
 
     private function dataset(Request $request, int $datasetId): Dataset

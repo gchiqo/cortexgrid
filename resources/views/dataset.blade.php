@@ -7,12 +7,13 @@
             <div class="flex items-center gap-3">
                 <a href="/dashboard" class="text-slate-400 hover:text-slate-700">←</a>
                 <div class="font-bold text-lg">{{ $dataset->name }}</div>
-                <span class="text-xs text-slate-400">{{ $docCount }} დოკ. · {{ $chunkCount }} ჩანკი</span>
+                <span class="text-xs text-slate-400">{{ __('dataset.doc_chunk_summary', ['docs' => $docCount, 'chunks' => $chunkCount]) }}</span>
             </div>
             <div class="flex items-center gap-4 text-sm">
-                <a href="/dashboard/datasets/{{ $dataset->id }}/explorer" class="text-slate-600 hover:text-indigo-600">📊 ცოდნის მკვლევარი</a>
-                <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">ტესტ-კონსოლი</a>
-                <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">საუბრები</a>
+                <a href="/dashboard/datasets/{{ $dataset->id }}/explorer" class="text-slate-600 hover:text-indigo-600">📊 {{ __('explorer.title') }}</a>
+                <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">{{ __('nav.console') }}</a>
+                <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">{{ __('nav.conversations') }}</a>
+                @include('partials.lang-toggle')
                 @include('partials.theme-toggle')
             </div>
         </div>
@@ -24,7 +25,7 @@
         @endif
         @if (session('new_api_key'))
             <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-4">
-                <div class="font-medium text-emerald-800">ახალი API გასაღები (ერთხელ ნაჩვენები):</div>
+                <div class="font-medium text-emerald-800">{{ __('dataset.new_key_notice') }}</div>
                 <code class="block mt-2 bg-white border rounded px-3 py-2 text-sm break-all">{{ session('new_api_key') }}</code>
             </div>
         @endif
@@ -37,37 +38,37 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Sources --}}
             <section class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="font-semibold text-lg mb-4">წყაროები (ფაილები / იმპორტი)</h2>
+                <h2 class="font-semibold text-lg mb-4">{{ __('dataset.sources') }}</h2>
                 <form method="POST" action="/dashboard/upload" enctype="multipart/form-data" id="uploadForm"
                       class="border-2 border-dashed border-slate-200 rounded-lg p-4 mb-5 space-y-3">
                     @csrf
                     <input type="hidden" name="dataset_id" value="{{ $dataset->id }}">
-                    <input type="text" name="source_name" placeholder="წყაროს სახელი (არასავალდებულო)"
+                    <input type="text" name="source_name" placeholder="{{ __('dataset.source_name_placeholder') }}"
                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
                     <input type="file" name="file" required accept=".pdf,.csv,.xlsx,.xls,.txt,.md"
                            class="w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-indigo-700">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400">PDF, CSV, XLSX, TXT — ერთ დატასეტში მრავალი ფაილი</span>
-                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 text-sm font-medium">ატვირთვა</button>
+                        <span class="text-xs text-slate-400">{{ __('dataset.upload_hint') }}</span>
+                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('dataset.upload') }}</button>
                     </div>
                 </form>
                 @if ($sources->isEmpty())
-                    <p class="text-slate-400 text-sm">ჯერ არაფერი ჩაგიტვირთავს. ატვირთე ფაილი, ან გამოიყენე
-                        <code>POST /v1/ingest</code> <code>{"dataset": {{ $dataset->id }}}</code>-ით.</p>
+                    <p class="text-slate-400 text-sm">{{ __('dataset.no_sources') }}
+                        <code>POST /v1/ingest</code> <code>{"dataset": {{ $dataset->id }}}</code>.</p>
                 @else
                     <ul class="space-y-2 text-sm">
                         @foreach ($sources as $src)
                             <li class="flex items-center justify-between border-t py-2">
-                                <span>{{ $src->name }} <span class="text-slate-400">({{ $src->type }} · {{ $src->documents_count }} ჩანაწ.)</span></span>
+                                <span>{{ $src->name }} <span class="text-slate-400">({{ $src->type }} · {{ __('dataset.record_count', ['count' => $src->documents_count]) }})</span></span>
                                 <span class="flex items-center gap-2">
-                                    <span class="text-xs px-2 py-0.5 rounded {{ $src->status === 'ready' ? 'bg-emerald-50 text-emerald-700' : ($src->status === 'failed' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700') }}">{{ $src->status }}</span>
+                                    <span class="text-xs px-2 py-0.5 rounded {{ $src->status === 'ready' ? 'bg-emerald-50 text-emerald-700' : ($src->status === 'failed' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700') }}">{{ Lang::has('dataset.source_status.'.$src->status) ? __('dataset.source_status.'.$src->status) : $src->status }}</span>
                                     @if ($src->status !== 'ready')
                                         <form method="POST" action="/dashboard/sources/{{ $src->id }}/reprocess">@csrf
-                                            <button class="text-indigo-600 hover:underline text-xs" title="ხელახლა დამუშავება">↻</button>
+                                            <button class="text-indigo-600 hover:underline text-xs" title="{{ __('dataset.reprocess') }}">↻</button>
                                         </form>
                                     @endif
-                                    <form method="POST" action="/dashboard/sources/{{ $src->id }}" onsubmit="return confirm('წავშალო ეს წყარო?')">@csrf @method('DELETE')
-                                        <button class="text-red-400 hover:text-red-600 text-xs" title="წაშლა">✕</button>
+                                    <form method="POST" action="/dashboard/sources/{{ $src->id }}" onsubmit="return confirm(@js(__('dataset.confirm_delete_source')))">@csrf @method('DELETE')
+                                        <button class="text-red-400 hover:text-red-600 text-xs" title="{{ __('common.delete') }}">✕</button>
                                     </form>
                                 </span>
                             </li>
@@ -78,18 +79,18 @@
 
             {{-- Test chat --}}
             <section class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="font-semibold text-lg mb-4">ტესტ-ჩატი (ამ დატასეტზე)</h2>
+                <h2 class="font-semibold text-lg mb-4">{{ __('dataset.test_chat') }}</h2>
                 @if ($configs->isEmpty())
-                    <p class="text-slate-400 text-sm">ჯერ ჩატბოტი არ არის. შექმენი ქვემოთ.</p>
+                    <p class="text-slate-400 text-sm">{{ __('dataset.no_chatbots_short') }}</p>
                 @else
                     <select id="config" class="w-full rounded-lg border border-slate-300 px-3 py-2 mb-3">
                         @foreach ($configs as $cfg)
                             <option value="{{ $cfg->id }}">{{ $cfg->name }} ({{ $cfg->model_tier }})</option>
                         @endforeach
                     </select>
-                    <textarea id="question" rows="3" placeholder="დასვი კითხვა ქართულად…"
+                    <textarea id="question" rows="3" placeholder="{{ __('console.ask_placeholder') }}"
                               class="w-full rounded-lg border border-slate-300 px-3 py-2 mb-3"></textarea>
-                    <button id="ask" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 font-medium">კითხვა</button>
+                    <button id="ask" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 font-medium">{{ __('dataset.ask') }}</button>
                     <div id="answer" class="mt-4 hidden">
                         <div class="rounded-lg bg-slate-50 border p-4 whitespace-pre-wrap text-sm" id="answerText"></div>
                         <div class="mt-2 text-xs text-slate-500" id="answerSources"></div>
@@ -101,18 +102,18 @@
         {{-- Chatbots --}}
         <section class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="font-semibold text-lg">ჩატბოტები</h2>
+                <h2 class="font-semibold text-lg">{{ __('dataset.chatbots') }}</h2>
                 <div class="flex items-center gap-2">
                     <form method="POST" action="/dashboard/configs/suggest">@csrf
                         <input type="hidden" name="dataset_id" value="{{ $dataset->id }}">
-                        <button class="bg-indigo-50 text-indigo-700 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-indigo-100">✨ გენერაცია მონაცემებიდან</button>
+                        <button class="bg-indigo-50 text-indigo-700 rounded-lg px-3 py-1.5 text-sm font-medium hover:bg-indigo-100">✨ {{ __('dataset.generate_from_data') }}</button>
                     </form>
                     <a href="/dashboard/configs/create?dataset={{ $dataset->id }}"
-                       class="bg-slate-800 text-white rounded-lg px-3 py-1.5 text-sm font-medium">+ ახალი</a>
+                       class="bg-slate-800 text-white rounded-lg px-3 py-1.5 text-sm font-medium">+ {{ __('common.new') }}</a>
                 </div>
             </div>
             @if ($configs->isEmpty())
-                <p class="text-slate-400 text-sm">ჯერ ჩატბოტი არ არის. შექმენი ხელით ან დააგენერირე მონაცემებიდან.</p>
+                <p class="text-slate-400 text-sm">{{ __('dataset.no_chatbots') }}</p>
             @else
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     @foreach ($configs as $cfg)
@@ -123,10 +124,10 @@
                             </div>
                             <p class="text-sm text-slate-500 mt-1 line-clamp-2">{{ \Illuminate\Support\Str::limit($cfg->system_prompt, 110) }}</p>
                             <div class="flex items-center gap-3 mt-2 text-sm">
-                                <a href="/dashboard/configs/{{ $cfg->id }}/edit" class="text-indigo-600 hover:underline">რედაქტირება / ჩასმის კოდი</a>
-                                <form method="POST" action="/dashboard/configs/{{ $cfg->id }}" onsubmit="return confirm('წავშალო?')">
+                                <a href="/dashboard/configs/{{ $cfg->id }}/edit" class="text-indigo-600 hover:underline">{{ __('dataset.edit_and_embed') }}</a>
+                                <form method="POST" action="/dashboard/configs/{{ $cfg->id }}" onsubmit="return confirm(@js(__('common.confirm_delete')))">
                                     @csrf @method('DELETE')
-                                    <button class="text-red-500 hover:underline">წაშლა</button>
+                                    <button class="text-red-500 hover:underline">{{ __('common.delete') }}</button>
                                 </form>
                             </div>
                         </div>
@@ -135,9 +136,9 @@
             @endif
         </section>
 
-        <form method="POST" action="/dashboard/datasets/{{ $dataset->id }}" onsubmit="return confirm('წავშალო ეს დატასეტი და მისი ყველა მონაცემი?')">
+        <form method="POST" action="/dashboard/datasets/{{ $dataset->id }}" onsubmit="return confirm(@js(__('dataset.confirm_delete_dataset')))">
             @csrf @method('DELETE')
-            <button class="text-red-400 hover:text-red-600 text-sm">დატასეტის წაშლა</button>
+            <button class="text-red-400 hover:text-red-600 text-sm">{{ __('dataset.delete_dataset') }}</button>
         </form>
     </main>
 </div>
@@ -145,22 +146,22 @@
 {{-- Upload pipeline animation overlay --}}
 <div id="upOverlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 backdrop-blur-sm">
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-xl mx-4">
-        <h3 class="font-bold text-lg text-center mb-1">მონაცემები მუშავდება</h3>
+        <h3 class="font-bold text-lg text-center mb-1">{{ __('dataset.pipeline.title') }}</h3>
         <p class="text-center text-slate-400 text-sm mb-7" id="upFile"></p>
         <div class="up-pipe">
-            <div class="up-stage" data-s="0"><div class="up-dot">📄</div><span>ამოღება</span></div>
+            <div class="up-stage" data-s="0"><div class="up-dot">📄</div><span>{{ __('dataset.pipeline.extract') }}</span></div>
             <div class="up-line" data-l="0"></div>
-            <div class="up-stage" data-s="1"><div class="up-dot">✂️</div><span>დაყოფა</span></div>
+            <div class="up-stage" data-s="1"><div class="up-dot">✂️</div><span>{{ __('dataset.pipeline.split') }}</span></div>
             <div class="up-line" data-l="1"></div>
-            <div class="up-stage" data-s="2"><div class="up-dot">💾</div><span>შენახვა</span></div>
+            <div class="up-stage" data-s="2"><div class="up-dot">💾</div><span>{{ __('dataset.pipeline.store') }}</span></div>
             <div class="up-line" data-l="2"></div>
-            <div class="up-stage" data-s="3"><div class="up-dot">🧠</div><span>ემბედინგი</span></div>
+            <div class="up-stage" data-s="3"><div class="up-dot">🧠</div><span>{{ __('dataset.pipeline.embed') }}</span></div>
             <div class="up-line" data-l="3"></div>
-            <div class="up-stage" data-s="4"><div class="up-dot">✅</div><span>მზადაა</span></div>
+            <div class="up-stage" data-s="4"><div class="up-dot">✅</div><span>{{ __('dataset.pipeline.ready') }}</span></div>
         </div>
-        <p class="text-center text-sm text-slate-500 mt-7" id="upStatus">იწყება…</p>
+        <p class="text-center text-sm text-slate-500 mt-7" id="upStatus">{{ __('dataset.pipeline.starting') }}</p>
         <div class="text-center mt-4 hidden" id="upClose">
-            <button onclick="location.reload()" class="bg-indigo-600 text-white rounded-lg px-5 py-2 text-sm font-medium">გვერდის განახლება</button>
+            <button onclick="location.reload()" class="bg-indigo-600 text-white rounded-lg px-5 py-2 text-sm font-medium">{{ __('dataset.pipeline.reload') }}</button>
         </div>
     </div>
 </div>
@@ -179,14 +180,29 @@
 @keyframes upFlow{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 </style>
 
+@php($__t = [
+    'working' => __('dataset.working'),
+    'ask' => __('dataset.ask'),
+    'sources' => __('conversations.sources'),
+    'error' => __('common.error'),
+    'reading_file' => __('dataset.pipeline.reading_file'),
+    'upload_failed' => __('dataset.pipeline.upload_failed'),
+    'splitting' => __('dataset.pipeline.splitting'),
+    'stored' => __('dataset.pipeline.stored'),
+    'embedding' => __('dataset.pipeline.embedding'),
+    'ready' => __('dataset.pipeline.ready_msg'),
+    'embed_failed' => __('dataset.pipeline.embed_failed'),
+    'queued' => __('dataset.pipeline.queued'),
+])
 <script>
 const csrf = document.querySelector('meta[name=csrf-token]').content;
+const T = @json($__t);
 const askBtn = document.getElementById('ask');
 if (askBtn) {
     askBtn.addEventListener('click', async () => {
         const q = document.getElementById('question').value.trim();
         if (!q) return;
-        askBtn.disabled = true; askBtn.textContent = 'მუშავდება…';
+        askBtn.disabled = true; askBtn.textContent = T.working;
         try {
             const res = await fetch('/dashboard/ask', {
                 method: 'POST',
@@ -202,13 +218,13 @@ if (askBtn) {
             let i = 0; (function step(){ if (i < full.length){ at.textContent += full.slice(i, i+4); i += 4; setTimeout(step, 10); } })();
             const sources = data.sources || [];
             document.getElementById('answerSources').innerHTML = sources.length
-                ? 'წყაროები: ' + sources.map(s => { const l = '[#'+s.ref+'] '+esc(s.title||''); return s.url ? '<a href="'+esc(s.url)+'" target="_blank" class="text-indigo-600 underline">'+l+'</a>' : l; }).join('  ')
+                ? esc(T.sources) + ': ' + sources.map(s => { const l = '[#'+s.ref+'] '+esc(s.title||''); return s.url ? '<a href="'+esc(s.url)+'" target="_blank" class="text-indigo-600 underline">'+l+'</a>' : l; }).join('  ')
                 : '';
         } catch (e) {
             document.getElementById('answer').classList.remove('hidden');
-            document.getElementById('answerText').textContent = 'შეცდომა: ' + e;
+            document.getElementById('answerText').textContent = T.error + ': ' + e;
         } finally {
-            askBtn.disabled = false; askBtn.textContent = 'კითხვა';
+            askBtn.disabled = false; askBtn.textContent = T.ask;
         }
     });
 }
@@ -235,7 +251,7 @@ if (uploadForm) {
         upClose.classList.add('hidden');
         overlay.classList.remove('hidden'); overlay.classList.add('flex');
         upFile.textContent = file.name;
-        upStatus.textContent = 'ფაილის წაკითხვა…';
+        upStatus.textContent = T.reading_file;
         active(0); await sleep(550);
 
         try {
@@ -245,15 +261,15 @@ if (uploadForm) {
                 body: new FormData(uploadForm),
             });
             if (!res.ok) {
-                const err = await res.json().catch(() => ({ error: 'ატვირთვა ვერ მოხერხდა' }));
-                upStatus.textContent = '❌ ' + (err.error || 'შეცდომა');
+                const err = await res.json().catch(() => ({ error: T.upload_failed }));
+                upStatus.textContent = '❌ ' + (err.error || T.error);
                 upClose.classList.remove('hidden');
                 return;
             }
             const data = await res.json();
-            done(0); active(1); upStatus.textContent = 'ტექსტის დაყოფა ჩანკებად…'; await sleep(500);
-            done(1); active(2); upStatus.textContent = `${data.documents} დოკუმენტი · ${data.chunks} ჩანკი შენახულია`; await sleep(500);
-            done(2); active(3); upStatus.textContent = 'ვექტორული ემბედინგების შექმნა (Gemini)…';
+            done(0); active(1); upStatus.textContent = T.splitting; await sleep(500);
+            done(1); active(2); upStatus.textContent = T.stored.replace(':documents', data.documents).replace(':chunks', data.chunks); await sleep(500);
+            done(2); active(3); upStatus.textContent = T.embedding;
 
             let tries = 0;
             while (tries++ < 24) {
@@ -262,16 +278,16 @@ if (uploadForm) {
                     const s = await (await fetch(`/dashboard/sources/${data.source_id}/status`, { headers: { 'Accept': 'application/json' } })).json();
                     if (s.status === 'ready') {
                         done(3); active(4); done(4);
-                        upStatus.textContent = '✅ მზადაა — მონაცემები ძებნადია!';
+                        upStatus.textContent = T.ready;
                         await sleep(950); location.reload(); return;
                     }
                     if (s.status === 'failed') {
-                        upStatus.textContent = '❌ ემბედინგი ჩაიშალა — შეამოწმე Gemini გასაღები.';
+                        upStatus.textContent = T.embed_failed;
                         upClose.classList.remove('hidden'); return;
                     }
                 } catch (_) { /* keep polling */ }
             }
-            upStatus.textContent = 'შენახულია ✓ — ემბედინგი ფონურად დასრულდება (გაუშვი queue:work).';
+            upStatus.textContent = T.queued;
             upClose.classList.remove('hidden');
         } catch (err) {
             upStatus.textContent = '❌ ' + err;

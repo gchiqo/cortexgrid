@@ -19,7 +19,7 @@ class SourceController extends Controller
             EmbedChunks::dispatch($documentId);
         }
 
-        return back()->with('status', "„{$source->name}“ — რეპროცესინგი დაიწყო (გაუშვი queue:work).");
+        return back()->with('status', __('messages.source_reprocessing', ['name' => $source->name]));
     }
 
     public function destroy(Request $request, Source $source): RedirectResponse
@@ -28,7 +28,7 @@ class SourceController extends Controller
         $name = $source->name;
         $source->delete(); // cascades documents + chunks
 
-        return back()->with('status', "წყარო „{$name}“ წაიშალა.");
+        return back()->with('status', __('messages.source_deleted', ['name' => $name]));
     }
 
     private function authorizeOwner(Request $request, Source $source): void

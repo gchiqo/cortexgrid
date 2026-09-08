@@ -1,28 +1,29 @@
 @extends('layout')
-@section('title', 'ლიდები')
+@section('title', __('leads.title'))
 @section('body')
 <div class="min-h-screen">
     <header class="bg-white border-b">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · ლიდები</div>
+            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('leads.title') }}</div>
             <div class="flex items-center gap-2">
+                @include('partials.lang-toggle')
                 @include('partials.theme-toggle')
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">← პანელი</a>
+                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
             </div>
         </div>
     </header>
 
     <main class="max-w-5xl mx-auto px-4 py-8">
-        <h1 class="text-xl font-bold mb-1">ლიდები</h1>
-        <p class="text-slate-500 text-sm mb-6">ვიჯეტში დატოვებული კონტაქტები (როცა ბოტმა ვერ უპასუხა ან მომხმარებელმა თავად დატოვა).</p>
+        <h1 class="text-xl font-bold mb-1">{{ __('leads.title') }}</h1>
+        <p class="text-slate-500 text-sm mb-6">{{ __('leads.subtitle') }}</p>
 
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             @if ($leads->isEmpty())
-                <p class="text-slate-400 text-sm p-6">ჯერ ლიდები არ არის.</p>
+                <p class="text-slate-400 text-sm p-6">{{ __('leads.empty') }}</p>
             @else
                 <table class="w-full text-sm">
                     <thead class="text-slate-400 text-left border-b">
-                        <tr><th class="py-2 px-4">სახელი</th><th>კონტაქტი</th><th>ჩატბოტი</th><th>თარიღი</th><th></th></tr>
+                        <tr><th class="py-2 px-4">{{ __('leads.th_name') }}</th><th>{{ __('leads.th_contact') }}</th><th>{{ __('leads.th_chatbot') }}</th><th>{{ __('leads.th_date') }}</th><th></th></tr>
                     </thead>
                     <tbody>
                         @foreach ($leads as $lead)
@@ -36,7 +37,7 @@
                                 <td class="text-slate-500">{{ $lead->created_at?->diffForHumans() }}</td>
                                 <td class="text-right pr-4">
                                     @if ($lead->conversation_id)
-                                        <a href="/dashboard/conversations/{{ $lead->conversation_id }}" class="text-xs text-indigo-600 hover:underline">საუბარი →</a>
+                                        <a href="/dashboard/conversations/{{ $lead->conversation_id }}" class="text-xs text-indigo-600 hover:underline">{{ __('leads.view_conversation') }}</a>
                                     @endif
                                 </td>
                             </tr>

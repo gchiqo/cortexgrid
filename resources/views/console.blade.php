@@ -1,17 +1,18 @@
 @extends('layout')
-@section('title', 'ტესტ-კონსოლი')
+@section('title', __('console.title'))
 @section('body')
 <div class="h-screen flex flex-col">
     <header class="bg-white border-b shrink-0">
         <div class="px-4 h-14 flex items-center justify-between gap-4">
-            <div class="font-bold"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · ტესტ-კონსოლი</div>
+            <div class="font-bold"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('console.title') }}</div>
             <div class="flex items-center gap-3">
                 <select id="config" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
                     @foreach ($configs as $cfg)
                         <option value="{{ $cfg->id }}">{{ $cfg->name }} ({{ $cfg->model_tier }})</option>
                     @endforeach
                 </select>
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">← პანელი</a>
+                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
+                @include('partials.lang-toggle')
                 @include('partials.theme-toggle')
             </div>
         </div>
@@ -20,15 +21,14 @@
     <div class="flex-1 flex min-h-0">
         {{-- LEFT: trace --}}
         <div class="w-1/2 border-r bg-slate-900 text-slate-100 overflow-y-auto p-4" id="trace">
-            <div class="text-slate-400 text-sm">დასვი კითხვა მარჯვნივ — აქ რეალურ დროში გამოჩნდება რა ხდება სისტემაში
-                (query rewrite → embedding → ჰიბრიდული ძებნა → შერწყმა → Claude).</div>
+            <div class="text-slate-400 text-sm">{{ __('console.trace_intro') }}</div>
         </div>
 
         {{-- RIGHT: chat --}}
         <div class="w-1/2 flex flex-col min-h-0 bg-slate-50">
             <div class="flex-1 overflow-y-auto p-4 space-y-3" id="chat"></div>
             <div class="border-t bg-white p-3 flex gap-2">
-                <textarea id="q" rows="1" placeholder="დასვი კითხვა ქართულად…"
+                <textarea id="q" rows="1" placeholder="{{ __('console.ask_placeholder') }}"
                           class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm resize-none"></textarea>
                 <button id="send" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-5 font-medium">↑</button>
             </div>
@@ -44,8 +44,42 @@
 .think-step.on{opacity:1;border-left-color:#6366f1;background:#27344b;transform:translateX(4px)}
 .think-dot{width:9px;height:9px;border-radius:50%;background:#6366f1;animation:thinkPulse 1s ease-in-out infinite;flex:0 0 auto}
 </style>
+@php($__t = [
+    'no_trace' => __('console.no_trace'),
+    'rewrite' => __('console.rewrite'),
+    'rewrite_from' => __('console.rewrite_from'),
+    'rewrite_to' => __('console.rewrite_to'),
+    'search_query' => __('console.search_query'),
+    'embedding' => __('console.embedding'),
+    'model' => __('console.model'),
+    'dims' => __('console.dims'),
+    'semantic' => __('console.semantic'),
+    'lexical' => __('console.lexical'),
+    'candidates' => __('console.candidates'),
+    'fusion' => __('console.fusion'),
+    'rerank' => __('console.rerank'),
+    'rerank_body' => __('console.rerank_body'),
+    'generate' => __('console.generate'),
+    'tokens' => __('console.tokens'),
+    'tools' => __('console.tools'),
+    'total' => __('console.total'),
+    'memory' => __('console.memory'),
+    'prev_messages' => __('console.prev_messages'),
+    'sources' => __('conversations.sources'),
+    'error' => __('common.error'),
+    'no_answer' => __('console.no_answer'),
+    'think' => [
+        'rewrite' => __('console.think.rewrite'),
+        'embed' => __('console.think.embed'),
+        'semantic' => __('console.think.semantic'),
+        'lexical' => __('console.think.lexical'),
+        'fuse' => __('console.think.fuse'),
+        'generate' => __('console.think.generate'),
+    ],
+])
 <script>
 const csrf = document.querySelector('meta[name=csrf-token]').content;
+const T = @json($__t);
 const chat = document.getElementById('chat');
 const trace = document.getElementById('trace');
 const qEl = document.getElementById('q');
@@ -84,52 +118,52 @@ function cands(list){
 }
 
 function renderTrace(t){
-  if(!t){ trace.innerHTML = '<div class="text-slate-400 text-sm">trace არ მოვიდა.</div>'; return; }
+  if(!t){ trace.innerHTML = '<div class="text-slate-400 text-sm">'+esc(T.no_trace)+'</div>'; return; }
   let html = '';
   // query / rewrite
   const rw = (t.steps||[]).find(s => s.step === 'query_rewrite');
   if(rw){
-    html += card('საძიებო ფრაზის გადაწერა', badge('groq'),
-      '<div>თავდაპირველი: <span class="text-slate-200">'+esc(rw.from)+'</span></div>' +
-      '<div>გადაწერილი: <span class="text-amber-200">'+esc(rw.to)+'</span></div>', rw.ms);
+    html += card(T.rewrite, badge('groq'),
+      '<div>'+esc(T.rewrite_from)+': <span class="text-slate-200">'+esc(rw.from)+'</span></div>' +
+      '<div>'+esc(T.rewrite_to)+': <span class="text-amber-200">'+esc(rw.to)+'</span></div>', rw.ms);
   } else {
-    html += card('საძიებო ფრაზა', '', '<span class="text-slate-200">'+esc(t.search_query)+'</span>', null);
+    html += card(T.search_query, '', '<span class="text-slate-200">'+esc(t.search_query)+'</span>', null);
   }
   const r = t.retrieval || {};
   if(r.embedding){
-    html += card('ემბედინგი', badge('gemini'),
-      '<div>მოდელი: '+esc(r.embedding.model)+'</div><div>განზომილება: '+r.embedding.dims+'</div>', r.embedding.ms);
+    html += card(T.embedding, badge('gemini'),
+      '<div>'+esc(T.model)+': '+esc(r.embedding.model)+'</div><div>'+esc(T.dims)+': '+r.embedding.dims+'</div>', r.embedding.ms);
   }
   if(r.semantic){
-    html += card('სემანტიკური ძებნა (pgvector cosine)', '',
-      '<div class="mb-1 text-slate-400">'+r.semantic.count+' კანდიდატი</div>'+cands(r.semantic.candidates), r.semantic.ms);
+    html += card(T.semantic, '',
+      '<div class="mb-1 text-slate-400">'+r.semantic.count+' '+esc(T.candidates)+'</div>'+cands(r.semantic.candidates), r.semantic.ms);
   }
   if(r.lexical){
-    html += card('ლექსიკური ძებნა (BM25 / tsvector)', '',
-      '<div class="mb-1 text-slate-400">'+r.lexical.count+' კანდიდატი</div>'+cands(r.lexical.candidates), r.lexical.ms);
+    html += card(T.lexical, '',
+      '<div class="mb-1 text-slate-400">'+r.lexical.count+' '+esc(T.candidates)+'</div>'+cands(r.lexical.candidates), r.lexical.ms);
   }
   if(r.fused){
     const chosen = (r.fused.chosen||[]).map(c => '<div class="flex gap-2 py-0.5"><span class="text-indigo-300">#'+c.id+'</span>' +
       '<span class="text-emerald-300 w-16 shrink-0">'+c.score+'</span><span class="text-slate-300">'+esc(c.title||'')+'</span></div>').join('');
-    html += card('შერწყმა — '+esc(r.fused.method), '', chosen, null);
+    html += card(T.fusion+' — '+r.fused.method, '', chosen, null);
   }
   const rr = (t.steps||[]).find(s => s.step === 'rerank');
   if(rr && rr.used){
-    html += card('reranker (გადარანჟირება)', badge('groq'), '<div>'+rr.pool+' → '+rr.kept+' საუკეთესო პასაჟი</div>', rr.ms);
+    html += card(T.rerank, badge('groq'), '<div>'+rr.pool+' → '+rr.kept+' '+esc(T.rerank_body)+'</div>', rr.ms);
   }
   if(t.generate){
-    html += card('პასუხის გენერაცია', badge('anthropic'),
-      '<div>მოდელი: '+esc(t.generate.model)+'</div>' +
-      '<div>ტოკენები: in '+t.generate.input_tokens+' / out '+t.generate.output_tokens+'</div>', t.generate.ms);
+    html += card(T.generate, badge('anthropic'),
+      '<div>'+esc(T.model)+': '+esc(t.generate.model)+'</div>' +
+      '<div>'+esc(T.tokens)+': in '+t.generate.input_tokens+' / out '+t.generate.output_tokens+'</div>', t.generate.ms);
   }
   const tools = (t.generate && t.generate.tool_calls) || [];
   if(tools.length){
     const items = tools.map(tc => '<div class="py-1 border-b border-slate-700 last:border-0">' +
       '<span class="text-amber-300">🔧 '+esc(tc.name)+'</span> <span class="text-slate-500">'+esc(JSON.stringify(tc.input))+'</span>' +
       '<div class="text-slate-300 mt-0.5">→ '+esc(tc.result)+'</div></div>').join('');
-    html += card('ხელსაწყოები (შესრულებული მოქმედებები)', '', items, null);
+    html += card(T.tools, '', items, null);
   }
-  html += '<div class="text-[11px] text-slate-400 mt-2">სულ: '+t.total_ms+' ms · მეხსიერება: '+t.history_turns+' წინა შეტყობინება</div>';
+  html += '<div class="text-[11px] text-slate-400 mt-2">'+esc(T.total)+': '+t.total_ms+' ms · '+esc(T.memory)+': '+t.history_turns+' '+esc(T.prev_messages)+'</div>';
   trace.innerHTML = html;
   [...trace.querySelectorAll('.trace-card')].forEach((el,i)=>el.style.animationDelay=(i*70)+'ms');
 }
@@ -137,8 +171,8 @@ function renderTrace(t){
 let thinkTimer = null;
 function showThinking(hasHistory){
   const steps = [];
-  if(hasHistory) steps.push(['groq','საძიებო ფრაზის გადაწერა']);
-  steps.push(['gemini','კითხვის ემბედინგი'],['','სემანტიკური ძებნა (pgvector)'],['','ლექსიკური ძებნა (BM25)'],['','შერწყმა (RRF)'],['anthropic','პასუხის გენერაცია (Claude)']);
+  if(hasHistory) steps.push(['groq',T.think.rewrite]);
+  steps.push(['gemini',T.think.embed],['',T.think.semantic],['',T.think.lexical],['',T.think.fuse],['anthropic',T.think.generate]);
   trace.innerHTML = steps.map(s => '<div class="think-step"><span class="think-dot"></span>'+
     (s[0]?badge(s[0])+' ':'')+'<span class="text-slate-300 text-sm">'+esc(s[1])+'</span></div>').join('');
   const els = [...trace.querySelectorAll('.think-step')];
@@ -161,14 +195,14 @@ async function send(){
     });
     const data = await res.json();
     stopThinking();
-    const answer = data.answer || (data.message ? ('შეცდომა: '+data.message) : 'ბოდიში, ვერ ვუპასუხე.');
+    const answer = data.answer || (data.message ? (T.error+': '+data.message) : T.no_answer);
     thinking.textContent = '';
     let i = 0;
     (function step(){
       if (i < answer.length) { thinking.textContent += answer.slice(i, i+4); i += 4; chat.scrollTop = chat.scrollHeight; setTimeout(step, 10); }
       else if (data.sources && data.sources.length) {
         const sd = document.createElement('div'); sd.className = 'mt-1 text-xs text-slate-500';
-        sd.innerHTML = 'წყაროები: ' + data.sources.map(s => { const l='[#'+s.ref+'] '+esc(s.title||''); return s.url ? '<a href="'+esc(s.url)+'" target="_blank" class="underline text-indigo-600">'+l+'</a>' : l; }).join('  ');
+        sd.innerHTML = esc(T.sources) + ': ' + data.sources.map(s => { const l='[#'+s.ref+'] '+esc(s.title||''); return s.url ? '<a href="'+esc(s.url)+'" target="_blank" class="underline text-indigo-600">'+l+'</a>' : l; }).join('  ');
         thinking.appendChild(sd);
       }
     })();
@@ -176,7 +210,7 @@ async function send(){
     history.push({role:'user', content:q}, {role:'assistant', content:data.answer || ''});
   } catch(e){
     stopThinking();
-    thinking.textContent = 'შეცდომა: ' + e;
+    thinking.textContent = T.error + ': ' + e;
   } finally {
     sendBtn.disabled = false; qEl.focus();
   }

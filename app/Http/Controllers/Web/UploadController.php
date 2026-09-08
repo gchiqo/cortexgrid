@@ -49,7 +49,7 @@ class UploadController extends Controller
             };
         } catch (\Throwable $e) {
             report($e);
-            $msg = 'ფაილის დამუშავება ვერ მოხერხდა: '.$e->getMessage();
+            $msg = __('messages.file_process_failed').': '.$e->getMessage();
 
             return $request->expectsJson()
                 ? response()->json(['error' => $msg], 422)
@@ -59,7 +59,7 @@ class UploadController extends Controller
         $records = array_slice($records, 0, self::MAX_RECORDS);
 
         if ($records === []) {
-            $msg = 'ფაილიდან მონაცემები ვერ ამოვიღე.';
+            $msg = __('messages.file_no_data');
 
             return $request->expectsJson()
                 ? response()->json(['error' => $msg], 422)
@@ -73,7 +73,11 @@ class UploadController extends Controller
         }
 
         return back()->with('status',
-            "ჩაიტვირთა «{$name}»: {$summary['documents']} დოკუმენტი, {$summary['chunks']} ჩანკი — ემბედინგი მუშავდება."
+            __('messages.file_ingested', [
+                'name' => $name,
+                'documents' => $summary['documents'],
+                'chunks' => $summary['chunks'],
+            ])
         );
     }
 

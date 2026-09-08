@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'title' => 'Dashboard',
+    'new_key_notice' => 'New API key (shown only once):',
+    'credits' => 'Credits',
+    'top_up' => 'Top up',
+    'documents_ingested' => 'Documents ingested',
+    'queries' => 'Queries',
+    'tokens_used' => 'Tokens used',
+    'datasets' => 'Datasets',
+    'datasets_hint' => 'One dataset = one business or topic. It can be filled from many files and sources, and can have many chatbots.',
+    'source_count' => ':count source|:count sources',
+    'chatbot_count' => ':count chatbot|:count chatbots',
+    'new_dataset' => '+ New dataset',
+    'new_dataset_name_placeholder' => 'e.g. Computer store',
+    'new_dataset_desc_placeholder' => 'Description (optional)',
+    'api_keys' => 'API keys',
+    'key_label_placeholder' => 'Label (optional)',
+    'th_prefix' => 'Prefix',
+    'th_status' => 'Status',
+    'key_revoked' => 'Revoked',
+    'key_active' => 'Active',
+    'revoke' => 'Revoke',
+];

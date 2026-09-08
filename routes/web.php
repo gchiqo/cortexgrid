@@ -22,6 +22,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('landing'));
 
+// --- UI language switcher (public: also used on the landing and login pages) ---
+Route::get('/locale/{locale}', function (string $locale) {
+    if (in_array($locale, \App\Http\Middleware\SetLocale::SUPPORTED, true)) {
+        session(['locale' => $locale]);
+    }
+
+    return back();
+})->name('locale.switch');
+
 // --- Public embeddable widget (no auth; browser-facing) ---
 Route::get('/embed.js', [WidgetController::class, 'embed']);
 Route::options('/public/chat', [PublicChatController::class, 'preflight']);

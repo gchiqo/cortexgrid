@@ -18,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'apikey' => \App\Http\Middleware\ApiKeyAuth::class,
         ]);
 
+        // Applies the visitor's chosen UI language (see the language switcher).
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
         // The embeddable widget posts cross-origin and cannot carry a CSRF token.
         $middleware->validateCsrfTokens(except: ['public/chat', 'public/chat/stream', 'public/feedback', 'public/lead', 'flitt/callback', 'flitt/response']);
     })

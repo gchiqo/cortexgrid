@@ -23,7 +23,7 @@ class FlittPaymentController extends Controller
         $packs = config('services.flitt.packs');
         $index = (int) $request->input('pack');
         if (! isset($packs[$index])) {
-            return back()->withErrors(['pay' => 'არასწორი პაკეტი.']);
+            return back()->withErrors(['pay' => __('messages.invalid_pack')]);
         }
         $pack = $packs[$index];
         $tenant = $request->user()->tenant;
@@ -40,7 +40,7 @@ class FlittPaymentController extends Controller
             'response_url' => route('flitt.response'),
             'order_id' => (string) $payment->id,
             'currency' => 'GEL',
-            'order_desc' => number_format($pack['credits']).' კრედიტი — CortexGrid AI',
+            'order_desc' => __('messages.order_desc', ['credits' => number_format($pack['credits'])]),
             'amount' => (int) round($pack['gel'] * 100),
         ];
 
@@ -55,14 +55,14 @@ class FlittPaymentController extends Controller
             Log::error('Flitt checkout failed', ['error' => $e->getMessage()]);
             $payment->update(['status' => 'failed']);
 
-            return back()->withErrors(['pay' => 'Flitt-თან კავშირი ვერ მოხერხდა.']);
+            return back()->withErrors(['pay' => __('messages.flitt_unreachable')]);
         }
 
         $checkoutUrl = data_get($response->json(), 'response.checkout_url');
         if (! $checkoutUrl) {
             $payment->update(['status' => 'failed', 'gateway_response' => $response->json()]);
 
-            return back()->withErrors(['pay' => 'გადახდის გვერდი ვერ შეიქმნა.']);
+            return back()->withErrors(['pay' => __('messages.flitt_no_page')]);
         }
 
         return redirect()->away($checkoutUrl);
@@ -99,10 +99,10 @@ class FlittPaymentController extends Controller
         }
 
         if ($payment && $payment->fresh()->status === 'completed') {
-            return redirect('/dashboard/billing')->with('status', '✓ გადახდა წარმატებულია — კრედიტები დაემატა.');
+            return redirect('/dashboard/billing')->with('status', __('billing.payment_success'));
         }
 
-        return redirect('/dashboard/billing')->withErrors(['pay' => 'გადახდა ვერ შესრულდა ან გაუქმდა.']);
+        return redirect('/dashboard/billing')->withErrors(['pay' => __('messages.payment_failed')]);
     }
 
     /** Idempotently apply a gateway status — adds credits once on first approval. */

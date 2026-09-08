@@ -21,7 +21,7 @@ class DatasetController extends Controller
 
         $dataset = Dataset::create($data + ['tenant_id' => $request->user()->tenant_id]);
 
-        return redirect("/dashboard/datasets/{$dataset->id}")->with('status', 'დატასეტი შეიქმნა.');
+        return redirect("/dashboard/datasets/{$dataset->id}")->with('status', __('messages.dataset_created'));
     }
 
     public function show(Request $request, Dataset $dataset): View
@@ -45,7 +45,7 @@ class DatasetController extends Controller
         $dataset->aiConfigs()->delete();  // cascades conversations + messages
         $dataset->delete();
 
-        return redirect('/dashboard')->with('status', 'დატასეტი წაიშალა.');
+        return redirect('/dashboard')->with('status', __('messages.dataset_deleted'));
     }
 
     /** Poll target for the upload animation. */

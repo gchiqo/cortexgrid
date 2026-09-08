@@ -23,7 +23,7 @@ class GoogleController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Throwable $e) {
-            return redirect('/login')->withErrors(['email' => 'Google ავტორიზაცია ვერ მოხერხდა.']);
+            return redirect('/login')->withErrors(['email' => __('messages.google_failed')]);
         }
 
         $user = User::firstOrNew(['email' => $googleUser->getEmail()]);

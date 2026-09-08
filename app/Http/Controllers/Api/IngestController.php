@@ -49,7 +49,7 @@ class IngestController extends Controller
         return response()->json($summary + [
             'dataset_id' => $datasetId,
             'status' => 'processing',
-            'message' => 'ჩაიტვირთა; ემბედინგები მუშავდება ფონურად.',
+            'message' => __('messages.ingest_queued'),
         ], 201);
     }
 

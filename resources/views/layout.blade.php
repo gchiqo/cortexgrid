@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ka">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'CortexGrid AI პლატფორმა')</title>
+    <title>@yield('title', __('common.app_title'))</title>
     <script>if (localStorage.theme === 'dark') document.documentElement.classList.add('dark');</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
@@ -41,8 +41,11 @@
         html.dark input::placeholder, html.dark textarea::placeholder { color:#64748b; }
         html.dark code { background:#334155; color:#e2e8f0; }
         html.dark table thead { color:#64748b; }
-        html.dark .js-theme-toggle:hover { background:#334155 !important; }
+        html.dark .js-theme-toggle:hover,
+        html.dark .js-lang-toggle:hover { background:#334155 !important; }
+        html.dark .js-lang-toggle { color:#94a3b8 !important; }
         .js-theme-toggle { cursor:pointer; }
+        .js-lang-toggle { cursor:pointer; text-decoration:none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
