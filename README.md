@@ -44,7 +44,7 @@ Originally built as *GTUH AI* for the **GTU Technological Hackathon 2026** (*Int
 
 ### 1. Clone & install
 ```bash
-git clone <your-repo-url> gtuh && cd gtuh
+git clone <your-repo-url> cortexgrid && cd cortexgrid
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -54,10 +54,10 @@ php artisan key:generate
 ```bash
 # Debian/Ubuntu example (match your PG version, e.g. 18):
 sudo apt install -y postgresql-18-pgvector
-sudo -u postgres createdb gtuh
-sudo -u postgres psql -d gtuh -c "CREATE EXTENSION IF NOT EXISTS vector;"
+sudo -u postgres createdb cortexgrid
+sudo -u postgres psql -d cortexgrid -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
-Set the DB connection in `.env` (`DB_DATABASE=gtuh`, plus host/user/password for your setup).
+Set the DB connection in `.env` (`DB_DATABASE=cortexgrid`, plus host/user/password for your setup).
 
 ### 3. API keys → `.env`
 ```env
@@ -81,7 +81,7 @@ php artisan db:seed --class=DemoResetSeeder
 # Gemini embedding calls, ~30s). Requires GEMINI_API_KEY to be set.
 php artisan db:seed --class=DemoContentSeeder
 ```
-Each seeder prints a **login** and a one‑time **API key**. Default login: **`admin@gtuh.local` / `password`**.
+Each seeder prints a **login** and a one‑time **API key**. Default login: **`admin@cortexgrid.local` / `password`**.
 
 ### 5. Run
 ```bash
@@ -94,7 +94,7 @@ php artisan queue:work     # REQUIRED — embeddings run on the queue
 
 ## 🕹️ Using it
 
-1. Open **`/`** (landing) → **`/dashboard`** (login `admin@gtuh.local` / `password`).
+1. Open **`/`** (landing) → **`/dashboard`** (login `admin@cortexgrid.local` / `password`).
 2. Open a **dataset** → **upload** a file (`examples/*.csv`) → watch the pipeline animation.
 3. Click **📊 ცოდნის მკვლევარი** to see what was understood; **✨ generate** agents from the data.
 4. Try an agent in the **ტესტ-კონსოლი** (glass‑box) or grab its **embed snippet** from the agent's edit page.
@@ -125,7 +125,7 @@ Full, tabbed docs are in‑app at **`/dashboard/docs`**.
 
 ## 🧩 WordPress plugin
 
-`wordpress-plugin/gtuh-ai-sync.zip` — install in WP, set Base URL + API Key, then:
+`wordpress-plugin/cortexgrid-ai-sync.zip` — install in WP, set Base URL + API Key, then:
 - **Sync** WooCommerce products / posts / pages into per‑type datasets (idempotent via `external_id`).
 - **Embed widget** — pick an agent in settings; the plugin auto‑injects the chat widget site‑wide (`wp_footer`).
 

@@ -4,7 +4,7 @@
 <div class="min-h-screen">
     <header class="bg-white border-b">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">GTUH <span class="text-indigo-600">AI</span></a> · API დოკუმენტაცია</div>
+            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · API დოკუმენტაცია</div>
             <div class="flex items-center gap-2">
                 @include('partials.theme-toggle')
                 <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">← პანელი</a>
@@ -105,7 +105,7 @@ saveLastSync(now());</code></pre>
             <p class="text-slate-600 text-sm">საიტზე გამოჩნდება მცურავი ჩატის ღილაკი. დაშვებული დომენების შეზღუდვა (CORS) აგენტის პარამეტრებშია.</p>
             <p class="text-slate-600 text-sm">პირდაპირი public endpoint (ვიჯეტი ამას იძახებს):</p>
             <pre class="doc-code"><code>POST {{ $base }}/public/chat
-{ "public_key": "pk_gtuh_…", "message": "გამარჯობა", "conversation_id": null }</code></pre>
+{ "public_key": "pk_cortexgrid_…", "message": "გამარჯობა", "conversation_id": null }</code></pre>
         </div>
     </main>
 </div>

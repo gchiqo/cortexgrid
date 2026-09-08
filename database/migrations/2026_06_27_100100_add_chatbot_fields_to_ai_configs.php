@@ -18,7 +18,7 @@ return new class extends Migration
 
         // Backfill public keys for existing configs (chatbots).
         foreach (DB::table('ai_configs')->whereNull('public_key')->pluck('id') as $id) {
-            DB::table('ai_configs')->where('id', $id)->update(['public_key' => 'pk_gtuh_'.Str::random(32)]);
+            DB::table('ai_configs')->where('id', $id)->update(['public_key' => 'pk_cortexgrid_'.Str::random(32)]);
         }
     }
 

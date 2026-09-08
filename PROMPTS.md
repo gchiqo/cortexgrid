@@ -1,4 +1,4 @@
-# My Prompts — GTUH AI ცოდნის პლატფორმა
+# My Prompts — CortexGrid AI ცოდნის პლატფორმა
 
 Every prompt I (the user) gave while building this project, in order.
 Verbatim — original spelling kept. `[popup choice]` = a selection I made in an in-chat question.

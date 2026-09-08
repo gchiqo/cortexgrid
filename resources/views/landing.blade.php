@@ -1,9 +1,9 @@
 @extends('layout')
-@section('title', 'GTUH AI — ცოდნის პლატფორმა')
+@section('title', 'CortexGrid AI — ცოდნის პლატფორმა')
 @section('body')
 <div class="min-h-screen bg-gradient-to-b from-slate-50 to-indigo-50/40">
     <header class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <a href="/" class="font-bold text-lg">GTUH <span class="text-indigo-600">AI</span></a>
+        <a href="/" class="font-bold text-lg">CortexGrid <span class="text-indigo-600">AI</span></a>
         <div class="flex items-center gap-3 text-sm">
             @include('partials.theme-toggle')
             <a href="#how" class="text-slate-600 hover:text-slate-900 px-3 py-2 hidden sm:inline">როგორ მუშაობს</a>
@@ -141,7 +141,7 @@
                     @endforeach
                 </div>
                 <pre class="bg-slate-900 text-slate-100 text-xs rounded-xl p-4 overflow-x-auto"><code>POST /public/chat
-{ "public_key": "pk_gtuh_…", "message": "ძლიერი PC მინდა, რას მირჩევთ?" }
+{ "public_key": "pk_cortexgrid_…", "message": "ძლიერი PC მინდა, რას მირჩევთ?" }
 → { "answer": "გირჩევთ: RTX 4070 (2100₾) …", "sources": [{ "ref": 1, "title": "RTX 4070" }], "message_id": 42 }</code></pre>
             </div>
         </div>
@@ -158,7 +158,7 @@
         @endauth
     </section>
 
-    <footer class="text-center text-slate-400 text-xs py-8">GTUH AI · Technological Hackathon 2026</footer>
+    <footer class="text-center text-slate-400 text-xs py-8">CortexGrid AI · Technological Hackathon 2026</footer>
 </div>
 
 <style>

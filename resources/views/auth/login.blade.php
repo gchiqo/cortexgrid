@@ -5,7 +5,7 @@
 <div class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white rounded-2xl shadow p-8">
         <h1 class="text-2xl font-bold mb-1">შესვლა</h1>
-        <p class="text-slate-500 mb-6">GTUH AI პლატფორმა</p>
+        <p class="text-slate-500 mb-6">CortexGrid AI პლატფორმა</p>
 
         @if ($errors->any())
             <div class="mb-4 rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">

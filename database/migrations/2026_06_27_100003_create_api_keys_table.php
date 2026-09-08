@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->string('label')->nullable();
-            $table->string('prefix', 12);            // shown in the UI, e.g. "gtuh_a1b2"
+            $table->string('prefix', 12);            // shown in the UI, e.g. "cortexgrid_a1b2"
             $table->string('key_hash')->unique();    // hash of the full secret; raw key shown once
             $table->timestamp('last_used_at')->nullable();
             $table->timestamp('revoked_at')->nullable();

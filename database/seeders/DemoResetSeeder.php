@@ -21,7 +21,7 @@ class DemoResetSeeder extends Seeder
 
         User::create([
             'name' => 'Demo Admin',
-            'email' => 'admin@gtuh.local',
+            'email' => 'admin@cortexgrid.local',
             'password' => Hash::make('password'),
             'tenant_id' => $tenant->id,
             'role' => 'admin',
@@ -41,7 +41,7 @@ class DemoResetSeeder extends Seeder
 
         $this->command?->newLine();
         $this->command?->info('=== Clean demo ready ===');
-        $this->command?->info('Login:    admin@gtuh.local / password');
+        $this->command?->info('Login:    admin@cortexgrid.local / password');
         $this->command?->info("API key:  {$secret}");
         $this->command?->info('Datasets: '.implode(', ', $datasets));
         $this->command?->info('Upload examples/ files into the matching datasets.');

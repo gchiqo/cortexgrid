@@ -1,6 +1,6 @@
-# GTUH AI Sync — WordPress plugin
+# CortexGrid AI Sync — WordPress plugin
 
-Syncs your WordPress site's content to the GTUH AI knowledge platform so your AI agents can answer from it.
+Syncs your WordPress site's content to the CortexGrid AI knowledge platform so your AI agents can answer from it.
 
 ## What it syncs
 - **WooCommerce products** → the *Products* dataset (name, price, SKU, category, **permalink URL**, description)
@@ -10,9 +10,9 @@ Syncs your WordPress site's content to the GTUH AI knowledge platform so your AI
 Each item is sent with an `external_id` (e.g. `product-42`), so **re-syncing updates the item instead of creating a duplicate** — your data stays fresh.
 
 ## Install
-1. Zip the `gtuh-ai-sync` folder (or download the provided `gtuh-ai-sync.zip`).
+1. Zip the `cortexgrid-ai-sync` folder (or download the provided `cortexgrid-ai-sync.zip`).
 2. WordPress admin → **Plugins → Add New → Upload Plugin** → choose the zip → **Install** → **Activate**.
-3. Open **GTUH AI** in the admin sidebar.
+3. Open **CortexGrid AI** in the admin sidebar.
 
 ## Configure
 - **API Base URL** — your platform host, e.g. `https://your-host` (no trailing slash).

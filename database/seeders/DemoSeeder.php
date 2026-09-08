@@ -17,7 +17,7 @@ class DemoSeeder extends Seeder
         $tenant = Tenant::firstOrCreate(['name' => 'Demo Tenant']);
 
         $user = User::updateOrCreate(
-            ['email' => 'admin@gtuh.local'],
+            ['email' => 'admin@cortexgrid.local'],
             [
                 'name' => 'Demo Admin',
                 'password' => Hash::make('password'),
@@ -68,7 +68,7 @@ class DemoSeeder extends Seeder
         $this->command?->newLine();
         $this->command?->info('=== Demo data ready ===');
         $this->command?->info("Tenant:   {$tenant->name} (id {$tenant->id})");
-        $this->command?->info('Login:    admin@gtuh.local / password');
+        $this->command?->info('Login:    admin@cortexgrid.local / password');
         $this->command?->info("API key:  {$secret}");
         $this->command?->warn('Save the API key now — it is shown only once.');
     }

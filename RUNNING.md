@@ -1,4 +1,4 @@
-# Running the GTUH AI platform
+# Running the CortexGrid AI platform
 
 Laravel 13 + PostgreSQL/pgvector. Universal content ingestion → hybrid RAG → Georgian chatbot,
 multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
@@ -11,7 +11,7 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 - **Knowledge Explorer** (`📊 ცოდნის მკვლევარი` on a dataset) — shows what the platform *understood*: entity facets (brands, categories, price ranges) aggregated from the structured fields, plus a one-click **AI analysis** (Claude) that detects relationships (`socket → compatible_with`) and missing info. Reinforces "platform, not chatbot."
 - **Streaming widget** — answers stream token-by-token (`POST /public/chat/stream`, SSE); the dashboard test-chat + console use a typing reveal. **Clickable citations** (sources link to their `url`). **Per-agent widget customization** (color, position, greeting, title, launcher). **Lead capture** — the widget offers a contact form (auto on a no-answer); leads appear on the **ლიდები** page.
 - **Reranker** (opt-in per agent) — Groq re-scores the fused candidates for better precision; shown as a step in the glass-box console. **Source management** — per-source doc counts + **reprocess** (recover stuck/failed embeddings) + delete in the dataset workspace.
-- **Integrations** — an **API/docs page** (`/dashboard/docs`, tabbed: ingest / sync / query / widget), idempotent ingest (`external_id` upsert keeps synced data fresh), and a **WordPress plugin** (`wordpress-plugin/gtuh-ai-sync.zip`) that manually syncs WooCommerce products / posts / pages into per-type datasets.
+- **Integrations** — an **API/docs page** (`/dashboard/docs`, tabbed: ingest / sync / query / widget), idempotent ingest (`external_id` upsert keeps synced data fresh), and a **WordPress plugin** (`wordpress-plugin/cortexgrid-ai-sync.zip`) that manually syncs WooCommerce products / posts / pages into per-type datasets.
 - **Multi-dataset agents** — an agent searches its home dataset plus any *additional datasets* you tick on its edit page (e.g. one "site assistant" over Products + Blog + Pages). Light/dark theme toggle lives in the header.
 - **Datasets** — a tenant has many datasets (e.g. "computer store", "news portal"). **One dataset is fed by many sources** (PDF + CSV + API together) and has **many chatbots**; each chatbot only searches **its own dataset** (verified isolation). The dashboard is a datasets list → each opens a dataset workspace (sources + upload + chatbots + test-chat). `POST /v1/ingest` takes an optional `"dataset"` (id or name) to target one.
 - **Dashboard** (`/dashboard`, Georgian): usage tiles, API-key issue/revoke; the dataset workspace has a live **test-chat**, plus:
@@ -23,7 +23,7 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 - **Conversational memory** — follow-ups keep context: Groq rewrites the follow-up into a standalone search query, and recent turns are fed to Claude (works in the widget, console, and stored conversations).
 - **Embeddable widget (each AI config = a deployable chatbot):**
   - Every config has a browser-safe **public key** + optional **domain allowlist** + widget on/off.
-  - The config edit page shows a copy-paste snippet: `<script src="<host>/embed.js?key=pk_gtuh_..." async></script>` — drop it on any site to get a floating Georgian chat bubble.
+  - The config edit page shows a copy-paste snippet: `<script src="<host>/embed.js?key=pk_cortexgrid_..." async></script>` — drop it on any site to get a floating Georgian chat bubble.
   - Public endpoint `POST /public/chat` (CORS, throttled) answers via the same RAG pipeline and **stores every conversation + message**.
   - **საუბრები** (Conversations) in the dashboard: list of chats per chatbot, message log, and per-chat token usage.
 - **API (`/v1`, API-key auth):**
@@ -36,8 +36,8 @@ multi-tenant with API keys. See [plan.md](plan.md) for the full architecture.
 
 ```bash
 sudo apt install -y postgresql-18-pgvector
-sudo -u postgres createdb -O d gtuh
-sudo -u postgres psql -d gtuh -c "CREATE EXTENSION IF NOT EXISTS vector;"
+sudo -u postgres createdb -O d cortexgrid
+sudo -u postgres psql -d cortexgrid -c "CREATE EXTENSION IF NOT EXISTS vector;"
 php artisan migrate
 ```
 
@@ -54,7 +54,7 @@ Seed demo data (prints a one-time API key + login):
 
 ```bash
 php artisan db:seed --class=DemoSeeder      # admin + 3 preset chatbots in one dataset
-# Login: admin@gtuh.local / password
+# Login: admin@cortexgrid.local / password
 ```
 
 **Clean start for a demo** — wipes everything and creates the admin + four empty datasets

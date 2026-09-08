@@ -4,7 +4,7 @@
 <div class="min-h-screen">
     <header class="bg-white border-b">
         <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">GTUH <span class="text-indigo-600">AI</span></a> · ბილინგი</div>
+            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · ბილინგი</div>
             <div class="flex items-center gap-2">
                 @include('partials.theme-toggle')
                 <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">← პანელი</a>

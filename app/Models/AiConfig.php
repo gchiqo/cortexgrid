@@ -27,7 +27,7 @@ class AiConfig extends Model
     protected static function booted(): void
     {
         static::creating(function (self $config) {
-            $config->public_key ??= 'pk_gtuh_'.Str::random(32);
+            $config->public_key ??= 'pk_cortexgrid_'.Str::random(32);
         });
     }
 

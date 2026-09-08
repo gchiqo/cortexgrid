@@ -29,7 +29,7 @@ class ApiKey extends Model
      */
     public static function issue(Tenant $tenant, ?string $label = null): array
     {
-        $secret = 'gtuh_'.Str::random(40);
+        $secret = 'cortexgrid_'.Str::random(40);
 
         $key = static::create([
             'tenant_id' => $tenant->id,

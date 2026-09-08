@@ -40,7 +40,7 @@ class FlittPaymentController extends Controller
             'response_url' => route('flitt.response'),
             'order_id' => (string) $payment->id,
             'currency' => 'GEL',
-            'order_desc' => number_format($pack['credits']).' კრედიტი — GTUH AI',
+            'order_desc' => number_format($pack['credits']).' კრედიტი — CortexGrid AI',
             'amount' => (int) round($pack['gel'] * 100),
         ];
 
