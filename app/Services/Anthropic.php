@@ -3,13 +3,14 @@
 namespace App\Services;
 
 use Anthropic\Client;
+use App\Services\Llm\TextGenerator;
 use Illuminate\Support\Facades\Http;
 
 /**
  * Anthropic Claude — the main reasoning brain: grounded Georgian answers,
  * agentic function calling, structured extraction.
  */
-class Anthropic
+class Anthropic implements TextGenerator
 {
     private Client $client;
 

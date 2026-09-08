@@ -4,7 +4,7 @@ namespace App\Services\Rag;
 
 use App\Models\AiConfig;
 use App\Models\UsageEvent;
-use App\Services\Anthropic;
+use App\Services\Llm\TextGenerator;
 use App\Services\Groq;
 use App\Services\Tools\ToolRegistry;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +23,7 @@ class AskService
 
     public function __construct(
         private Retriever $retriever,
-        private Anthropic $anthropic,
+        private TextGenerator $anthropic,
         private Groq $groq,
         private ToolRegistry $tools,
         private Reranker $reranker,
@@ -126,9 +126,10 @@ class AskService
         UsageEvent::record($tenantId, 'tokens', $result['input_tokens'] + $result['output_tokens'], $apiKeyId);
         $this->deductCredits($tenantId, $result['input_tokens'] + $result['output_tokens']);
 
+        $provider = (string) config('services.llm.provider', 'groq');
         $generate = [
-            'provider' => 'anthropic',
-            'model' => $config?->modelId() ?? config('services.anthropic.model'),
+            'provider' => $provider,
+            'model' => $config?->modelId() ?? AiConfig::defaultModelId(),
             'input_tokens' => $result['input_tokens'],
             'output_tokens' => $result['output_tokens'],
             'ms' => $genMs,

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Services\Llm\TextGenerator;
+
 use App\Models\Chunk;
 
 /**
@@ -10,7 +12,7 @@ use App\Models\Chunk;
  */
 class ConfigSuggester
 {
-    public function __construct(private Anthropic $anthropic) {}
+    public function __construct(private TextGenerator $anthropic) {}
 
     /**
      * @return array{business_summary:?string, configs:list<array{name:string,system_prompt:string,model_tier:string,rationale:string}>}

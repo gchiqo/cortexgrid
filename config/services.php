@@ -66,6 +66,66 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    /*
+    | Which backend answers questions. 'anthropic' uses Claude directly;
+    | every other value is an OpenAI-compatible endpoint from the list below,
+    | so switching provider is a .env change rather than a code change.
+    */
+    'llm' => [
+        'provider' => env('LLM_PROVIDER', 'groq'),
+
+        'providers' => [
+            'groq' => [
+                'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+                'key' => env('GROQ_API_KEY'),
+                'model' => env('GROQ_CHAT_MODEL', 'openai/gpt-oss-120b'),
+                'tiers' => [
+                    'fast' => env('GROQ_TIER_FAST', 'qwen/qwen3.8-27b'),
+                    'standard' => env('GROQ_TIER_STANDARD', 'openai/gpt-oss-120b'),
+                    'max' => env('GROQ_TIER_MAX', 'openai/gpt-oss-120b'),
+                ],
+            ],
+
+            'openrouter' => [
+                'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
+                'key' => env('OPENROUTER_API_KEY'),
+                'model' => env('OPENROUTER_MODEL', 'deepseek/deepseek-chat-v3.1:free'),
+                // OpenRouter attributes usage to your app when these are sent.
+                'headers' => array_filter([
+                    'HTTP-Referer' => env('APP_URL'),
+                    'X-Title' => env('APP_NAME'),
+                ]),
+                'tiers' => [
+                    'fast' => env('OPENROUTER_TIER_FAST', 'meta-llama/llama-3.3-70b-instruct:free'),
+                    'standard' => env('OPENROUTER_TIER_STANDARD', 'deepseek/deepseek-chat-v3.1:free'),
+                    'max' => env('OPENROUTER_TIER_MAX', 'deepseek/deepseek-r1:free'),
+                ],
+            ],
+
+            'nvidia' => [
+                'base_url' => env('NVIDIA_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
+                'key' => env('NVIDIA_API_KEY'),
+                'model' => env('NVIDIA_MODEL', 'meta/llama-3.3-70b-instruct'),
+                'tiers' => [
+                    'fast' => env('NVIDIA_TIER_FAST', 'meta/llama-3.1-8b-instruct'),
+                    'standard' => env('NVIDIA_TIER_STANDARD', 'meta/llama-3.3-70b-instruct'),
+                    'max' => env('NVIDIA_TIER_MAX', 'qwen/qwen3-235b-a22b'),
+                ],
+            ],
+
+            'cerebras' => [
+                'base_url' => env('CEREBRAS_BASE_URL', 'https://api.cerebras.ai/v1'),
+                'key' => env('CEREBRAS_API_KEY'),
+                'model' => env('CEREBRAS_MODEL', 'llama-3.3-70b'),
+                'tiers' => [
+                    'fast' => env('CEREBRAS_TIER_FAST', 'llama3.1-8b'),
+                    'standard' => env('CEREBRAS_TIER_STANDARD', 'llama-3.3-70b'),
+                    'max' => env('CEREBRAS_TIER_MAX', 'llama-3.3-70b'),
+                ],
+            ],
+        ],
+    ],
+
     'flitt' => [
         'merchant_id' => env('FLITT_MERCHANT_ID', '1549901'),
         'secret_key' => env('FLITT_SECRET_KEY', 'test'),

@@ -46,12 +46,28 @@ class AiConfig extends Model
         return $this->hasMany(Conversation::class);
     }
 
-    /** Resolve the configured tier to a concrete Claude model id. */
+    /** Resolve the configured tier to a concrete model id for the active provider. */
     public function modelId(): string
     {
-        $tiers = config('services.anthropic.tiers');
+        $base = self::providerConfig();
 
-        return $tiers[$this->model_tier] ?? config('services.anthropic.model');
+        return $base['tiers'][$this->model_tier] ?? ($base['model'] ?? '');
+    }
+
+    /** The active provider's default model, for callers with no agent config. */
+    public static function defaultModelId(): string
+    {
+        return (string) (self::providerConfig()['model'] ?? '');
+    }
+
+    /** @return array<string,mixed> config block for the provider currently in use */
+    private static function providerConfig(): array
+    {
+        $provider = (string) config('services.llm.provider', 'groq');
+
+        return $provider === 'anthropic'
+            ? (array) config('services.anthropic', [])
+            : (array) config("services.llm.providers.{$provider}", []);
     }
 
     /**

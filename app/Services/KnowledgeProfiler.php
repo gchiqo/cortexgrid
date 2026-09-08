@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Services\Llm\TextGenerator;
+
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -11,7 +13,7 @@ use Illuminate\Support\Facades\DB;
  */
 class KnowledgeProfiler
 {
-    public function __construct(private Anthropic $anthropic) {}
+    public function __construct(private TextGenerator $anthropic) {}
 
     /** Overview counts + facets derived purely from structured data. */
     public function facets(int $datasetId): array
