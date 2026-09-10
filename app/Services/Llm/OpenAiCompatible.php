@@ -195,7 +195,9 @@ class OpenAiCompatible implements TextGenerator
         $resp = Http::withToken($this->key)
             ->withHeaders($this->headers)
             ->timeout(120)
-            ->retry(2, 500)
+            // throw:false so a failed response reaches the check below and
+            // callers get one consistent exception type with the body in it.
+            ->retry(2, 500, throw: false)
             ->post($this->baseUrl.'/chat/completions', $payload);
 
         if ($resp->failed()) {
