@@ -4,23 +4,31 @@
 <div class="scroll-rail"><i id="scrollBar"></i></div>
 <canvas id="net" class="net-canvas" aria-hidden="true"></canvas>
 <div class="min-h-screen">
-    <header class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <a href="/" class="font-bold text-lg">CortexGrid <span class="text-indigo-600">AI</span></a>
-        <div class="flex items-center gap-3 text-sm">
+    <header class="nav" id="nav">
+        <div class="nav-pill">
+            <a href="/" class="nav-brand">
+                <span class="nav-mark">CG</span>
+                <span>Cortex<b>Grid</b></span>
+            </a>
+
+            <a href="#how" class="nav-link">{{ __('landing.how_it_works') }}</a>
+
+            <span class="nav-div"></span>
+
             @include('partials.lang-toggle')
             @include('partials.theme-toggle')
-            <a href="#how" class="text-slate-600 hover:text-slate-900 px-3 py-2 hidden sm:inline">{{ __('landing.how_it_works') }}</a>
+
             @auth
-                <a href="/dashboard" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 font-medium">{{ __('dashboard.title') }}</a>
+                <a href="/dashboard" class="nav-cta">{{ __('dashboard.title') }}</a>
             @else
-                <a href="/login" class="text-slate-600 hover:text-slate-900 px-3 py-2">{{ __('auth.login') }}</a>
-                <a href="/register" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 font-medium">{{ __('landing.get_started') }}</a>
+                <a href="/login" class="nav-link">{{ __('auth.login') }}</a>
+                <a href="/register" class="nav-cta">{{ __('landing.get_started') }}</a>
             @endauth
         </div>
     </header>
 
     {{-- Hero --}}
-    <section class="max-w-4xl mx-auto px-4 text-center pt-14 pb-8">
+    <section class="max-w-4xl mx-auto px-4 text-center pt-32 pb-8">
         <div class="hero-badge inline-block font-medium rounded-full px-4 py-1.5 mb-6">
             {{ __('landing.badge') }}
         </div>
@@ -251,7 +259,9 @@ html.js .reveal.show{opacity:1;transform:none}
 .engine:hover{color:var(--accent);border-color:rgba(34,211,238,.45);box-shadow:0 0 20px -6px rgba(34,211,238,.6)}
 
 /* ---- ambient neural canvas ---- */
-.net-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.55}
+.net-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.9}
+/* No square mesh on the marketing page — the nerve field is the texture. */
+body::before{display:none}
 /* ---- scroll progress ---- */
 .scroll-rail{position:fixed;top:0;left:0;right:0;height:2px;z-index:70;background:transparent}
 .scroll-rail i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
@@ -305,6 +315,62 @@ html.js .stagger.show > *{opacity:1;transform:none}
     .marquee-run{animation:none}
     .reveal,.stagger > *{opacity:1!important;transform:none!important}
 }
+
+/* The landing page runs a deeper ground than the app panel: more contrast
+   behind the canvas and the glowing hero, without touching the dashboard. */
+:root{
+    --bg:            #080d16;
+    --bg-2:          #0d1420;
+    --panel:         rgba(24, 34, 52, .72);
+    --line:          rgba(150, 196, 245, .15);
+    --line-soft:     rgba(150, 196, 245, .08);
+    --bar:           rgba(13, 20, 33, .72);
+    --surface:       rgba(23, 33, 51, .68);
+    --surface-solid: #16202f;
+    --code-bg:       rgba(6, 11, 20, .92);
+    --input-bg:      rgba(13, 20, 33, .8);
+}
+html.light{
+    --bg:#eef2f9; --bg-2:#e3e9f4;
+    --panel:rgba(255,255,255,.86); --line:rgba(30,64,120,.14); --line-soft:rgba(30,64,120,.08);
+    --bar:rgba(255,255,255,.8); --surface:rgba(255,255,255,.78); --surface-solid:#fff;
+    --code-bg:rgba(15,23,42,.05); --input-bg:rgba(255,255,255,.9);
+}
+
+/* ---- floating nav ---- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;justify-content:center;
+    padding:16px 16px 0;transition:transform .32s cubic-bezier(.2,.7,.2,1),padding .32s ease}
+.nav.up{transform:translateY(-130%)}
+.nav.small{padding-top:9px}
+.nav-pill{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 14px;border-radius:999px;
+    border:1px solid var(--line);background:rgba(10,16,27,.72);backdrop-filter:blur(18px) saturate(1.4);
+    -webkit-backdrop-filter:blur(18px) saturate(1.4);
+    box-shadow:0 18px 50px -24px #000, inset 0 1px 0 rgba(255,255,255,.05);
+    transition:border-color .3s ease,box-shadow .3s ease}
+html.light .nav-pill{background:rgba(255,255,255,.8)}
+.nav.small .nav-pill{border-color:rgba(34,211,238,.26);
+    box-shadow:0 18px 50px -24px #000,0 0 0 1px rgba(34,211,238,.1),inset 0 1px 0 rgba(255,255,255,.05)}
+.nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;font-size:14.5px;font-weight:600;
+    color:var(--text);letter-spacing:-.02em;padding-inline-end:6px}
+.nav-brand b{font-weight:600;color:var(--accent)}
+.nav-mark{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#04060d;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 5px 16px -5px rgba(34,211,238,.85)}
+.nav-link{font-size:13.5px;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;
+    transition:all .16s ease;white-space:nowrap}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-div{width:1px;height:20px;background:var(--line);margin:0 2px}
+.nav-cta{font-size:13.5px;font-weight:600;color:#04060d;text-decoration:none;padding:8px 17px;border-radius:999px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));white-space:nowrap;
+    box-shadow:0 8px 24px -8px rgba(34,211,238,.8);transition:filter .16s ease,box-shadow .16s ease}
+.nav-cta:hover{filter:brightness(1.12);box-shadow:0 12px 30px -8px rgba(34,211,238,.95)}
+.nav .js-lang-toggle,.nav .js-theme-toggle{border-radius:999px}
+@media (max-width:640px){
+    .nav-pill{gap:5px;padding-inline-start:11px}
+    .nav-link{display:none}
+    .nav-brand span:not(.nav-mark){display:none}
+}
 </style>
 @php($__demoQ = (array) __('landing.demo_questions'))
 @php($__demoA = __('docs.example_answer'))
@@ -353,6 +419,17 @@ html.js .stagger.show > *{opacity:1;transform:none}
             ticking = false;
         });
     }
+    // The bar gets out of the way going down, and comes back on the way up.
+    var navEl = document.getElementById('nav'), lastY = 0;
+    function navScroll() {
+        var y = window.scrollY || 0;
+        navEl.classList.toggle('small', y > 20);
+        navEl.classList.toggle('up', y > 220 && y > lastY);
+        lastY = y;
+    }
+    window.addEventListener('scroll', navScroll, { passive: true });
+    navScroll();
+
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
@@ -371,52 +448,173 @@ html.js .stagger.show > *{opacity:1;transform:none}
         });
     }
 
-    /* ---------- ambient neural canvas ---------- */
+    /* ---------- ambient nerve field ----------
+       Neurons with branching dendrites, wired by axons that carry signals.
+       The dendrite geometry is generated once and cached to an offscreen
+       canvas; only the signals and the firing glow are redrawn per frame. */
     var cv = document.getElementById('net');
     if (cv && !reduced) {
-        var ctx = cv.getContext('2d'), nodes = [], w = 0, h = 0, dpr = Math.min(devicePixelRatio || 1, 2);
-        var mouse = { x: -999, y: -999 };
-        function resize() {
-            w = cv.clientWidth; h = cv.clientHeight;
-            cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            var count = Math.round(Math.min(80, (w * h) / 22000));
-            nodes = [];
-            for (var i = 0; i < count; i++) {
-                nodes.push({ x: Math.random() * w, y: Math.random() * h,
-                             vx: (Math.random() - .5) * .22, vy: (Math.random() - .5) * .22 });
+        var ctx = cv.getContext('2d'),
+            dpr = Math.min(devicePixelRatio || 1, 2),
+            w = 0, h = 0,
+            neurons = [], axons = [], signals = [],
+            still = document.createElement('canvas'), sctx = still.getContext('2d'),
+            mouse = { x: -9999, y: -9999 };
+
+        function rnd(a, b) { return a + Math.random() * (b - a); }
+
+        // One dendrite: a tapering branch that forks as it goes.
+        function grow(x, y, angle, len, width, depth, out) {
+            var sway = rnd(-0.42, 0.42);
+            var cx = x + Math.cos(angle + sway * 0.5) * len * 0.55,
+                cy = y + Math.sin(angle + sway * 0.5) * len * 0.55,
+                ex = x + Math.cos(angle + sway) * len,
+                ey = y + Math.sin(angle + sway) * len;
+            out.push({ x: x, y: y, cx: cx, cy: cy, ex: ex, ey: ey, w: width });
+            if (depth <= 0) return;
+            var forks = depth > 1 ? 2 : (Math.random() < 0.6 ? 2 : 1);
+            for (var i = 0; i < forks; i++) {
+                grow(ex, ey, angle + sway + rnd(-0.72, 0.72), len * rnd(0.55, 0.74),
+                     Math.max(0.35, width * 0.62), depth - 1, out);
             }
         }
-        window.addEventListener('resize', resize);
-        window.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
-        window.addEventListener('mouseleave', function () { mouse.x = mouse.y = -999; });
-        resize();
 
-        (function frame() {
-            ctx.clearRect(0, 0, w, h);
-            for (var i = 0; i < nodes.length; i++) {
-                var n = nodes[i];
-                n.x += n.vx; n.y += n.vy;
-                if (n.x < 0 || n.x > w) n.vx *= -1;
-                if (n.y < 0 || n.y > h) n.vy *= -1;
-
-                // gentle pull toward the pointer
-                var mdx = mouse.x - n.x, mdy = mouse.y - n.y, md = Math.hypot(mdx, mdy);
-                if (md < 150) { n.x += mdx * 0.0016; n.y += mdy * 0.0016; }
-
-                for (var j = i + 1; j < nodes.length; j++) {
-                    var m = nodes[j], dx = n.x - m.x, dy = n.y - m.y, d = Math.hypot(dx, dy);
-                    if (d < 132) {
-                        ctx.globalAlpha = (1 - d / 132) * 0.3;
-                        ctx.strokeStyle = md < 150 ? 'rgba(34,211,238,.9)' : 'rgba(148,197,247,.75)';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(m.x, m.y); ctx.stroke();
+        function build() {
+            neurons = []; axons = []; signals = [];
+            var count = Math.max(9, Math.round(Math.min(22, (w * h) / 88000)));
+            for (var i = 0; i < count; i++) {
+                var n = { x: rnd(w * 0.04, w * 0.96), y: rnd(h * 0.05, h * 0.95),
+                          r: rnd(2.4, 4.2), fire: 0, seg: [],
+                          drift: rnd(0, 6.28), speed: rnd(0.0016, 0.0042) };
+                var arms = Math.round(rnd(4, 7));
+                for (var a = 0; a < arms; a++) {
+                    grow(n.x, n.y, (a / arms) * 6.283 + rnd(-0.35, 0.35),
+                         rnd(52, 118), rnd(1.2, 1.9), 2, n.seg);
+                }
+                neurons.push(n);
+            }
+            // Wire close pairs together with a bowed axon.
+            for (var i = 0; i < neurons.length; i++) {
+                for (var j = i + 1; j < neurons.length; j++) {
+                    var A = neurons[i], B = neurons[j],
+                        d = Math.hypot(A.x - B.x, A.y - B.y);
+                    if (d < Math.min(w, h) * 0.42 && Math.random() < 0.55) {
+                        var mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2,
+                            nx = -(B.y - A.y) / d, ny = (B.x - A.x) / d,
+                            bow = rnd(-0.16, 0.16) * d;
+                        axons.push({ a: i, b: j, cx: mx + nx * bow, cy: my + ny * bow });
                     }
                 }
-                ctx.globalAlpha = md < 150 ? .85 : .5;
-                ctx.fillStyle = md < 150 ? 'rgba(34,211,238,1)' : 'rgba(163,205,250,.9)';
-                ctx.beginPath(); ctx.arc(n.x, n.y, md < 150 ? 2.1 : 1.5, 0, 6.284); ctx.fill();
             }
-            ctx.globalAlpha = 1;
+        }
+
+        function paintStill() {
+            still.width = w * dpr; still.height = h * dpr;
+            sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            sctx.clearRect(0, 0, w, h);
+            sctx.lineCap = 'round';
+
+            axons.forEach(function (ax) {
+                var A = neurons[ax.a], B = neurons[ax.b];
+                sctx.strokeStyle = 'rgba(134,186,238,.17)';
+                sctx.lineWidth = 0.9;
+                sctx.beginPath();
+                sctx.moveTo(A.x, A.y);
+                sctx.quadraticCurveTo(ax.cx, ax.cy, B.x, B.y);
+                sctx.stroke();
+            });
+
+            neurons.forEach(function (n) {
+                n.seg.forEach(function (g) {
+                    sctx.strokeStyle = 'rgba(152,198,244,' + (0.075 + g.w * 0.10) + ')';
+                    sctx.lineWidth = g.w;
+                    sctx.beginPath();
+                    sctx.moveTo(g.x, g.y);
+                    sctx.quadraticCurveTo(g.cx, g.cy, g.ex, g.ey);
+                    sctx.stroke();
+                });
+            });
+        }
+
+        function resize() {
+            w = cv.clientWidth; h = cv.clientHeight;
+            cv.width = w * dpr; cv.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            build(); paintStill();
+        }
+        var rt; window.addEventListener('resize', function () {
+            clearTimeout(rt); rt = setTimeout(resize, 220);
+        });
+        window.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('mouseleave', function () { mouse.x = mouse.y = -9999; });
+        resize();
+
+        function pointOn(ax, t) {
+            var A = neurons[ax.a], B = neurons[ax.b], u = 1 - t;
+            return { x: u * u * A.x + 2 * u * t * ax.cx + t * t * B.x,
+                     y: u * u * A.y + 2 * u * t * ax.cy + t * t * B.y };
+        }
+
+        function emit(from) {
+            var options = [];
+            axons.forEach(function (ax, i) {
+                if (ax.a === from) options.push({ i: i, dir: 1 });
+                if (ax.b === from) options.push({ i: i, dir: -1 });
+            });
+            if (!options.length) return;
+            var pick = options[(Math.random() * options.length) | 0];
+            signals.push({ ax: pick.i, dir: pick.dir, t: pick.dir === 1 ? 0 : 1,
+                           speed: rnd(0.005, 0.011) });
+        }
+
+        var tick = 0;
+        (function frame() {
+            ctx.clearRect(0, 0, w, h);
+            ctx.drawImage(still, 0, 0, w, h);
+            tick++;
+
+            // Idle firing, plus a burst wherever the pointer is.
+            if (tick % 26 === 0 && neurons.length) emit((Math.random() * neurons.length) | 0);
+
+            neurons.forEach(function (n, i) {
+                var md = Math.hypot(mouse.x - n.x, mouse.y - n.y), near = md < 190;
+                if (near && Math.random() < 0.045) { n.fire = 1; emit(i); }
+                if (n.fire > 0) n.fire = Math.max(0, n.fire - 0.018);
+
+                // soma, with a halo while it fires or the pointer is close
+                var glow = Math.max(n.fire, near ? (1 - md / 190) * 0.75 : 0);
+                if (glow > 0.01) {
+                    var g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 34 + glow * 30);
+                    g.addColorStop(0, 'rgba(34,211,238,' + (0.26 * glow) + ')');
+                    g.addColorStop(1, 'rgba(34,211,238,0)');
+                    ctx.fillStyle = g;
+                    ctx.beginPath(); ctx.arc(n.x, n.y, 34 + glow * 30, 0, 6.283); ctx.fill();
+                }
+                ctx.fillStyle = glow > 0.05 ? 'rgba(120,235,250,.95)' : 'rgba(150,196,240,.5)';
+                ctx.beginPath(); ctx.arc(n.x, n.y, n.r + glow * 1.6, 0, 6.283); ctx.fill();
+            });
+
+            // signals travelling the axons
+            for (var i = signals.length - 1; i >= 0; i--) {
+                var sg = signals[i], ax = axons[sg.ax];
+                sg.t += sg.speed * sg.dir;
+                if (sg.t <= 0 || sg.t >= 1) {
+                    neurons[sg.dir === 1 ? ax.b : ax.a].fire = 1;
+                    signals.splice(i, 1);
+                    continue;
+                }
+                var pt = pointOn(ax, sg.t),
+                    tail = pointOn(ax, Math.max(0, Math.min(1, sg.t - 0.055 * sg.dir)));
+                var lg = ctx.createLinearGradient(tail.x, tail.y, pt.x, pt.y);
+                lg.addColorStop(0, 'rgba(34,211,238,0)');
+                lg.addColorStop(1, 'rgba(120,235,250,.85)');
+                ctx.strokeStyle = lg; ctx.lineWidth = 1.7; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(tail.x, tail.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+
+                ctx.fillStyle = 'rgba(180,245,255,.95)';
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.9, 0, 6.283); ctx.fill();
+            }
+
             requestAnimationFrame(frame);
         })();
     }
