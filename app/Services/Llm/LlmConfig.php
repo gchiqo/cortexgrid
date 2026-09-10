@@ -18,6 +18,15 @@ class LlmConfig
 
     public const TIERS = ['fast', 'standard', 'max'];
 
+    /** Where an operator goes to create a key for each provider. */
+    public const CONSOLE_URLS = [
+        'groq' => 'https://console.groq.com/keys',
+        'openrouter' => 'https://openrouter.ai/keys',
+        'nvidia' => 'https://build.nvidia.com',
+        'cerebras' => 'https://cloud.cerebras.ai',
+        'anthropic' => 'https://console.anthropic.com/settings/keys',
+    ];
+
     public static function provider(): string
     {
         return (string) Setting::get('llm.provider', config('services.llm.provider', 'groq'));

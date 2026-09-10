@@ -38,9 +38,9 @@ Originally built as *GTUH AI* for the **GTU Technological Hackathon 2026** (*Int
 ## 🚀 Getting started
 
 ### Prerequisites
-- **PHP 8.3+** and **Composer**
-- **PostgreSQL 16/17/18** with the **pgvector** extension
-- API keys: **Groq**, **Gemini**, **Anthropic** (free tiers work — see links below)
+- **PHP 8.3+** (with `pdo_pgsql`) and **Composer**
+- **PostgreSQL 16/17/18** with **pgvector** — self-hosted, or a managed one such as [Neon](https://neon.tech) (free tier, pgvector preinstalled)
+- API keys: **Gemini** for embeddings, plus **one** chat provider (Groq, OpenRouter, NVIDIA, Cerebras or Anthropic). Free tiers are enough.
 
 ### 1. Clone & install
 ```bash
@@ -51,24 +51,60 @@ php artisan key:generate
 ```
 
 ### 2. PostgreSQL + pgvector
+
+**Self-hosted:**
 ```bash
 # Debian/Ubuntu example (match your PG version, e.g. 18):
 sudo apt install -y postgresql-18-pgvector
 sudo -u postgres createdb cortexgrid
 sudo -u postgres psql -d cortexgrid -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
-Set the DB connection in `.env` (`DB_DATABASE=cortexgrid`, plus host/user/password for your setup).
 
-### 3. API keys → `.env`
+**Managed (Neon):** create a project and copy its connection details into `.env`.
+Use the **direct** endpoint, not the pooled `-pooler` one — schema changes inside a
+transaction fail on the pooler, so migrations abort partway with a misleading
+"current transaction is aborted" error. Set `DB_SSLMODE=require` as well.
+
+Either way the `.env` block looks like this:
 ```env
-ANTHROPIC_API_KEY=sk-ant-...      # https://console.anthropic.com/
-GEMINI_API_KEY=...                # https://aistudio.google.com/apikey
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1          # or ep-xxxx.<region>.aws.neon.tech
+DB_PORT=5432
+DB_DATABASE=cortexgrid     # or neondb
+DB_USERNAME=postgres
+DB_PASSWORD=
+DB_SSLMODE=prefer          # require, for a managed host
+```
+
+### 3. API keys
+
+Embeddings always come from Gemini. The chat provider is your choice, and can be
+changed later from **Dashboard → Settings** without editing files or redeploying.
+
+```env
+GEMINI_API_KEY=...                # https://aistudio.google.com/apikey  (required)
+
+LLM_PROVIDER=groq                 # groq | openrouter | nvidia | cerebras | anthropic
 GROQ_API_KEY=gsk_...              # https://console.groq.com/keys
+# OPENROUTER_API_KEY=             # https://openrouter.ai/keys
+# NVIDIA_API_KEY=                 # https://build.nvidia.com
+# CEREBRAS_API_KEY=               # https://cloud.cerebras.ai
+# ANTHROPIC_API_KEY=sk-ant-...    # https://console.anthropic.com/  (paid)
+
 # optional:
 GOOGLE_CLIENT_ID= / GOOGLE_CLIENT_SECRET=          # Google login (Socialite)
 FLITT_MERCHANT_ID=1549901 / FLITT_SECRET_KEY=test  # Flitt test creds
+PLATFORM_ADMINS=you@example.com                    # who may open Settings
 ```
+
+Every provider except Anthropic speaks the OpenAI-compatible chat API, so adding
+another one is a key and a base URL — never a code change.
+
 > **Gemini note:** the embedding model must exist for your key — this project uses `gemini-embedding-001` (768‑dim). Keep `EMBEDDING_DIM=768` in sync with the model.
+
+> **Keys in the panel:** anything set at **Dashboard → Settings** is stored
+> encrypted in the database and overrides `.env`. Leave the `.env` values in place
+> as the fallback. Only a platform admin (see `PLATFORM_ADMINS`) can open that page.
 
 ### 4. Migrate & seed
 ```bash

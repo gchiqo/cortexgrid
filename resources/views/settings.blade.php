@@ -50,7 +50,13 @@
                         </div>
                     </div>
 
-                    <p class="text-xs text-slate-400">{{ __('settings.hint.'.$name) }}</p>
+                    <p class="text-xs text-slate-400">
+                        {{ __('settings.hint.'.$name) }}
+                        @if ($p['console_url'])
+                            <a href="{{ $p['console_url'] }}" target="_blank" rel="noopener noreferrer"
+                               class="text-indigo-600 hover:underline whitespace-nowrap">{{ __('settings.get_key') }} ↗</a>
+                        @endif
+                    </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="sm:col-span-2">

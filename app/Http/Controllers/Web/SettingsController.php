@@ -32,6 +32,7 @@ class SettingsController extends Controller
                 // never send the key back to the browser — only a hint that it exists
                 'key_hint' => filled($cfg['key']) ? '••••'.substr($cfg['key'], -4) : '',
                 'from_env' => filled($cfg['key']) && blank(Setting::get("llm.{$name}.key")),
+                'console_url' => LlmConfig::CONSOLE_URLS[$name] ?? null,
             ];
         }
 
