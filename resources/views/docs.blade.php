@@ -106,7 +106,7 @@ saveLastSync(now());</code></pre>
 .doc-tab:hover{border-color:rgba(34,211,238,.4);color:var(--accent)}
 .doc-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#04060d;border-color:transparent;
     box-shadow:0 6px 20px -8px rgba(34,211,238,.7)}
-.doc-code{background:rgba(3,6,14,.86);color:#cfe6f5;border:1px solid var(--line);border-radius:var(--radius);
+.doc-code{background:var(--code-bg);color:#cfe6f5;border:1px solid var(--line);border-radius:var(--radius);
     padding:18px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'JetBrains Mono',monospace}
 </style>
 <script>

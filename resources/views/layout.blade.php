@@ -22,15 +22,24 @@
        changes from here.
        ============================================================ */
     :root {
-        --bg:        #04060d;
-        --bg-2:      #080d18;
-        --panel:     rgba(14, 21, 38, .74);
-        --panel-2:   rgba(20, 29, 50, .82);
-        --line:      rgba(125, 211, 252, .13);
-        --line-soft: rgba(125, 211, 252, .07);
-        --text:      #dde7f7;
-        --muted:     #8a9cba;
-        --dim:       #5d6f8e;
+        /* Lifted slate rather than near-black: still dark, far less heavy. */
+        --bg:        #182231;
+        --bg-2:      #202c3f;
+        --panel:     rgba(42, 57, 82, .74);
+        --panel-2:   rgba(51, 68, 96, .86);
+        --line:      rgba(163, 205, 250, .19);
+        --line-soft: rgba(163, 205, 250, .11);
+        --text:      #e9eff9;
+        --muted:     #a8b8d0;
+        --dim:       #8496ae;
+
+        /* Named surfaces so depth is tuned here, not scattered per view. */
+        --bar:           rgba(32, 44, 64, .82);
+        --surface:       rgba(39, 53, 77, .7);
+        --surface-solid: #27334a;
+        --code-bg:       rgba(20, 29, 45, .92);
+        --input-bg:      rgba(25, 35, 53, .85);
+        --overlay:       rgba(16, 23, 36, .76);
         --accent:    #22d3ee;
         --accent-2:  #a78bfa;
         --accent-3:  #34d399;
@@ -42,7 +51,7 @@
     html.light {
         --bg:        #eef2f9;
         --bg-2:      #e3e9f4;
-        --panel:     rgba(255,255,255,.86);
+        --panel:     var(--surface);
         --panel-2:   rgba(255,255,255,.95);
         --line:      rgba(30, 64, 120, .14);
         --line-soft: rgba(30, 64, 120, .08);
@@ -52,6 +61,12 @@
         --accent:    #0891b2;
         --accent-2:  #7c3aed;
         --glow:      0 0 0 1px rgba(8,145,178,.14), 0 8px 26px -10px rgba(8,145,178,.28);
+        --bar:           rgba(255,255,255,.8);
+        --surface:       rgba(255,255,255,.78);
+        --surface-solid: #ffffff;
+        --code-bg:       rgba(15,23,42,.05);
+        --input-bg:      rgba(255,255,255,.9);
+        --overlay:       rgba(226,232,240,.7);
     }
 
     html, body { background: var(--bg); }
@@ -76,8 +91,8 @@
     body::after {
         content: ''; position: fixed; inset: -30% -10% auto -10%; height: 90vh; z-index: 0; pointer-events: none;
         background:
-            radial-gradient(42rem 26rem at 18% 8%,  rgba(34,211,238,.13), transparent 65%),
-            radial-gradient(38rem 24rem at 82% 2%, rgba(167,139,250,.13), transparent 65%);
+            radial-gradient(42rem 26rem at 18% 8%,  rgba(34,211,238,.10), transparent 65%),
+            radial-gradient(38rem 24rem at 82% 2%, rgba(167,139,250,.10), transparent 65%);
         animation: drift 22s ease-in-out infinite alternate;
     }
     @keyframes drift { from { transform: translate3d(-2%, 0, 0) } to { transform: translate3d(2%, 2%, 0) } }
@@ -152,13 +167,13 @@
 
     /* --- Inputs -------------------------------------------------- */
     input, textarea, select {
-        background: rgba(4,8,18,.6) !important;
+        background: var(--input-bg) !important;
         color: var(--text) !important;
         border: 1px solid var(--line) !important;
         border-radius: 10px !important;
         transition: border-color .15s ease, box-shadow .15s ease;
     }
-    html.light input, html.light textarea, html.light select { background: rgba(255,255,255,.9) !important; }
+    html.light input, html.light textarea, html.light select { background: var(--input-bg) !important; }
     input:focus, textarea:focus, select:focus {
         outline: none !important;
         border-color: rgba(34,211,238,.6) !important;
@@ -178,7 +193,7 @@
         background: rgba(34,211,238,.2); box-shadow: 0 0 16px -5px rgba(34,211,238,.8);
     }
     /* Native dropdown lists render in the OS palette; keep options readable. */
-    select option { background: #0a0f1c; color: var(--text); }
+    select option { background: var(--surface-solid); color: var(--text); }
 
     /* --- Code ---------------------------------------------------- */
     code {
@@ -187,7 +202,7 @@
         border: 1px solid var(--line-soft);
         border-radius: 6px; padding: 1px 5px; font-size: .92em;
     }
-    pre { background: rgba(3,6,14,.86) !important; border: 1px solid var(--line); border-radius: var(--radius); }
+    pre { background: var(--code-bg) !important; border: 1px solid var(--line); border-radius: var(--radius); }
     pre code { background: none !important; border: 0; color: #cfe6f5 !important; padding: 0; }
 
     /* --- Tables -------------------------------------------------- */
@@ -198,12 +213,12 @@
     /* --- Header: sticky glass bar -------------------------------- */
     header {
         position: sticky; top: 0; z-index: 40;
-        background: rgba(4,7,14,.72) !important;
+        background: var(--bar) !important;
         backdrop-filter: blur(16px) saturate(1.3);
         -webkit-backdrop-filter: blur(16px) saturate(1.3);
         border-bottom: 1px solid var(--line) !important;
     }
-    html.light header { background: rgba(255,255,255,.78) !important; }
+    html.light header { background: var(--bar) !important; }
     header a { transition: color .15s ease; }
 
     /* Wordmark gets the gradient treatment. */

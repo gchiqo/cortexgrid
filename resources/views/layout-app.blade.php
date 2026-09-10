@@ -9,8 +9,8 @@
     /* ---------- rail ---------- */
     .side{ position:sticky; top:0; height:100vh; display:flex; flex-direction:column; gap:6px;
         padding:18px 12px; border-right:1px solid var(--line);
-        background:rgba(6,10,20,.66); backdrop-filter:blur(18px) saturate(1.2); }
-    html.light .side{ background:rgba(255,255,255,.7); }
+        background:var(--bar); backdrop-filter:blur(18px) saturate(1.2); }
+    html.light .side{ background:var(--bar); }
     @media (max-width:960px){
         .side{ position:fixed; z-index:60; width:236px; left:0; transform:translateX(-102%);
             transition:transform .22s ease; box-shadow:24px 0 60px -30px #000; }
@@ -57,8 +57,8 @@
     /* ---------- top bar ---------- */
     .topbar{ position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;
         padding:0 22px;height:60px;border-bottom:1px solid var(--line);
-        background:rgba(4,7,14,.7);backdrop-filter:blur(16px) saturate(1.3) }
-    html.light .topbar{ background:rgba(255,255,255,.76) }
+        background:var(--bar);backdrop-filter:blur(16px) saturate(1.3) }
+    html.light .topbar{ background:var(--bar) }
     .topbar h1{ font-size:15.5px;font-weight:600;letter-spacing:-.02em;margin:0;white-space:nowrap }
     .crumb{ font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:1px }
     .topbar-actions{ margin-inline-start:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end }
@@ -82,10 +82,10 @@
 
     /* ---------- command palette ---------- */
     .cmdk{ position:fixed;inset:0;z-index:80;display:none;align-items:flex-start;justify-content:center;
-        padding-top:14vh;background:rgba(2,4,10,.7);backdrop-filter:blur(6px) }
+        padding-top:14vh;background:var(--overlay);backdrop-filter:blur(6px) }
     .cmdk.open{ display:flex }
     .cmdk-box{ width:min(560px,92vw);border-radius:16px;border:1px solid rgba(34,211,238,.28);
-        background:rgba(10,16,30,.96);box-shadow:0 40px 90px -30px #000,0 0 0 1px rgba(34,211,238,.1);overflow:hidden }
+        background:var(--surface-solid);box-shadow:0 40px 90px -30px #000,0 0 0 1px rgba(34,211,238,.1);overflow:hidden }
     .cmdk input{ width:100%;border:0!important;background:transparent!important;padding:16px 18px;font-size:15px;
         border-bottom:1px solid var(--line)!important;border-radius:0!important }
     .cmdk input:focus{ box-shadow:none!important }

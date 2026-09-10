@@ -129,7 +129,7 @@
             <button class="text-red-400 hover:text-red-600 text-sm">{{ __('dataset.delete_dataset') }}</button>
         </form>
 {{-- Upload pipeline animation overlay --}}
-<div id="upOverlay" class="fixed inset-0 z-50 hidden items-center justify-center backdrop-blur-md" style="background:rgba(2,4,10,.8)">
+<div id="upOverlay" class="fixed inset-0 z-50 hidden items-center justify-center backdrop-blur-md" style="background:var(--overlay)">
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-xl mx-4">
         <h3 class="font-bold text-lg text-center mb-1">{{ __('dataset.pipeline.title') }}</h3>
         <p class="text-center text-slate-400 text-sm mb-7" id="upFile"></p>
@@ -155,7 +155,7 @@
 .up-stage{display:flex;flex-direction:column;align-items:center;gap:9px;width:66px;flex:0 0 auto}
 .up-stage span{font-size:11.5px;color:var(--dim);text-align:center}
 .up-dot{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:20px;
-    background:rgba(14,21,38,.8);border:1px solid var(--line);transition:all .35s ease;filter:grayscale(1);opacity:.5}
+    background:var(--surface);border:1px solid var(--line);transition:all .35s ease;filter:grayscale(1);opacity:.5}
 .up-stage.active .up-dot{border-color:var(--accent);background:rgba(34,211,238,.12);filter:none;opacity:1;
     transform:scale(1.12);animation:upPulse 1.1s ease-in-out infinite}
 .up-stage.done .up-dot{border-color:var(--accent-3);background:rgba(52,211,153,.12);filter:none;opacity:1}

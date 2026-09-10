@@ -7,9 +7,9 @@
 <style>
     .band{ display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:1px;background:var(--line);
         border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:26px }
-    .band > *{ background:rgba(10,16,30,.72);padding:16px 18px;text-decoration:none;display:block;
+    .band > *{ background:var(--surface);padding:16px 18px;text-decoration:none;display:block;
         transition:background .16s ease }
-    html.light .band > *{ background:rgba(255,255,255,.86) }
+    html.light .band > *{ background:var(--surface) }
     a.band-cell:hover{ background:rgba(34,211,238,.07) }
     .band-k{ font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);
         display:flex;align-items:center;gap:7px }
@@ -29,8 +29,8 @@
         border:1px solid rgba(34,211,238,.28);background:rgba(34,211,238,.07);border-radius:999px;padding:1px 8px }
 
     /* Datasets read as rows — a work list, not a wall of tiles. */
-    .rows{ border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:rgba(10,16,30,.55) }
-    html.light .rows{ background:rgba(255,255,255,.7) }
+    .rows{ border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface) }
+    html.light .rows{ background:var(--bar) }
     .row-item{ display:flex;align-items:center;gap:14px;padding:14px 16px;text-decoration:none;
         border-bottom:1px solid var(--line);transition:background .15s ease;position:relative }
     .row-item:last-of-type{ border-bottom:0 }
@@ -49,8 +49,8 @@
     .row-add input{ flex:1;padding:8px 11px;font-size:13px }
     .row-add button{ padding:8px 16px;font-size:13px;border-radius:9px;white-space:nowrap }
 
-    .panel{ border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:rgba(10,16,30,.55) }
-    html.light .panel{ background:rgba(255,255,255,.7) }
+    .panel{ border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--surface) }
+    html.light .panel{ background:var(--bar) }
     .keyrow{ display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line) }
     .keyrow:first-of-type{ border-top:0 }
     .pill{ font-size:10px;padding:1px 8px;border-radius:999px;border:1px solid }

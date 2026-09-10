@@ -211,7 +211,7 @@
 .step-tag::before{content:'// '}
 
 /* console mock */
-.mock{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(8,13,26,.8);
+.mock{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface);
     box-shadow:0 40px 90px -40px rgba(34,211,238,.35),0 0 0 1px rgba(34,211,238,.08)}
 .mock-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);
     background:rgba(255,255,255,.02)}

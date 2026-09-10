@@ -5,7 +5,7 @@
 .auth-wrap{display:grid;grid-template-columns:1.05fr .95fr;min-height:100vh}
 @media (max-width:900px){.auth-wrap{grid-template-columns:1fr}.auth-aside{display:none}}
 .auth-aside{padding:48px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center;
-    border-inline-end:1px solid var(--line);background:rgba(6,10,20,.5);position:relative;overflow:hidden}
+    border-inline-end:1px solid var(--line);background:var(--bar);position:relative;overflow:hidden}
 .auth-aside::after{content:'';position:absolute;inset:auto -20% -40% -20%;height:60%;
     background:radial-gradient(30rem 18rem at 40% 50%,rgba(34,211,238,.16),transparent 70%)}
 .auth-brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-size:17px;font-weight:600;

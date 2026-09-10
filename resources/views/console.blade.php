@@ -15,7 +15,7 @@
 
     <div class="flex-1 flex min-h-0 console-split">
         {{-- LEFT: trace --}}
-        <div class="w-1/2 border-r overflow-y-auto p-4" style="background:rgba(3,6,14,.7)" id="trace">
+        <div class="w-1/2 border-r overflow-y-auto p-4" style="background:var(--code-bg)" id="trace">
             <div class="text-slate-400 text-sm">{{ __('console.trace_intro') }}</div>
         </div>
 
@@ -48,13 +48,13 @@
 #trace .trace-card{animation:traceIn .42s ease both}
 @keyframes thinkPulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
 .think-step{display:flex;align-items:center;gap:9px;padding:10px 12px;margin-bottom:8px;border-radius:10px;
-    background:rgba(14,21,38,.7);border:1px solid var(--line);border-left:3px solid var(--line);
+    background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--line);
     opacity:.45;transition:all .3s ease}
 .think-step.on{opacity:1;border-left-color:var(--accent);background:rgba(34,211,238,.09);
     transform:translateX(5px);box-shadow:0 0 24px -8px rgba(34,211,238,.6)}
 .think-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);
     animation:thinkPulse 1s ease-in-out infinite;flex:0 0 auto}
-.trace-card{background:rgba(8,13,26,.8)!important;border:1px solid var(--line)!important;
+.trace-card{background:var(--surface)!important;border:1px solid var(--line)!important;
     border-left:3px solid var(--accent)!important;border-radius:12px}
 </style>
 @php($__t = [
