@@ -89,30 +89,36 @@ return [
             'openrouter' => [
                 'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
                 'key' => env('OPENROUTER_API_KEY'),
-                'model' => env('OPENROUTER_MODEL', 'google/gemma-4-31b-it:free'),
+                'model' => env('OPENROUTER_MODEL', 'nex-agi/nex-n2.5-pro:free'),
                 // OpenRouter attributes usage to your app when these are sent.
                 'headers' => array_filter([
                     'HTTP-Referer' => env('APP_URL'),
                     'X-Title' => env('APP_NAME'),
                 ]),
                 'tiers' => [
-                    'fast' => env('OPENROUTER_TIER_FAST', 'google/gemma-4-26b-a4b-it:free'),
-                    'standard' => env('OPENROUTER_TIER_STANDARD', 'google/gemma-4-31b-it:free'),
-                    // Nemotron free models emit their reasoning into the answer
-                    // body, which visitors would see, so the Gemma family is
-                    // used across all tiers for clean output.
-                    'max' => env('OPENROUTER_TIER_MAX', 'google/gemma-4-31b-it:free'),
+                    // Availability of ":free" ids swings with OpenRouter's shared
+                    // pool, and the alternatives each fail one requirement:
+                    // Gemma is frequently 429, the Nemotron models write their
+                    // reasoning into the answer body, and nex-n2.5-mini will
+                    // not call tools. nex-n2.5-pro does all three, so it is
+                    // used across every tier.
+                    'fast' => env('OPENROUTER_TIER_FAST', 'nex-agi/nex-n2.5-pro:free'),
+                    'standard' => env('OPENROUTER_TIER_STANDARD', 'nex-agi/nex-n2.5-pro:free'),
+                    'max' => env('OPENROUTER_TIER_MAX', 'nex-agi/nex-n2.5-pro:free'),
                 ],
             ],
 
             'nvidia' => [
                 'base_url' => env('NVIDIA_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
                 'key' => env('NVIDIA_API_KEY'),
-                'model' => env('NVIDIA_MODEL', 'deepseek-ai/deepseek-v4-flash-0731'),
+                'model' => env('NVIDIA_MODEL', 'nvidia/nemotron-3-super-120b-a12b'),
                 'tiers' => [
-                    'fast' => env('NVIDIA_TIER_FAST', 'openai/gpt-oss-20b'),
-                    'standard' => env('NVIDIA_TIER_STANDARD', 'deepseek-ai/deepseek-v4-flash-0731'),
-                    'max' => env('NVIDIA_TIER_MAX', 'deepseek-ai/deepseek-v4-pro-0813'),
+                    // Most ids this account lists never answer: gpt-oss-20b and
+                    // both deepseek-v4 builds time out with zero bytes. Nemotron
+                    // is the one that reliably responds, so every tier uses it.
+                    'fast' => env('NVIDIA_TIER_FAST', 'nvidia/nemotron-3-super-120b-a12b'),
+                    'standard' => env('NVIDIA_TIER_STANDARD', 'nvidia/nemotron-3-super-120b-a12b'),
+                    'max' => env('NVIDIA_TIER_MAX', 'nvidia/nemotron-3-super-120b-a12b'),
                 ],
             ],
 

@@ -111,7 +111,15 @@ class IngestService
     private function recordToText(array $record): string
     {
         if (! empty($record['text']) && is_string($record['text'])) {
-            return $record['text'];
+            // Keep the title inside the chunk body. Dropping it made the title
+            // invisible to lexical search — a document called "მიწოდება" could
+            // not be found by that word — and kept it out of the context the
+            // model reads. Structured records already include every field.
+            $title = $record['title'] ?? $record['name'] ?? null;
+
+            return is_string($title) && trim($title) !== ''
+                ? trim($title)."\n\n".$record['text']
+                : $record['text'];
         }
 
         $lines = [];
