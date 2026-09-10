@@ -38,6 +38,8 @@ class SettingsController extends Controller
 
         return view('settings', [
             'active' => LlmConfig::provider(),
+            'resolved' => LlmConfig::resolvedProvider(),
+            'fallingBack' => LlmConfig::isFallingBack(),
             'providers' => $providers,
             'tiers' => LlmConfig::TIERS,
         ]);

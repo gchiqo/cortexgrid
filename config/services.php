@@ -89,38 +89,41 @@ return [
             'openrouter' => [
                 'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
                 'key' => env('OPENROUTER_API_KEY'),
-                'model' => env('OPENROUTER_MODEL', 'deepseek/deepseek-chat-v3.1:free'),
+                'model' => env('OPENROUTER_MODEL', 'google/gemma-4-31b-it:free'),
                 // OpenRouter attributes usage to your app when these are sent.
                 'headers' => array_filter([
                     'HTTP-Referer' => env('APP_URL'),
                     'X-Title' => env('APP_NAME'),
                 ]),
                 'tiers' => [
-                    'fast' => env('OPENROUTER_TIER_FAST', 'meta-llama/llama-3.3-70b-instruct:free'),
-                    'standard' => env('OPENROUTER_TIER_STANDARD', 'deepseek/deepseek-chat-v3.1:free'),
-                    'max' => env('OPENROUTER_TIER_MAX', 'deepseek/deepseek-r1:free'),
+                    'fast' => env('OPENROUTER_TIER_FAST', 'google/gemma-4-26b-a4b-it:free'),
+                    'standard' => env('OPENROUTER_TIER_STANDARD', 'google/gemma-4-31b-it:free'),
+                    // Nemotron free models emit their reasoning into the answer
+                    // body, which visitors would see, so the Gemma family is
+                    // used across all tiers for clean output.
+                    'max' => env('OPENROUTER_TIER_MAX', 'google/gemma-4-31b-it:free'),
                 ],
             ],
 
             'nvidia' => [
                 'base_url' => env('NVIDIA_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
                 'key' => env('NVIDIA_API_KEY'),
-                'model' => env('NVIDIA_MODEL', 'meta/llama-3.3-70b-instruct'),
+                'model' => env('NVIDIA_MODEL', 'deepseek-ai/deepseek-v4-flash-0731'),
                 'tiers' => [
-                    'fast' => env('NVIDIA_TIER_FAST', 'meta/llama-3.1-8b-instruct'),
-                    'standard' => env('NVIDIA_TIER_STANDARD', 'meta/llama-3.3-70b-instruct'),
-                    'max' => env('NVIDIA_TIER_MAX', 'qwen/qwen3-235b-a22b'),
+                    'fast' => env('NVIDIA_TIER_FAST', 'openai/gpt-oss-20b'),
+                    'standard' => env('NVIDIA_TIER_STANDARD', 'deepseek-ai/deepseek-v4-flash-0731'),
+                    'max' => env('NVIDIA_TIER_MAX', 'deepseek-ai/deepseek-v4-pro-0813'),
                 ],
             ],
 
             'cerebras' => [
                 'base_url' => env('CEREBRAS_BASE_URL', 'https://api.cerebras.ai/v1'),
                 'key' => env('CEREBRAS_API_KEY'),
-                'model' => env('CEREBRAS_MODEL', 'llama-3.3-70b'),
+                'model' => env('CEREBRAS_MODEL', 'gpt-oss-120b'),
                 'tiers' => [
-                    'fast' => env('CEREBRAS_TIER_FAST', 'llama3.1-8b'),
-                    'standard' => env('CEREBRAS_TIER_STANDARD', 'llama-3.3-70b'),
-                    'max' => env('CEREBRAS_TIER_MAX', 'llama-3.3-70b'),
+                    'fast' => env('CEREBRAS_TIER_FAST', 'qwen-3.8-27b'),
+                    'standard' => env('CEREBRAS_TIER_STANDARD', 'gpt-oss-120b'),
+                    'max' => env('CEREBRAS_TIER_MAX', 'gpt-oss-120b'),
                 ],
             ],
         ],

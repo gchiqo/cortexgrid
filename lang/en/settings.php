@@ -26,6 +26,8 @@ return [
     'leave_blank' => 'blank = unchanged',
     'clear_key' => 'Clear',
     'from_env' => 'Coming from .env. A key entered here will take over.',
+    'falling_back' => 'The selected provider (:selected) has no key, so :used is answering requests.',
+    'in_use' => 'in use',
     'key_set' => 'key set',
     'no_key_badge' => 'no key',
     'no_key' => 'This provider has no API key.',

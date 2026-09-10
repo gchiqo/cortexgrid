@@ -23,6 +23,15 @@
             </div>
         @endif
 
+        @if ($fallingBack)
+            <div class="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                {{ __('settings.falling_back', [
+                    'selected' => __('settings.provider.'.$active),
+                    'used' => __('settings.provider.'.$resolved),
+                ]) }}
+            </div>
+        @endif
+
         <div>
             <h1 class="text-xl font-bold">{{ __('settings.heading') }}</h1>
             <p class="text-slate-500 text-sm mt-1">{{ __('settings.subtitle') }}</p>
@@ -37,6 +46,9 @@
                         <label class="flex items-center gap-2 font-semibold cursor-pointer">
                             <input type="radio" name="provider" value="{{ $name }}" @checked($active === $name)>
                             {{ __('settings.provider.'.$name) }}
+                            @if ($resolved === $name && $fallingBack)
+                                <span class="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded font-normal">{{ __('settings.in_use') }}</span>
+                            @endif
                             @if ($p['has_key'])
                                 <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-normal">{{ __('settings.key_set') }}</span>
                             @else

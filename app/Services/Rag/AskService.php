@@ -126,7 +126,7 @@ class AskService
         UsageEvent::record($tenantId, 'tokens', $result['input_tokens'] + $result['output_tokens'], $apiKeyId);
         $this->deductCredits($tenantId, $result['input_tokens'] + $result['output_tokens']);
 
-        $provider = (string) config('services.llm.provider', 'groq');
+        $provider = \App\Services\Llm\LlmConfig::resolvedProvider();
         $generate = [
             'provider' => $provider,
             'model' => $config?->modelId() ?? AiConfig::defaultModelId(),

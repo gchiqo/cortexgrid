@@ -27,9 +27,42 @@ class LlmConfig
         'anthropic' => 'https://console.anthropic.com/settings/keys',
     ];
 
+    /** The provider the operator selected, whether or not it is usable. */
     public static function provider(): string
     {
         return (string) Setting::get('llm.provider', config('services.llm.provider', 'groq'));
+    }
+
+    /**
+     * The provider actually used for a request.
+     *
+     * Normally the selected one. If it has no key — a fresh install, or a key
+     * cleared from the panel — fall back to any provider that does, so the app
+     * keeps answering instead of failing outright. Falls back to the selection
+     * when nothing is configured, so the error names the provider the operator
+     * actually chose.
+     */
+    public static function resolvedProvider(): string
+    {
+        $selected = self::provider();
+
+        if (self::isConfigured($selected)) {
+            return $selected;
+        }
+
+        foreach (self::providers() as $candidate) {
+            if (self::isConfigured($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return $selected;
+    }
+
+    /** True when the selected provider is unusable and another is standing in. */
+    public static function isFallingBack(): bool
+    {
+        return self::resolvedProvider() !== self::provider();
     }
 
     /** @return list<string> every provider the panel can offer */
@@ -45,7 +78,7 @@ class LlmConfig
      */
     public static function active(): array
     {
-        return self::forProvider(self::provider());
+        return self::forProvider(self::resolvedProvider());
     }
 
     /**
@@ -92,7 +125,7 @@ class LlmConfig
 
         if (blank($cfg['key'])) {
             throw new \RuntimeException(
-                "LLM provider [{$cfg['provider']}] has no API key. Set one in the admin panel under Settings, or in .env."
+                "No model provider is configured. Add an API key under Settings, or set one in .env."
             );
         }
 
