@@ -45,6 +45,18 @@
                     </select>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium mb-1">{{ __('configs.answer_language') }}</label>
+                    <select name="answer_language" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        @foreach (\App\Models\AiConfig::ANSWER_LANGUAGES as $lang)
+                            <option value="{{ $lang }}" @selected(old('answer_language', $config->answer_language ?: \App\Models\AiConfig::ANSWER_DEFAULT) === $lang)>
+                                {{ __('configs.answer_language_option.'.$lang) }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-slate-400 mt-1">{{ __('configs.answer_language_hint') }}</p>
+                </div>
+
                 @if ($datasets->count() > 1)
                     <div>
                         <label class="block text-sm font-medium mb-1">{{ __('configs.extra_datasets') }}</label>

@@ -10,11 +10,22 @@ use Illuminate\Support\Str;
 
 class AiConfig extends Model
 {
+    /** Answer-language options offered in the agent form. */
+    public const ANSWER_KA = 'ka';
+
+    public const ANSWER_EN = 'en';
+
+    public const ANSWER_AUTO = 'auto';
+
+    public const ANSWER_DEFAULT = self::ANSWER_KA;
+
+    public const ANSWER_LANGUAGES = [self::ANSWER_KA, self::ANSWER_EN, self::ANSWER_AUTO];
+
     protected $table = 'ai_configs';
 
     protected $fillable = [
         'tenant_id', 'dataset_id', 'name', 'system_prompt', 'data_scope', 'enabled_tools', 'model_tier',
-        'public_key', 'allowed_domains', 'widget_enabled', 'settings',
+        'public_key', 'allowed_domains', 'widget_enabled', 'settings', 'answer_language',
     ];
 
     protected $casts = [

@@ -17,7 +17,7 @@ class ConfigController extends Controller
         $dataset = $this->dataset($request, (int) $request->query('dataset'));
 
         return view('configs.form', [
-            'config' => new AiConfig(['model_tier' => 'standard', 'dataset_id' => $dataset->id]),
+            'config' => new AiConfig(['model_tier' => 'standard', 'answer_language' => AiConfig::ANSWER_DEFAULT, 'dataset_id' => $dataset->id]),
             'dataset' => $dataset,
             'datasets' => Dataset::where('tenant_id', $request->user()->tenant_id)->orderBy('id')->get(),
         ]);
@@ -84,6 +84,7 @@ class ConfigController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'system_prompt' => ['required', 'string'],
             'model_tier' => ['required', 'in:fast,standard,max'],
+            'answer_language' => ['nullable', 'in:'.implode(',', AiConfig::ANSWER_LANGUAGES)],
             'enabled_tools' => ['nullable', 'string'],
             'allowed_domains' => ['nullable', 'string'],
             'additional_datasets' => ['nullable', 'array'],
@@ -103,6 +104,7 @@ class ConfigController extends Controller
             'name' => $data['name'],
             'system_prompt' => $data['system_prompt'],
             'model_tier' => $data['model_tier'],
+            'answer_language' => $data['answer_language'] ?? AiConfig::ANSWER_DEFAULT,
             'enabled_tools' => $split($data['enabled_tools'] ?? ''),
             'allowed_domains' => $split($data['allowed_domains'] ?? ''),
             'widget_enabled' => $request->boolean('widget_enabled'),

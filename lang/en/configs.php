@@ -16,6 +16,13 @@ return [
         'standard' => 'Standard (Sonnet)',
         'max' => 'Maximum (Opus)',
     ],
+    'answer_language' => 'Answer language',
+    'answer_language_hint' => 'Which language the agent replies in, in the widget and the API.',
+    'answer_language_option' => [
+        'ka' => 'Georgian',
+        'en' => 'English',
+        'auto' => 'Automatic (match the visitor)',
+    ],
     'extra_datasets' => 'Additional datasets (the agent searches these too)',
     'extra_datasets_hint' => 'Primary dataset: <b>:dataset</b>. Tick others so the agent searches them together (e.g. products + blog + pages).',
     'system_prompt' => 'System instruction',

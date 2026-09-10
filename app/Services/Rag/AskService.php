@@ -228,14 +228,23 @@ class AskService
 
     private function systemPrompt(?AiConfig $config, string $contextBlock): string
     {
+        $answerIn = $config?->answer_language ?: AiConfig::ANSWER_DEFAULT;
+
+        // "auto" writes the rules in English and lets the model mirror whatever
+        // language the visitor used; otherwise the rules are written in the
+        // answer language itself, which models follow more reliably.
+        $locale = $answerIn === AiConfig::ANSWER_AUTO ? 'en' : $answerIn;
+
+        $languageRule = $answerIn === AiConfig::ANSWER_AUTO
+            ? 'Answer in the same language the user wrote in.'
+            : __('prompts.language_rule', [], $locale);
+
+        $rules = array_merge([$languageRule], (array) __('prompts.rules', [], $locale));
+
         return trim(($config?->system_prompt ?: self::DEFAULT_PROMPT))."\n\n"
-            ."წესები:\n"
-            ."- უპასუხე მხოლოდ ქართულ ენაზე.\n"
-            ."- გამოიყენე მხოლოდ ქვემოთ მოცემული კონტექსტი. ნუ მოიგონებ ფაქტებს.\n"
-            ."- გაითვალისწინე საუბრის წინა შეტყობინებები follow-up კითხვებისთვის.\n"
-            ."- თუ პასუხი კონტექსტში არ არის, პირდაპირ თქვი რომ ინფორმაცია ვერ მოიძებნა.\n"
-            ."- პასუხის ბოლოს მიუთითე გამოყენებული წყაროები ფორმატით [#ნომერი].\n\n"
-            ."კონტექსტი:\n".$contextBlock;
+            .__('prompts.rules_heading', [], $locale)."\n"
+            .implode("\n", array_map(fn (string $r): string => "- {$r}", $rules))."\n\n"
+            .__('prompts.context_heading', [], $locale)."\n".$contextBlock;
     }
 
     /**
