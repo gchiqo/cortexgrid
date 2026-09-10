@@ -6,7 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('common.app_title'))</title>
     {{-- Dark is the default here; "light" is the opt-out. --}}
-    <script>if (localStorage.theme === 'light') document.documentElement.classList.add('light');</script>
+    <script>
+        document.documentElement.classList.add('js');
+        if (localStorage.theme === 'light') document.documentElement.classList.add('light');
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{-- Space Grotesk carries Latin; Noto Sans Georgian carries ქართული. --}}
@@ -151,7 +154,7 @@
     .divide-slate-200 > * { border-color: var(--line) !important; }
 
     /* --- Accent actions ------------------------------------------ */
-    .bg-indigo-600, .bg-slate-800, .bg-slate-900 {
+    .bg-indigo-600, .bg-slate-800 {
         background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
         color: #04060d !important;
         border: 0 !important;
@@ -164,6 +167,9 @@
     }
     .bg-indigo-600, .bg-slate-800 { transition: filter .16s ease, box-shadow .16s ease; }
     .bg-emerald-600 { background: linear-gradient(135deg, var(--accent-3), #22d3ee) !important; color:#04060d !important; }
+    /* bg-slate-900 is only ever a <pre> in this app — a code surface, not a button. */
+    .bg-slate-900 { background: var(--code-bg) !important; border: 1px solid var(--line); }
+    .text-slate-100, .text-slate-200, .text-slate-300 { color: #cfe0f2 !important; }
 
     /* --- Inputs -------------------------------------------------- */
     input, textarea, select {

@@ -1,7 +1,9 @@
 @extends('layout')
 @section('title', __('landing.title'))
 @section('body')
-<div class="min-h-screen bg-gradient-to-b from-slate-50 to-indigo-50/40">
+<div class="scroll-rail"><i id="scrollBar"></i></div>
+<canvas id="net" class="net-canvas" aria-hidden="true"></canvas>
+<div class="min-h-screen">
     <header class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <a href="/" class="font-bold text-lg">CortexGrid <span class="text-indigo-600">AI</span></a>
         <div class="flex items-center gap-3 text-sm">
@@ -25,7 +27,7 @@
         <h1 class="hero-title text-4xl md:text-5xl font-extrabold leading-[1.1] max-w-3xl mx-auto">
             {!! __('landing.hero') !!}
         </h1>
-        <p class="text-lg text-slate-500 mt-5 max-w-2xl mx-auto">
+        <p class="text-lg text-slate-500 mt-5 max-w-2xl mx-auto par" data-par="0.06">
             {{ __('landing.hero_sub') }}
         </p>
         <div class="flex items-center justify-center gap-3 mt-8">
@@ -46,15 +48,18 @@
                 <span class="mock-title">{{ __('console.title') }}</span>
             </div>
             <div class="mock-body">
-                <div class="mock-q">{{ __('docs.example_question') }}</div>
-                @foreach ([['console.rewrite','groq'],['console.embedding','gemini'],['console.semantic','—'],['console.lexical','—'],['console.fusion','RRF'],['console.generate','claude']] as $i => [$k, $tag])
-                    <div class="mock-step" style="--i:{{ $i }}">
+                <div class="mock-q"><span id="mockQ"></span><i class="caret"></i></div>
+                <div id="mockSteps">
+                @foreach ([['console.rewrite','groq'],['console.embedding','gemini'],['console.semantic','pgvector'],['console.lexical','BM25'],['console.fusion','RRF'],['console.generate','claude']] as $i => [$k, $tag])
+                    <div class="mock-step" data-s="{{ $i }}">
                         <span class="mock-tick"></span>
                         <span class="mock-label">{{ __($k) }}</span>
+                        <span class="mock-ms"></span>
                         <span class="mock-tag">{{ $tag }}</span>
                     </div>
                 @endforeach
-                <div class="mock-a">{{ __('docs.example_answer') }} <span class="mock-cite">[#1]</span></div>
+                </div>
+                <div class="mock-a"><span id="mockA"></span></div>
             </div>
         </div>
     </section>
@@ -64,10 +69,14 @@
         <p class="text-center text-xs text-slate-400 mb-5" style="letter-spacing:.16em;text-transform:uppercase">
             {{ __('landing.engines') }}
         </p>
-        <div class="engines">
-            @foreach (['Groq','Gemini','Cerebras','OpenRouter','NVIDIA','Claude'] as $e)
-                <span class="engine">{{ $e }}</span>
-            @endforeach
+        <div class="marquee">
+            <div class="marquee-run">
+                @for ($pass = 0; $pass < 2; $pass++)
+                    @foreach (['Groq','Gemini','Cerebras','OpenRouter','NVIDIA','Claude','pgvector','BM25','RRF'] as $e)
+                        <span class="engine">{{ $e }}</span>
+                    @endforeach
+                @endfor
+            </div>
         </div>
     </section>
 
@@ -84,9 +93,9 @@
 
     {{-- Features --}}
     <section class="max-w-6xl mx-auto px-4 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger reveal">
             @foreach (['datasets' => '📂', 'agents' => '🤖', 'hybrid' => '🔎', 'glassbox' => '🪟', 'explorer' => '📊', 'acting' => '🛠️'] as $key => $icon)
-                <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="bg-white rounded-2xl shadow-sm p-6 tilt">
                     <div class="text-3xl mb-3">{{ $icon }}</div>
                     <div class="font-semibold mb-1">{{ __('landing.features.'.$key.'.title') }}</div>
                     <p class="text-sm text-slate-500">{{ __('landing.features.'.$key.'.body') }}</p>
@@ -196,7 +205,7 @@
 @keyframes packet{0%,72%{left:0;opacity:0}74%{opacity:1}100%{left:100%;opacity:0}}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
-.reveal.show{opacity:1;transform:none}
+html.js .reveal.show{opacity:1;transform:none}
 
 /* Hero: gradient wordline + a scanning sweep across the headline */
 .hero-title{background:linear-gradient(96deg,var(--text) 18%,var(--accent) 52%,var(--accent-2) 88%);
@@ -240,13 +249,218 @@
     border:1px solid var(--line);border-radius:999px;padding:7px 16px;background:rgba(255,255,255,.02);
     transition:all .18s ease}
 .engine:hover{color:var(--accent);border-color:rgba(34,211,238,.45);box-shadow:0 0 20px -6px rgba(34,211,238,.6)}
+
+/* ---- ambient neural canvas ---- */
+.net-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.55}
+/* ---- scroll progress ---- */
+.scroll-rail{position:fixed;top:0;left:0;right:0;height:2px;z-index:70;background:transparent}
+.scroll-rail i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    box-shadow:0 0 12px var(--accent)}
+/* ---- staggered, directional reveals ---- */
+html.js .reveal{opacity:0;transform:translateY(26px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)}
+html.js .reveal.show{opacity:1;transform:none}
+html.js .stagger > *{opacity:0;transform:translateY(20px);
+    transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+html.js .stagger.show > *{opacity:1;transform:none}
+.stagger.show > *:nth-child(1){transition-delay:.05s}
+.stagger.show > *:nth-child(2){transition-delay:.14s}
+.stagger.show > *:nth-child(3){transition-delay:.23s}
+.stagger.show > *:nth-child(4){transition-delay:.32s}
+.stagger.show > *:nth-child(5){transition-delay:.41s}
+.stagger.show > *:nth-child(6){transition-delay:.5s}
+/* ---- card tilt + cursor spotlight ---- */
+.tilt{position:relative;transform-style:preserve-3d;transition:transform .25s ease,box-shadow .25s ease}
+.tilt::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+    transition:opacity .25s ease;
+    background:radial-gradient(18rem 18rem at var(--mx,50%) var(--my,50%),rgba(34,211,238,.16),transparent 60%)}
+.tilt:hover::after{opacity:1}
+/* ---- typing caret ---- */
+.caret{display:inline-block;width:7px;height:15px;background:var(--accent);margin-inline-start:3px;
+    vertical-align:-2px;animation:caret 1s steps(2) infinite;box-shadow:0 0 9px var(--accent)}
+@keyframes caret{0%,100%{opacity:1}50%{opacity:0}}
+/* ---- pipeline states ---- */
+.mock-step{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--dim);
+    opacity:.3;transition:opacity .3s ease,color .3s ease;animation:none}
+.mock-step.run{opacity:1;color:var(--text)}
+.mock-step.done{opacity:.85;color:var(--muted)}
+.mock-step .mock-tick{background:var(--line);box-shadow:none;transition:all .3s ease}
+.mock-step.run .mock-tick{background:var(--accent);box-shadow:0 0 10px var(--accent);
+    animation:tickPulse .9s ease-in-out infinite}
+.mock-step.done .mock-tick{background:var(--accent-3);box-shadow:0 0 8px var(--accent-3)}
+@keyframes tickPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.mock-ms{margin-inline-start:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);opacity:0;
+    transition:opacity .3s ease}
+.mock-step.done .mock-ms{opacity:1}
+.mock-a{min-height:22px;opacity:1;animation:none}
+/* ---- marquee ---- */
+.marquee{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee-run{display:flex;gap:10px;width:max-content;animation:slide 34s linear infinite}
+.marquee:hover .marquee-run{animation-play-state:paused}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* ---- hero parallax ---- */
+.par{will-change:transform}
+@media (prefers-reduced-motion:reduce){
+    .net-canvas{display:none}
+    .marquee-run{animation:none}
+    .reveal,.stagger > *{opacity:1!important;transform:none!important}
+}
 </style>
+@php($__demoQ = (array) __('landing.demo_questions'))
+@php($__demoA = __('docs.example_answer'))
 <script>
 (function () {
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---------- reveal on scroll (with stagger groups) ---------- */
     var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); } });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+        entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal, .stagger').forEach(function (el) { io.observe(el); });
+    // Anchor links land mid-page; show whatever is already in view immediately.
+    function showVisible() {
+        document.querySelectorAll('.reveal:not(.show), .stagger:not(.show)').forEach(function (el) {
+            var r = el.getBoundingClientRect();
+            if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('show');
+        });
+    }
+    showVisible();
+    window.addEventListener('load', showVisible);
+    // Last-resort safety net: never leave content permanently invisible.
+    setTimeout(function () {
+        document.querySelectorAll('.reveal, .stagger').forEach(function (el) { el.classList.add('show'); });
+    }, 4000);
+
+    /* ---------- scroll progress + hero parallax ---------- */
+    var bar = document.getElementById('scrollBar');
+    var pars = [].slice.call(document.querySelectorAll('.par'));
+    var ticking = false;
+    function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+            var y = window.scrollY || 0;
+            var max = (document.documentElement.scrollHeight - window.innerHeight) || 1;
+            if (bar) bar.style.width = Math.min(100, (y / max) * 100) + '%';
+            if (!reduced) {
+                pars.forEach(function (el) {
+                    var k = parseFloat(el.dataset.par || '0.05');
+                    el.style.transform = 'translate3d(0,' + (y * k) + 'px,0)';
+                });
+            }
+            ticking = false;
+        });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    /* ---------- cursor spotlight + tilt on cards ---------- */
+    if (!reduced) {
+        document.querySelectorAll('.tilt').forEach(function (card) {
+            card.addEventListener('mousemove', function (e) {
+                var r = card.getBoundingClientRect();
+                var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+                card.style.setProperty('--mx', (px * 100) + '%');
+                card.style.setProperty('--my', (py * 100) + '%');
+                card.style.transform = 'perspective(760px) rotateX(' + ((0.5 - py) * 5).toFixed(2) +
+                                       'deg) rotateY(' + ((px - 0.5) * 6).toFixed(2) + 'deg) translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', function () { card.style.transform = ''; });
+        });
+    }
+
+    /* ---------- ambient neural canvas ---------- */
+    var cv = document.getElementById('net');
+    if (cv && !reduced) {
+        var ctx = cv.getContext('2d'), nodes = [], w = 0, h = 0, dpr = Math.min(devicePixelRatio || 1, 2);
+        var mouse = { x: -999, y: -999 };
+        function resize() {
+            w = cv.clientWidth; h = cv.clientHeight;
+            cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            var count = Math.round(Math.min(80, (w * h) / 22000));
+            nodes = [];
+            for (var i = 0; i < count; i++) {
+                nodes.push({ x: Math.random() * w, y: Math.random() * h,
+                             vx: (Math.random() - .5) * .22, vy: (Math.random() - .5) * .22 });
+            }
+        }
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('mouseleave', function () { mouse.x = mouse.y = -999; });
+        resize();
+
+        (function frame() {
+            ctx.clearRect(0, 0, w, h);
+            for (var i = 0; i < nodes.length; i++) {
+                var n = nodes[i];
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > w) n.vx *= -1;
+                if (n.y < 0 || n.y > h) n.vy *= -1;
+
+                // gentle pull toward the pointer
+                var mdx = mouse.x - n.x, mdy = mouse.y - n.y, md = Math.hypot(mdx, mdy);
+                if (md < 150) { n.x += mdx * 0.0016; n.y += mdy * 0.0016; }
+
+                for (var j = i + 1; j < nodes.length; j++) {
+                    var m = nodes[j], dx = n.x - m.x, dy = n.y - m.y, d = Math.hypot(dx, dy);
+                    if (d < 132) {
+                        ctx.globalAlpha = (1 - d / 132) * 0.3;
+                        ctx.strokeStyle = md < 150 ? 'rgba(34,211,238,.9)' : 'rgba(148,197,247,.75)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(m.x, m.y); ctx.stroke();
+                    }
+                }
+                ctx.globalAlpha = md < 150 ? .85 : .5;
+                ctx.fillStyle = md < 150 ? 'rgba(34,211,238,1)' : 'rgba(163,205,250,.9)';
+                ctx.beginPath(); ctx.arc(n.x, n.y, md < 150 ? 2.1 : 1.5, 0, 6.284); ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(frame);
+        })();
+    }
+
+    /* ---------- the console mock runs the real pipeline, on a loop ---------- */
+    var qEl = document.getElementById('mockQ'), aEl = document.getElementById('mockA'),
+        steps = [].slice.call(document.querySelectorAll('#mockSteps .mock-step'));
+    if (qEl && aEl && steps.length) {
+        var questions = @json($__demoQ), answer = @json($__demoA), qi = 0;
+        var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+
+        function type(el, text, speed) {
+            return new Promise(function (done) {
+                el.textContent = ''; var i = 0;
+                (function tick() {
+                    if (i >= text.length) return done();
+                    el.textContent += text.charAt(i++);
+                    setTimeout(tick, speed);
+                })();
+            });
+        }
+
+        async function run() {
+            while (true) {
+                steps.forEach(function (s) { s.className = 'mock-step'; s.querySelector('.mock-ms').textContent = ''; });
+                aEl.textContent = '';
+                await type(qEl, questions[qi % questions.length], 42);
+                await sleep(320);
+                for (var i = 0; i < steps.length; i++) {
+                    steps[i].classList.add('run');
+                    var ms = 120 + Math.round(Math.random() * 380);
+                    await sleep(reduced ? 60 : ms);
+                    steps[i].classList.remove('run');
+                    steps[i].classList.add('done');
+                    steps[i].querySelector('.mock-ms').textContent = ms + 'ms';
+                }
+                await sleep(200);
+                await type(aEl, answer + '  [#1]', 20);
+                qi++;
+                await sleep(2600);
+            }
+        }
+        run();
+    }
 })();
 </script>
 @endsection
