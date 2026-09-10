@@ -14,9 +14,16 @@ class Anthropic implements TextGenerator
 {
     private Client $client;
 
-    public function __construct()
+    private string $key;
+
+    private string $defaultModel;
+
+    /** Key and model default to config, but the admin panel can override them. */
+    public function __construct(?string $key = null, ?string $model = null)
     {
-        $this->client = new Client(apiKey: (string) config('services.anthropic.key'));
+        $this->key = $key ?: (string) config('services.anthropic.key');
+        $this->defaultModel = $model ?: (string) config('services.anthropic.model');
+        $this->client = new Client(apiKey: $this->key);
     }
 
     /**
@@ -35,7 +42,7 @@ class Anthropic implements TextGenerator
     ): array {
         $args = [
             'maxTokens' => $maxTokens,
-            'model' => $model ?? config('services.anthropic.model'),
+            'model' => $model ?: $this->defaultModel,
             'system' => $system,
             'messages' => array_values($messages),
         ];
@@ -70,11 +77,11 @@ class Anthropic implements TextGenerator
     public function stream(string $system, array $messages, ?string $model, int $maxTokens, callable $onText): array
     {
         $response = Http::withHeaders([
-            'x-api-key' => (string) config('services.anthropic.key'),
+            'x-api-key' => $this->key,
             'anthropic-version' => '2023-06-01',
             'content-type' => 'application/json',
         ])->withOptions(['stream' => true])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model' => $model ?? config('services.anthropic.model'),
+            'model' => $model ?: $this->defaultModel,
             'max_tokens' => $maxTokens,
             'system' => $system,
             'messages' => array_values($messages),
@@ -134,7 +141,7 @@ class Anthropic implements TextGenerator
         int $maxTokens = 2000,
         int $maxIters = 5,
     ): array {
-        $model = $model ?? config('services.anthropic.model');
+        $model = $model ?: $this->defaultModel;
         $msgs = array_values($messages);
 
         $inTok = 0;

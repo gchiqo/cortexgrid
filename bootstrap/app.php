@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'apikey' => \App\Http\Middleware\ApiKeyAuth::class,
+            'platform-admin' => \App\Http\Middleware\EnsurePlatformAdmin::class,
         ]);
 
         // Applies the visitor's chosen UI language (see the language switcher).

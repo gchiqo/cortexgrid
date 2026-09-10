@@ -21,4 +21,6 @@ return [
     'source_deleted' => 'წყარო „:name“ წაიშალა.',
     'google_failed' => 'Google ავტორიზაცია ვერ მოხერხდა.',
     'ingest_queued' => 'ჩაიტვირთა; ემბედინგები მუშავდება ფონურად.',
+    'settings_saved' => 'პარამეტრები შენახულია.',
+    'settings_key_cleared' => 'გასაღები წაიშალა.',
 ];

@@ -14,6 +14,7 @@ use App\Http\Controllers\Web\DocsController;
 use App\Http\Controllers\Web\ExplorerController;
 use App\Http\Controllers\Web\InsightsController;
 use App\Http\Controllers\Web\LeadController;
+use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\SourceController;
 use App\Http\Controllers\Web\GoogleController;
 use App\Http\Controllers\Web\UploadController;
@@ -90,6 +91,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/insights', [InsightsController::class, 'index'])->name('insights');
     Route::get('/dashboard/conversations', [ConversationController::class, 'index'])->name('conversations');
     Route::get('/dashboard/conversations/{conversation}', [ConversationController::class, 'show']);
+
+    // --- Platform settings (admin only): model backend + provider keys ---
+    Route::middleware('platform-admin')->group(function () {
+        Route::get('/dashboard/settings', [SettingsController::class, 'index'])->name('settings');
+        Route::post('/dashboard/settings', [SettingsController::class, 'update']);
+        Route::delete('/dashboard/settings/{provider}/key', [SettingsController::class, 'forgetKey']);
+        Route::post('/dashboard/settings/{provider}/test', [SettingsController::class, 'test']);
+    });
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

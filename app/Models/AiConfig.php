@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Llm\LlmConfig;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -49,25 +50,15 @@ class AiConfig extends Model
     /** Resolve the configured tier to a concrete model id for the active provider. */
     public function modelId(): string
     {
-        $base = self::providerConfig();
+        $cfg = LlmConfig::active();
 
-        return $base['tiers'][$this->model_tier] ?? ($base['model'] ?? '');
+        return $cfg['tiers'][$this->model_tier] ?? $cfg['model'];
     }
 
     /** The active provider's default model, for callers with no agent config. */
     public static function defaultModelId(): string
     {
-        return (string) (self::providerConfig()['model'] ?? '');
-    }
-
-    /** @return array<string,mixed> config block for the provider currently in use */
-    private static function providerConfig(): array
-    {
-        $provider = (string) config('services.llm.provider', 'groq');
-
-        return $provider === 'anthropic'
-            ? (array) config('services.anthropic', [])
-            : (array) config("services.llm.providers.{$provider}", []);
+        return LlmConfig::active()['model'];
     }
 
     /**

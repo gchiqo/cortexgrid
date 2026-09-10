@@ -36,8 +36,31 @@ class User extends Authenticatable
         return $this->belongsTo(Tenant::class);
     }
 
+    /** Admin of their own tenant. Every registered user gets this. */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Operator of the whole install — may edit platform settings such as the
+     * model provider and its API keys.
+     *
+     * Distinct from isAdmin(): ProvisionTenant makes every signup an admin of
+     * their own tenant, which must not expose the operator's credentials.
+     * Listed in PLATFORM_ADMINS, or the first account if that list is empty.
+     */
+    public function isPlatformAdmin(): bool
+    {
+        $allowed = array_filter(array_map(
+            'trim',
+            explode(',', (string) config('app.platform_admins'))
+        ));
+
+        if ($allowed !== []) {
+            return in_array(mb_strtolower($this->email), array_map('mb_strtolower', $allowed), true);
+        }
+
+        return $this->id === static::query()->min('id');
     }
 }

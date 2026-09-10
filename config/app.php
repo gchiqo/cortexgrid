@@ -78,6 +78,12 @@ return [
     |
     */
 
+    /*
+    | Comma-separated emails allowed to edit platform settings (model provider
+    | and API keys). Empty means the first registered account.
+    */
+    'platform_admins' => env('PLATFORM_ADMINS', ''),
+
     'locale' => env('APP_LOCALE', 'en'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),

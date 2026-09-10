@@ -7,5 +7,6 @@ return [
     'leads' => 'Leads',
     'billing' => 'Billing',
     'conversations' => 'Conversations',
+    'settings' => 'Settings',
     'logout' => 'Sign out',
 ];

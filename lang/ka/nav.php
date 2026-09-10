@@ -7,5 +7,6 @@ return [
     'leads' => 'ლიდები',
     'billing' => 'ბილინგი',
     'conversations' => 'საუბრები',
+    'settings' => 'პარამეტრები',
     'logout' => 'გასვლა',
 ];

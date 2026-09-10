@@ -12,6 +12,9 @@
                 <a href="/dashboard/leads" class="text-slate-600 hover:text-indigo-600">{{ __('nav.leads') }}</a>
                 <a href="/dashboard/billing" class="text-slate-600 hover:text-indigo-600">{{ __('nav.billing') }}</a>
                 <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">{{ __('nav.conversations') }}</a>
+                @if ($user->isPlatformAdmin())
+                    <a href="/dashboard/settings" class="text-slate-600 hover:text-indigo-600">{{ __('nav.settings') }}</a>
+                @endif
                 @include('partials.lang-toggle')
                 @include('partials.theme-toggle')
                 <span class="text-slate-500">{{ $user->email }}</span>

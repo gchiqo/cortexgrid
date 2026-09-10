@@ -21,4 +21,6 @@ return [
     'source_deleted' => 'The source “:name” was deleted.',
     'google_failed' => 'Google sign-in failed.',
     'ingest_queued' => 'Ingested; embeddings are being processed in the background.',
+    'settings_saved' => 'Settings saved.',
+    'settings_key_cleared' => 'The key was cleared.',
 ];
