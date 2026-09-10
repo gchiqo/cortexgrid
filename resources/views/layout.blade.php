@@ -184,6 +184,11 @@
     .text-amber-800, .text-amber-700, .text-amber-500 { color: var(--warn) !important; }
     .font-bold, .font-semibold { letter-spacing: -.015em; }
     h1, h2, h3, .text-4xl, .text-5xl, .text-3xl, .text-2xl { letter-spacing: -.03em; }
+    /* ქართული sits taller and deeper than Latin: tight leading clips it, and
+       gradient-clipped text has no box padding to save it. */
+    h1, h2, .text-4xl, .text-5xl, .text-6xl { line-height: 1.28; }
+    [class*="text-transparent"], .hero-title, .auth-h,
+    .tele-primary .tele-value, .band-v.accent { padding-bottom: .1em; }
 
     /* Numbers and identifiers read as data. */
     code, pre, .font-mono, table td:nth-child(n+2) { font-family: 'JetBrains Mono', ui-monospace, monospace; }

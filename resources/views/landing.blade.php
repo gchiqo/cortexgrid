@@ -34,7 +34,7 @@
         <div class="hero-badge inline-block font-medium rounded-full px-4 py-1.5 mb-6">
             {{ __('landing.badge') }}
         </div>
-        <h1 class="hero-title text-4xl md:text-5xl font-extrabold leading-[1.1] max-w-3xl mx-auto">
+        <h1 class="hero-title text-4xl md:text-5xl font-extrabold max-w-3xl mx-auto">
             {!! __('landing.hero') !!}
         </h1>
         <p class="text-lg text-slate-500 mt-5 max-w-2xl mx-auto par" data-par="0.06">
@@ -218,7 +218,8 @@
 html.js .reveal.show{opacity:1;transform:none}
 
 /* Hero: gradient wordline + a scanning sweep across the headline */
-.hero-title{background:linear-gradient(96deg,var(--text) 18%,var(--accent) 52%,var(--accent-2) 88%);
+.hero-title{line-height:1.24;padding-bottom:.12em;
+    background:linear-gradient(96deg,var(--text) 18%,var(--accent) 52%,var(--accent-2) 88%);
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .hero-badge{border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);color:var(--accent);
     backdrop-filter:blur(10px);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px}
@@ -384,8 +385,7 @@ html:not(.light){
 }
 }
 </style>
-@php($__demoQ = (array) __('landing.demo_questions'))
-@php($__demoA = __('docs.example_answer'))
+@php($__demo = (array) __('landing.demo'))
 <script>
 (function () {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -649,7 +649,7 @@ html:not(.light){
     var qEl = document.getElementById('mockQ'), aEl = document.getElementById('mockA'),
         steps = [].slice.call(document.querySelectorAll('#mockSteps .mock-step'));
     if (qEl && aEl && steps.length) {
-        var questions = @json($__demoQ), answer = @json($__demoA), qi = 0;
+        var turns = @json($__demo), qi = 0;
         var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 
         function type(el, text, speed) {
@@ -667,7 +667,8 @@ html:not(.light){
             while (true) {
                 steps.forEach(function (s) { s.className = 'mock-step'; s.querySelector('.mock-ms').textContent = ''; });
                 aEl.textContent = '';
-                await type(qEl, questions[qi % questions.length], 42);
+                var turn = turns[qi % turns.length];
+                await type(qEl, turn.q, 42);
                 await sleep(320);
                 for (var i = 0; i < steps.length; i++) {
                     steps[i].classList.add('run');
@@ -678,7 +679,7 @@ html:not(.light){
                     steps[i].querySelector('.mock-ms').textContent = ms + 'ms';
                 }
                 await sleep(200);
-                await type(aEl, answer + '  [#1]', 20);
+                await type(aEl, turn.a, 18);
                 qi++;
                 await sleep(2600);
             }

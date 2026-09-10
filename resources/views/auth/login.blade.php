@@ -14,7 +14,7 @@
 .auth-brand .side-mark{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
     font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;color:#04060d;
     background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px -6px rgba(34,211,238,.8)}
-.auth-h{font-size:30px;font-weight:700;line-height:1.15;letter-spacing:-.03em;
+.auth-h{font-size:30px;font-weight:700;line-height:1.28;padding-bottom:.1em;letter-spacing:-.03em;
     background:linear-gradient(96deg,var(--text) 20%,var(--accent) 62%,var(--accent-2));
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;max-width:16ch}
 .auth-p{color:var(--muted);font-size:14px;line-height:1.6;max-width:44ch}

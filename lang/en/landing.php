@@ -10,10 +10,10 @@ return [
     'hero' => 'Your data →<br><span class="text-indigo-600">intelligent AI agents</span>',
     'hero_sub' => 'Connect your files and data, let the platform understand them, and get AI agents you can drop into your site with a single line of code.',
     'engines' => 'Runs on the engine you choose',
-    'demo_questions' => [
-        'I want a powerful PC, what do you recommend?',
-        'How much is delivery to Tbilisi?',
-        'Do you have the RTX 4070 in stock?',
+    'demo' => [
+        ['q' => 'I want a powerful PC, what do you recommend?', 'a' => 'I recommend the RTX 4070 (2100 ₾) with a Ryzen 5 7600X (720 ₾) — a solid pair for gaming. [#1] [#2]'],
+        ['q' => 'How much is delivery to Tbilisi?', 'a' => 'Delivery in Tbilisi is free; elsewhere it is 10 ₾. [#3]'],
+        ['q' => 'Do you have the RTX 4070 in stock?', 'a' => 'Yes, the RTX 4070 is in stock — 12GB GDDR6X, 2100 ₾. [#1]'],
     ],
     'flow_caption' => 'How your data is processed',
     'flow' => [
