@@ -1,20 +1,9 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('configs.suggestions_title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="/" class="font-bold text-lg">CortexGrid <span class="text-indigo-600">AI</span></a>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
-            </div>
-        </div>
-    </header>
+@section('heading', __('configs.suggestions_title'))
 
-    <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        <div>
+@section('content')
+<div>
             <h1 class="text-xl font-bold">{{ __('configs.suggestions_heading') }}</h1>
             <p class="text-slate-500 text-sm mt-1">{{ __('configs.suggestions_subtitle') }}</p>
         </div>

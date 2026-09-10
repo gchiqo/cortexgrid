@@ -6,6 +6,8 @@ return [
     'theme_title' => 'Light / dark theme',
     'theme_aria' => 'Toggle theme',
     'back_to_dashboard' => '← Dashboard',
+    'search' => 'Search',
+    'search_placeholder' => 'Jump to a page…',
     'save' => 'Save',
     'create' => 'Create',
     'cancel' => 'Cancel',

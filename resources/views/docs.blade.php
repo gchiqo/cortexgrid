@@ -1,20 +1,9 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('docs.title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('docs.title') }}</div>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
-            </div>
-        </div>
-    </header>
+@section('heading', __('docs.title'))
 
-    <main class="max-w-5xl mx-auto px-4 py-8">
-        <h1 class="text-2xl font-bold">{{ __('docs.heading') }}</h1>
+@section('content')
+<h1 class="text-2xl font-bold">{{ __('docs.heading') }}</h1>
         <p class="text-slate-500 mt-2 mb-6 max-w-3xl">{{ __('docs.intro') }}</p>
 
         {{-- Tabs --}}
@@ -112,11 +101,13 @@ saveLastSync(now());</code></pre>
 </div>
 
 <style>
-.doc-tab{padding:8px 14px;border-radius:9px;font-size:14px;font-weight:500;background:#f1f5f9;color:#475569;cursor:pointer}
-.doc-tab.active{background:#4f46e5;color:#fff}
-html.dark .doc-tab{background:#1e293b;color:#94a3b8}
-html.dark .doc-tab.active{background:#4f46e5;color:#fff}
-.doc-code{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:16px;overflow-x:auto;font-size:12.5px;line-height:1.6}
+.doc-tab{padding:9px 16px;border-radius:10px;font-size:13.5px;font-weight:500;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);color:var(--muted);transition:all .16s ease}
+.doc-tab:hover{border-color:rgba(34,211,238,.4);color:var(--accent)}
+.doc-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#04060d;border-color:transparent;
+    box-shadow:0 6px 20px -8px rgba(34,211,238,.7)}
+.doc-code{background:rgba(3,6,14,.86);color:#cfe6f5;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;overflow-x:auto;font-size:12.5px;line-height:1.65;font-family:'JetBrains Mono',monospace}
 </style>
 <script>
 const tabs = document.querySelectorAll('.doc-tab');

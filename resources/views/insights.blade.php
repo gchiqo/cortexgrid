@@ -1,20 +1,9 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('insights.title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('insights.title') }}</div>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
-            </div>
-        </div>
-    </header>
+@section('heading', __('insights.title'))
 
-    <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        @php $total = $up + $down; $sat = $total ? round($up / $total * 100) : null; @endphp
+@section('content')
+@php $total = $up + $down; $sat = $total ? round($up / $total * 100) : null; @endphp
         <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-white rounded-xl shadow-sm p-5"><div class="text-slate-500 text-sm">👍 {{ __('insights.liked') }}</div><div class="text-3xl font-bold mt-1 text-emerald-600">{{ $up }}</div></div>
             <div class="bg-white rounded-xl shadow-sm p-5"><div class="text-slate-500 text-sm">👎 {{ __('insights.disliked') }}</div><div class="text-3xl font-bold mt-1 text-red-500">{{ $down }}</div></div>
@@ -45,6 +34,4 @@
                 </div>
             @endif
         </section>
-    </main>
-</div>
 @endsection

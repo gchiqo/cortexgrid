@@ -9,6 +9,7 @@ return [
     'badge' => 'A knowledge AI platform — not just a chatbot',
     'hero' => 'Your data →<br><span class="text-indigo-600">intelligent AI agents</span>',
     'hero_sub' => 'Connect your files and data, let the platform understand them, and get AI agents you can drop into your site with a single line of code.',
+    'engines' => 'Runs on the engine you choose',
     'flow_caption' => 'How your data is processed',
     'flow' => [
         'connect' => 'Connect',

@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'overview' => 'Overview',
+    'engine' => 'Engine',
     'console' => 'Test console',
     'api' => 'API',
     'insights' => 'Insights',

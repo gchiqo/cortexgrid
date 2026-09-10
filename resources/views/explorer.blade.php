@@ -1,23 +1,13 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', $dataset->name.' — '.__('explorer.title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-slate-400 hover:text-slate-700">←</a>
-                <div class="font-bold text-lg">📊 {{ __('explorer.title') }}</div>
-                <span class="text-slate-400 text-sm">{{ $dataset->name }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-            </div>
-        </div>
-    </header>
+@section('heading'){{ __('explorer.title') }}@endsection
+@section('crumb'){{ $dataset->name }}@endsection
+@section('actions')
+    <a href="/dashboard/datasets/{{ $dataset->id }}" class="cmd-open" style="text-decoration:none">← {{ $dataset->name }}</a>
+@endsection
 
-    <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        <p class="text-slate-500 text-sm">{!! __('explorer.intro') !!}</p>
+@section('content')
+<p class="text-slate-500 text-sm">{!! __('explorer.intro') !!}</p>
 
         {{-- Overview --}}
         <section class="grid grid-cols-2 md:grid-cols-4 gap-4">

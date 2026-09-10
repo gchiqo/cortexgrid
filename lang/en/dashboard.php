@@ -8,6 +8,7 @@ return [
     'documents_ingested' => 'Documents ingested',
     'queries' => 'Queries',
     'tokens_used' => 'Tokens used',
+    'open' => 'Open',
     'datasets' => 'Datasets',
     'datasets_hint' => 'One dataset = one business or topic. It can be filled from many files and sources, and can have many chatbots.',
     'source_count' => ':count source|:count sources',

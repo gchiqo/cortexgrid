@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'overview' => 'მიმოხილვა',
+    'engine' => 'ძრავი',
     'console' => 'ტესტ-კონსოლი',
     'api' => 'API',
     'insights' => 'ანალიტიკა',

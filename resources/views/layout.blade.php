@@ -5,61 +5,254 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('common.app_title'))</title>
-    <script>if (localStorage.theme === 'dark') document.documentElement.classList.add('dark');</script>
+    {{-- Dark is the default here; "light" is the opt-out. --}}
+    <script>if (localStorage.theme === 'light') document.documentElement.classList.add('light');</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {{-- Space Grotesk carries Latin; Noto Sans Georgian carries ქართული. --}}
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <style>
-        /* --- Dark theme: override the common light utilities when html.dark is set --- */
-        html.dark body { background:#0f172a; color:#e2e8f0; }
-        html.dark .bg-white { background:#1e293b !important; }
-        html.dark .bg-slate-50 { background:#0f172a !important; }
-        html.dark .bg-slate-100 { background:#334155 !important; }
-        html.dark .bg-gradient-to-b { background-image:none !important; background:#0f172a !important; }
-        html.dark .bg-indigo-50 { background:rgba(99,102,241,.15) !important; }
-        html.dark .bg-emerald-50 { background:rgba(16,185,129,.13) !important; }
-        html.dark .bg-red-50 { background:rgba(239,68,68,.13) !important; }
-        html.dark .bg-amber-50 { background:rgba(245,158,11,.13) !important; }
-        html.dark .bg-indigo-100 { background:rgba(99,102,241,.22) !important; }
-        html.dark .text-slate-900, html.dark .text-slate-800 { color:#e2e8f0 !important; }
-        html.dark .text-slate-700 { color:#cbd5e1 !important; }
-        html.dark .text-slate-600, html.dark .text-slate-500 { color:#94a3b8 !important; }
-        html.dark .text-slate-400 { color:#64748b !important; }
-        html.dark .text-indigo-600, html.dark .text-indigo-700 { color:#818cf8 !important; }
-        html.dark .text-indigo-900 { color:#c7d2fe !important; }
-        html.dark .text-emerald-800, html.dark .text-emerald-700 { color:#6ee7b7 !important; }
-        html.dark .text-red-700 { color:#fca5a5 !important; }
-        html.dark .border, html.dark .border-b, html.dark .border-t,
-        html.dark .border-slate-200, html.dark .border-slate-300 { border-color:#334155 !important; }
-        html.dark .border-indigo-200 { border-color:rgba(99,102,241,.4) !important; }
-        html.dark .border-emerald-200 { border-color:rgba(16,185,129,.4) !important; }
-        html.dark .border-red-200 { border-color:rgba(239,68,68,.4) !important; }
-        html.dark .divide-slate-200 > * { border-color:#334155 !important; }
-        html.dark .shadow-sm, html.dark .shadow, html.dark .shadow-2xl { box-shadow:0 1px 3px rgba(0,0,0,.4) !important; }
-        html.dark input, html.dark textarea, html.dark select {
-            background:#0f172a !important; color:#e2e8f0 !important; border-color:#334155 !important;
-        }
-        html.dark input::placeholder, html.dark textarea::placeholder { color:#64748b; }
-        html.dark code { background:#334155; color:#e2e8f0; }
-        html.dark table thead { color:#64748b; }
-        html.dark .js-theme-toggle:hover,
-        html.dark .js-lang-toggle:hover { background:#334155 !important; }
-        html.dark .js-lang-toggle { color:#94a3b8 !important; }
-        .js-theme-toggle { cursor:pointer; }
-        .js-lang-toggle { cursor:pointer; text-decoration:none; }
+    /* ============================================================
+       CortexGrid — cyber design system.
+       The views speak a small utility vocabulary (bg-white, shadow-sm,
+       text-slate-*, bg-indigo-600 …). Rather than rewrite 20 templates,
+       that vocabulary is remapped onto these tokens, so the whole app
+       changes from here.
+       ============================================================ */
+    :root {
+        --bg:        #04060d;
+        --bg-2:      #080d18;
+        --panel:     rgba(14, 21, 38, .74);
+        --panel-2:   rgba(20, 29, 50, .82);
+        --line:      rgba(125, 211, 252, .13);
+        --line-soft: rgba(125, 211, 252, .07);
+        --text:      #dde7f7;
+        --muted:     #8a9cba;
+        --dim:       #5d6f8e;
+        --accent:    #22d3ee;
+        --accent-2:  #a78bfa;
+        --accent-3:  #34d399;
+        --danger:    #fb7185;
+        --warn:      #fbbf24;
+        --glow:      0 0 0 1px rgba(34,211,238,.16), 0 8px 32px -8px rgba(34,211,238,.22);
+        --radius:    14px;
+    }
+    html.light {
+        --bg:        #eef2f9;
+        --bg-2:      #e3e9f4;
+        --panel:     rgba(255,255,255,.86);
+        --panel-2:   rgba(255,255,255,.95);
+        --line:      rgba(30, 64, 120, .14);
+        --line-soft: rgba(30, 64, 120, .08);
+        --text:      #0d1628;
+        --muted:     #4a5b78;
+        --dim:       #6b7c98;
+        --accent:    #0891b2;
+        --accent-2:  #7c3aed;
+        --glow:      0 0 0 1px rgba(8,145,178,.14), 0 8px 26px -10px rgba(8,145,178,.28);
+    }
+
+    html, body { background: var(--bg); }
+    body {
+        color: var(--text);
+        font-family: 'Space Grotesk', 'Noto Sans Georgian', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* --- Ambient: grid mesh + two slow aurora blooms --- */
+    body::before {
+        content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background-image:
+            linear-gradient(var(--line-soft) 1px, transparent 1px),
+            linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+        background-size: 54px 54px;
+        mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 78%);
+        -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 78%);
+    }
+    body::after {
+        content: ''; position: fixed; inset: -30% -10% auto -10%; height: 90vh; z-index: 0; pointer-events: none;
+        background:
+            radial-gradient(42rem 26rem at 18% 8%,  rgba(34,211,238,.13), transparent 65%),
+            radial-gradient(38rem 24rem at 82% 2%, rgba(167,139,250,.13), transparent 65%);
+        animation: drift 22s ease-in-out infinite alternate;
+    }
+    @keyframes drift { from { transform: translate3d(-2%, 0, 0) } to { transform: translate3d(2%, 2%, 0) } }
+    body > * { position: relative; z-index: 1; }
+
+    ::selection { background: rgba(34,211,238,.28); color: var(--text); }
+
+    /* --- Surfaces ------------------------------------------------ */
+    .bg-white, .bg-slate-50, .bg-slate-100 {
+        background: var(--panel) !important;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+    body.bg-slate-50, .min-h-screen { background: transparent !important; }
+    .bg-gradient-to-b { background-image: none !important; background: transparent !important; }
+
+    .rounded-xl, .rounded-2xl { border-radius: var(--radius) !important; }
+    .shadow-sm, .shadow, .shadow-2xl { box-shadow: var(--glow) !important; }
+
+    /* Panels get a hairline that brightens toward the accent on hover. */
+    .shadow-sm, .shadow, .shadow-2xl, .rounded-xl, .rounded-2xl { border: 1px solid var(--line); }
+    a.rounded-xl:hover, a.shadow-sm:hover, .hover\:shadow:hover {
+        border-color: rgba(34,211,238,.34) !important;
+        box-shadow: 0 0 0 1px rgba(34,211,238,.3), 0 14px 40px -12px rgba(34,211,238,.3) !important;
+        transform: translateY(-1px);
+    }
+    a.rounded-xl, a.shadow-sm, .hover\:shadow { transition: all .18s ease; }
+
+    /* --- Type ---------------------------------------------------- */
+    .text-slate-900, .text-slate-800, .text-slate-700 { color: var(--text) !important; }
+    .text-slate-600, .text-slate-500 { color: var(--muted) !important; }
+    .text-slate-400 { color: var(--dim) !important; }
+    .text-indigo-600, .text-indigo-700, .text-indigo-900, .text-indigo-500, .text-indigo-300 { color: var(--accent) !important; }
+    .text-emerald-800, .text-emerald-700, .text-emerald-600, .text-emerald-300 { color: var(--accent-3) !important; }
+    .text-red-700, .text-red-600, .text-red-500, .text-red-400 { color: var(--danger) !important; }
+    .text-amber-800, .text-amber-700, .text-amber-500 { color: var(--warn) !important; }
+    .font-bold, .font-semibold { letter-spacing: -.015em; }
+    h1, h2, h3, .text-4xl, .text-5xl, .text-3xl, .text-2xl { letter-spacing: -.03em; }
+
+    /* Numbers and identifiers read as data. */
+    code, pre, .font-mono, table td:nth-child(n+2) { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .text-3xl.font-bold, .text-4xl.font-bold { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: -.04em; }
+
+    /* --- Tinted status blocks ------------------------------------ */
+    .bg-indigo-50, .bg-indigo-100 { background: rgba(34,211,238,.10) !important; }
+    .bg-emerald-50 { background: rgba(52,211,153,.10) !important; }
+    .bg-red-50    { background: rgba(251,113,133,.10) !important; }
+    .bg-amber-50  { background: rgba(251,191,36,.10) !important; }
+    .border-indigo-200  { border-color: rgba(34,211,238,.32) !important; }
+    .border-emerald-200 { border-color: rgba(52,211,153,.32) !important; }
+    .border-red-200     { border-color: rgba(251,113,133,.32) !important; }
+    .border-amber-200   { border-color: rgba(251,191,36,.32) !important; }
+
+    .border, .border-b, .border-t, .border-r,
+    .border-slate-200, .border-slate-300 { border-color: var(--line) !important; }
+    .divide-slate-200 > * { border-color: var(--line) !important; }
+
+    /* --- Accent actions ------------------------------------------ */
+    .bg-indigo-600, .bg-slate-800, .bg-slate-900 {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
+        color: #04060d !important;
+        border: 0 !important;
+        box-shadow: 0 6px 22px -8px rgba(34,211,238,.6);
+        font-weight: 600;
+    }
+    .hover\:bg-indigo-700:hover, .bg-indigo-600:hover, .bg-slate-800:hover {
+        filter: brightness(1.12) saturate(1.1);
+        box-shadow: 0 10px 30px -8px rgba(34,211,238,.75);
+    }
+    .bg-indigo-600, .bg-slate-800 { transition: filter .16s ease, box-shadow .16s ease; }
+    .bg-emerald-600 { background: linear-gradient(135deg, var(--accent-3), #22d3ee) !important; color:#04060d !important; }
+
+    /* --- Inputs -------------------------------------------------- */
+    input, textarea, select {
+        background: rgba(4,8,18,.6) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--line) !important;
+        border-radius: 10px !important;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    html.light input, html.light textarea, html.light select { background: rgba(255,255,255,.9) !important; }
+    input:focus, textarea:focus, select:focus {
+        outline: none !important;
+        border-color: rgba(34,211,238,.6) !important;
+        box-shadow: 0 0 0 3px rgba(34,211,238,.14) !important;
+    }
+    input::placeholder, textarea::placeholder { color: var(--dim); }
+    input[type="color"] { padding: 2px; }
+    input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); width: 15px; height: 15px; }
+    input[type="file"] { padding: 8px 10px; }
+    input[type="file"]::file-selector-button {
+        background: rgba(34,211,238,.1); color: var(--accent);
+        border: 1px solid rgba(34,211,238,.32); border-radius: 8px;
+        padding: 6px 14px; margin-right: 12px; cursor: pointer; font: inherit; font-size: 13px;
+        transition: all .16s ease;
+    }
+    input[type="file"]::file-selector-button:hover {
+        background: rgba(34,211,238,.2); box-shadow: 0 0 16px -5px rgba(34,211,238,.8);
+    }
+    /* Native dropdown lists render in the OS palette; keep options readable. */
+    select option { background: #0a0f1c; color: var(--text); }
+
+    /* --- Code ---------------------------------------------------- */
+    code {
+        background: rgba(34,211,238,.09) !important;
+        color: var(--accent) !important;
+        border: 1px solid var(--line-soft);
+        border-radius: 6px; padding: 1px 5px; font-size: .92em;
+    }
+    pre { background: rgba(3,6,14,.86) !important; border: 1px solid var(--line); border-radius: var(--radius); }
+    pre code { background: none !important; border: 0; color: #cfe6f5 !important; padding: 0; }
+
+    /* --- Tables -------------------------------------------------- */
+    table thead { color: var(--dim); text-transform: uppercase; letter-spacing: .09em; font-size: 10.5px; }
+    table tbody tr { transition: background .15s ease; }
+    table tbody tr:hover { background: rgba(34,211,238,.05); }
+
+    /* --- Header: sticky glass bar -------------------------------- */
+    header {
+        position: sticky; top: 0; z-index: 40;
+        background: rgba(4,7,14,.72) !important;
+        backdrop-filter: blur(16px) saturate(1.3);
+        -webkit-backdrop-filter: blur(16px) saturate(1.3);
+        border-bottom: 1px solid var(--line) !important;
+    }
+    html.light header { background: rgba(255,255,255,.78) !important; }
+    header a { transition: color .15s ease; }
+
+    /* Wordmark gets the gradient treatment. */
+    header .font-bold > a, header a.font-bold, .font-bold > a[href="/"] {
+        background: linear-gradient(100deg, var(--text) 20%, var(--accent) 60%, var(--accent-2));
+        -webkit-background-clip: text; background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -.04em;
+    }
+
+    /* --- Toggles ------------------------------------------------- */
+    .js-theme-toggle, .js-lang-toggle {
+        cursor: pointer; text-decoration: none;
+        border: 1px solid var(--line); border-radius: 10px;
+        color: var(--muted) !important; background: rgba(255,255,255,.03);
+        transition: all .16s ease;
+    }
+    .js-theme-toggle:hover, .js-lang-toggle:hover {
+        border-color: rgba(34,211,238,.45) !important;
+        color: var(--accent) !important;
+        background: rgba(34,211,238,.08) !important;
+        box-shadow: 0 0 18px -4px rgba(34,211,238,.5);
+    }
+
+    /* --- Misc ---------------------------------------------------- */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(125,211,252,.18); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(34,211,238,.4); }
+    @media (prefers-reduced-motion: reduce) {
+        body::after { animation: none; }
+        * { transition: none !important; }
+    }
     </style>
+    @stack('head')
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="antialiased">
     @yield('body')
 
     <script>
         (function () {
-            function ico() { return document.documentElement.classList.contains('dark') ? '☀️' : '🌙'; }
+            function isLight() { return document.documentElement.classList.contains('light'); }
+            function ico() { return isLight() ? '🌙' : '☀'; }
             function sync() { document.querySelectorAll('.js-theme-toggle').forEach(function (b) { b.textContent = ico(); }); }
             document.addEventListener('click', function (e) {
                 var b = e.target.closest('.js-theme-toggle');
                 if (!b) return;
-                var d = document.documentElement.classList.toggle('dark');
-                localStorage.theme = d ? 'dark' : 'light';
+                var light = document.documentElement.classList.toggle('light');
+                localStorage.theme = light ? 'light' : 'dark';
                 sync();
             });
             sync();

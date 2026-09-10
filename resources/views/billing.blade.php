@@ -1,20 +1,9 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('billing.title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('billing.title') }}</div>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
-            </div>
-        </div>
-    </header>
+@section('heading', __('billing.title'))
 
-    <main class="max-w-4xl mx-auto px-4 py-8 space-y-8">
-        @if (session('status'))
+@section('content')
+@if (session('status'))
             <div class="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-800">{{ session('status') }}</div>
         @endif
         @if ($errors->any())
@@ -73,6 +62,4 @@
                 </table>
             @endif
         </section>
-    </main>
-</div>
 @endsection

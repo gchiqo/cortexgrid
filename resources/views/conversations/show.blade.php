@@ -1,20 +1,12 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('conversations.one'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="/" class="font-bold text-lg">CortexGrid <span class="text-indigo-600">AI</span></a>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard/conversations" class="text-sm text-slate-600 hover:text-slate-900">{{ __('conversations.back') }}</a>
-            </div>
-        </div>
-    </header>
+@section('heading', __('conversations.one'))
+@section('actions')
+    <a href="/dashboard/conversations" class="cmd-open" style="text-decoration:none">{{ __('conversations.back') }}</a>
+@endsection
 
-    <main class="max-w-3xl mx-auto px-4 py-8 space-y-4">
-        <div class="bg-white rounded-xl shadow-sm p-5 flex items-center justify-between">
+@section('content')
+<div class="bg-white rounded-xl shadow-sm p-5 flex items-center justify-between">
             <div>
                 <div class="font-semibold">{{ $conversation->title ?: __('conversations.untitled', ['id' => $conversation->id]) }}</div>
                 <div class="text-sm text-slate-500">{{ __('conversations.chatbot_label') }}: {{ $conversation->config?->name }}</div>
@@ -40,6 +32,4 @@
                 </div>
             @endforeach
         </div>
-    </main>
-</div>
 @endsection

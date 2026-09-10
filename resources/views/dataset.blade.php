@@ -1,26 +1,14 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', $dataset->name)
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="/dashboard" class="text-slate-400 hover:text-slate-700">←</a>
-                <div class="font-bold text-lg">{{ $dataset->name }}</div>
-                <span class="text-xs text-slate-400">{{ __('dataset.doc_chunk_summary', ['docs' => $docCount, 'chunks' => $chunkCount]) }}</span>
-            </div>
-            <div class="flex items-center gap-4 text-sm">
-                <a href="/dashboard/datasets/{{ $dataset->id }}/explorer" class="text-slate-600 hover:text-indigo-600">📊 {{ __('explorer.title') }}</a>
-                <a href="/dashboard/console" class="text-slate-600 hover:text-indigo-600">{{ __('nav.console') }}</a>
-                <a href="/dashboard/conversations" class="text-slate-600 hover:text-indigo-600">{{ __('nav.conversations') }}</a>
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-            </div>
-        </div>
-    </header>
+@section('heading'){{ $dataset->name }}@endsection
+@section('crumb'){{ __('dashboard.datasets') }}@endsection
+@section('actions')
+    <span class="topbar-meta">{{ __('dataset.doc_chunk_summary', ['docs' => $docCount, 'chunks' => $chunkCount]) }}</span>
+    <a href="/dashboard/datasets/{{ $dataset->id }}/explorer" class="cmd-open" style="text-decoration:none">📊 {{ __('explorer.title') }}</a>
+@endsection
 
-    <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
-        @if (session('status'))
+@section('content')
+@if (session('status'))
             <div class="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-800">{{ session('status') }}</div>
         @endif
         @if (session('new_api_key'))
@@ -140,11 +128,8 @@
             @csrf @method('DELETE')
             <button class="text-red-400 hover:text-red-600 text-sm">{{ __('dataset.delete_dataset') }}</button>
         </form>
-    </main>
-</div>
-
 {{-- Upload pipeline animation overlay --}}
-<div id="upOverlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 backdrop-blur-sm">
+<div id="upOverlay" class="fixed inset-0 z-50 hidden items-center justify-center backdrop-blur-md" style="background:rgba(2,4,10,.8)">
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-xl mx-4">
         <h3 class="font-bold text-lg text-center mb-1">{{ __('dataset.pipeline.title') }}</h3>
         <p class="text-center text-slate-400 text-sm mb-7" id="upFile"></p>
@@ -167,16 +152,18 @@
 </div>
 <style>
 .up-pipe{display:flex;align-items:flex-start;justify-content:space-between}
-.up-stage{display:flex;flex-direction:column;align-items:center;gap:8px;width:64px;flex:0 0 auto}
-.up-stage span{font-size:12px;color:#94a3b8;text-align:center}
-.up-dot{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;
-        background:#f1f5f9;border:2px solid #e2e8f0;transition:all .35s ease;filter:grayscale(1);opacity:.55}
-.up-stage.active .up-dot{border-color:#6366f1;background:#eef2ff;filter:none;opacity:1;transform:scale(1.12);animation:upPulse 1s ease-in-out infinite}
-.up-stage.done .up-dot{border-color:#10b981;background:#ecfdf5;filter:none;opacity:1}
-.up-stage.active span,.up-stage.done span{color:#334155;font-weight:600}
-.up-line{flex:1;height:3px;background:#e2e8f0;margin-top:23px;border-radius:2px;position:relative;overflow:hidden}
-.up-line.fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#6366f1,#10b981);animation:upFlow .5s ease forwards}
-@keyframes upPulse{0%,100%{box-shadow:0 0 0 6px rgba(99,102,241,.15)}50%{box-shadow:0 0 0 11px rgba(99,102,241,.04)}}
+.up-stage{display:flex;flex-direction:column;align-items:center;gap:9px;width:66px;flex:0 0 auto}
+.up-stage span{font-size:11.5px;color:var(--dim);text-align:center}
+.up-dot{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:20px;
+    background:rgba(14,21,38,.8);border:1px solid var(--line);transition:all .35s ease;filter:grayscale(1);opacity:.5}
+.up-stage.active .up-dot{border-color:var(--accent);background:rgba(34,211,238,.12);filter:none;opacity:1;
+    transform:scale(1.12);animation:upPulse 1.1s ease-in-out infinite}
+.up-stage.done .up-dot{border-color:var(--accent-3);background:rgba(52,211,153,.12);filter:none;opacity:1}
+.up-stage.active span,.up-stage.done span{color:var(--text);font-weight:600}
+.up-line{flex:1;height:2px;background:var(--line);margin-top:24px;border-radius:2px;position:relative;overflow:hidden}
+.up-line.fill::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent-3));animation:upFlow .5s ease forwards}
+@keyframes upPulse{0%,100%{box-shadow:0 0 0 5px rgba(34,211,238,.10)}50%{box-shadow:0 0 0 10px rgba(34,211,238,.03)}}
 @keyframes upFlow{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 </style>
 

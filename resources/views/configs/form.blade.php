@@ -1,20 +1,13 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', $config->exists ? __('configs.edit_title') : __('configs.new_title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="/" class="font-bold text-lg">CortexGrid <span class="text-indigo-600">AI</span></a>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard/datasets/{{ $dataset->id }}" class="text-sm text-slate-600 hover:text-slate-900">← {{ $dataset->name }}</a>
-            </div>
-        </div>
-    </header>
+@section('heading'){{ $config->exists ? __('configs.edit_title') : __('configs.new_heading') }}@endsection
+@section('crumb'){{ $dataset->name }}@endsection
+@section('actions')
+    <a href="/dashboard/datasets/{{ $dataset->id }}" class="cmd-open" style="text-decoration:none">← {{ $dataset->name }}</a>
+@endsection
 
-    <main class="max-w-3xl mx-auto px-4 py-8">
-        <div class="bg-white rounded-xl shadow-sm p-6">
+@section('content')
+<div class="bg-white rounded-xl shadow-sm p-6">
             <h1 class="text-xl font-bold mb-6">
                 {{ $config->exists ? __('configs.edit_title') : __('configs.new_heading') }}
             </h1>
@@ -163,6 +156,4 @@
                 </script>
             @endif
         </div>
-    </main>
-</div>
 @endsection

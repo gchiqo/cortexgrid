@@ -1,20 +1,9 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('leads.title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('leads.title') }}</div>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
-            </div>
-        </div>
-    </header>
+@section('heading', __('leads.title'))
 
-    <main class="max-w-5xl mx-auto px-4 py-8">
-        <h1 class="text-xl font-bold mb-1">{{ __('leads.title') }}</h1>
+@section('content')
+<h1 class="text-xl font-bold mb-1">{{ __('leads.title') }}</h1>
         <p class="text-slate-500 text-sm mb-6">{{ __('leads.subtitle') }}</p>
 
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -46,6 +35,4 @@
                 </table>
             @endif
         </div>
-    </main>
-</div>
 @endsection

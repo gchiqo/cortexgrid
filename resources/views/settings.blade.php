@@ -1,20 +1,23 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('settings.title'))
-@section('body')
-<div class="min-h-screen">
-    <header class="bg-white border-b">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="font-bold text-lg"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('settings.title') }}</div>
-            <div class="flex items-center gap-2">
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
-            </div>
-        </div>
-    </header>
+@push('head')
+<style>
+.js-test{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);
+    transition:all .16s ease;cursor:pointer;font-weight:500}
+.js-test:hover{border-color:rgba(34,211,238,.5);color:var(--accent);background:rgba(34,211,238,.08);
+    box-shadow:0 0 18px -6px rgba(34,211,238,.7)}
+.js-test:disabled{opacity:.5;cursor:default}
+/* the selected provider card gets a live accent edge */
+section.ring-2{position:relative}
+section.ring-2::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:2px;border-radius:2px;
+    background:linear-gradient(180deg,var(--accent),var(--accent-2));box-shadow:0 0 14px rgba(34,211,238,.7)}
+</style>
+@endpush
+@section('heading'){{ __('settings.title') }}@endsection
+@section('crumb'){{ __('common.app_title') }}@endsection
 
-    <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        @if (session('status'))
+@section('content')
+@if (session('status'))
             <div class="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-800">{{ session('status') }}</div>
         @endif
         @if ($errors->any())
@@ -57,7 +60,7 @@
                         </label>
                         <div class="flex items-center gap-2 shrink-0">
                             <span class="js-test-result text-xs text-slate-400" data-for="{{ $name }}"></span>
-                            <button type="button" class="js-test text-xs bg-slate-100 hover:bg-slate-200 rounded px-2 py-1"
+                            <button type="button" class="js-test text-xs rounded-lg px-3 py-1.5"
                                     data-provider="{{ $name }}">{{ __('settings.test') }}</button>
                         </div>
                     </div>

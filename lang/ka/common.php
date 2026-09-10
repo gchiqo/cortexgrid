@@ -6,6 +6,8 @@ return [
     'theme_title' => 'ღია / მუქი თემა',
     'theme_aria' => 'თემის გადართვა',
     'back_to_dashboard' => '← პანელი',
+    'search' => 'ძებნა',
+    'search_placeholder' => 'გადადი გვერდზე…',
     'save' => 'შენახვა',
     'create' => 'შექმნა',
     'cancel' => 'გაუქმება',

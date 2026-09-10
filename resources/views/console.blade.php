@@ -1,31 +1,26 @@
-@extends('layout')
+@extends('layout-app')
 @section('title', __('console.title'))
-@section('body')
-<div class="h-screen flex flex-col">
-    <header class="bg-white border-b shrink-0">
-        <div class="px-4 h-14 flex items-center justify-between gap-4">
-            <div class="font-bold"><a href="/">CortexGrid <span class="text-indigo-600">AI</span></a> · {{ __('console.title') }}</div>
-            <div class="flex items-center gap-3">
-                <select id="config" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
-                    @foreach ($configs as $cfg)
-                        <option value="{{ $cfg->id }}">{{ $cfg->name }} ({{ $cfg->model_tier }})</option>
-                    @endforeach
-                </select>
-                <a href="/dashboard" class="text-sm text-slate-600 hover:text-slate-900">{{ __('common.back_to_dashboard') }}</a>
-                @include('partials.lang-toggle')
-                @include('partials.theme-toggle')
-            </div>
-        </div>
-    </header>
+@section('heading'){{ __('console.title') }}@endsection
+@section('crumb'){{ __('common.app_title') }}@endsection
+@section('actions')
+    <select id="config" class="px-3 py-1.5 text-sm" style="max-width:280px">
+        @foreach ($configs as $cfg)
+            <option value="{{ $cfg->id }}">{{ $cfg->name }} ({{ $cfg->model_tier }})</option>
+        @endforeach
+    </select>
+@endsection
 
-    <div class="flex-1 flex min-h-0">
+@section('content')
+<div class="console-fill">
+
+    <div class="flex-1 flex min-h-0 console-split">
         {{-- LEFT: trace --}}
-        <div class="w-1/2 border-r bg-slate-900 text-slate-100 overflow-y-auto p-4" id="trace">
+        <div class="w-1/2 border-r overflow-y-auto p-4" style="background:rgba(3,6,14,.7)" id="trace">
             <div class="text-slate-400 text-sm">{{ __('console.trace_intro') }}</div>
         </div>
 
         {{-- RIGHT: chat --}}
-        <div class="w-1/2 flex flex-col min-h-0 bg-slate-50">
+        <div class="w-1/2 flex flex-col min-h-0 js-chat-pane">
             <div class="flex-1 overflow-y-auto p-4 space-y-3" id="chat"></div>
             <div class="border-t bg-white p-3 flex gap-2">
                 <textarea id="q" rows="1" placeholder="{{ __('console.ask_placeholder') }}"
@@ -37,12 +32,30 @@
 </div>
 
 <style>
+/* Break out of the shell's padding: the console is an instrument panel. */
+.console-fill{ height:calc(100vh - 60px); display:flex; flex-direction:column;
+    margin:-26px -22px -70px; border-top:0 }
+.console-split{ border-top:1px solid var(--line) }
+
+.js-chat-pane{background:linear-gradient(180deg,rgba(14,21,38,.5),rgba(8,13,26,.72))}
+#trace{border-right:1px solid rgba(34,211,238,.22);box-shadow:inset -18px 0 32px -30px rgba(34,211,238,.9)}
+#trace::-webkit-scrollbar-thumb{background:rgba(34,211,238,.25)}
+/* the composer sits on its own bar so the split reads clearly */
+.js-chat-pane > .border-t{background:rgba(4,8,18,.72)!important;backdrop-filter:blur(12px);
+    border-top:1px solid var(--line)!important}
+
 @keyframes traceIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 #trace .trace-card{animation:traceIn .42s ease both}
 @keyframes thinkPulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
-.think-step{display:flex;align-items:center;gap:8px;padding:9px 11px;margin-bottom:8px;border-radius:8px;background:#1e293b;border-left:3px solid #334155;opacity:.5;transition:all .3s ease}
-.think-step.on{opacity:1;border-left-color:#6366f1;background:#27344b;transform:translateX(4px)}
-.think-dot{width:9px;height:9px;border-radius:50%;background:#6366f1;animation:thinkPulse 1s ease-in-out infinite;flex:0 0 auto}
+.think-step{display:flex;align-items:center;gap:9px;padding:10px 12px;margin-bottom:8px;border-radius:10px;
+    background:rgba(14,21,38,.7);border:1px solid var(--line);border-left:3px solid var(--line);
+    opacity:.45;transition:all .3s ease}
+.think-step.on{opacity:1;border-left-color:var(--accent);background:rgba(34,211,238,.09);
+    transform:translateX(5px);box-shadow:0 0 24px -8px rgba(34,211,238,.6)}
+.think-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);
+    animation:thinkPulse 1s ease-in-out infinite;flex:0 0 auto}
+.trace-card{background:rgba(8,13,26,.8)!important;border:1px solid var(--line)!important;
+    border-left:3px solid var(--accent)!important;border-radius:12px}
 </style>
 @php($__t = [
     'no_trace' => __('console.no_trace'),
@@ -101,9 +114,9 @@ function bubble(role, text){
 }
 
 function badge(p){
-  const colors = { groq:'#f59e0b', gemini:'#3b82f6', anthropic:'#8b5cf6' };
-  const label = { groq:'Groq', gemini:'Gemini', anthropic:'Claude' }[p] || p;
-  return '<span style="background:'+(colors[p]||'#64748b')+'" class="text-white text-[10px] px-1.5 py-0.5 rounded">'+label+'</span>';
+  const colors = { groq:'#fbbf24', gemini:'#22d3ee', anthropic:'#a78bfa', cerebras:'#34d399', openrouter:'#f472b6', nvidia:'#84cc16' };
+  const label = { groq:'Groq', gemini:'Gemini', anthropic:'Claude', cerebras:'Cerebras', openrouter:'OpenRouter', nvidia:'NVIDIA' }[p] || p;
+  return '<span style="background:'+(colors[p]||'#64748b')+'22;border:1px solid '+(colors[p]||'#64748b')+'66;color:'+(colors[p]||'#94a3b8')+'" class="text-[10px] px-2 py-0.5 rounded-md font-medium">'+label+'</span>';
 }
 function card(title, badgeHtml, bodyHtml, ms){
   return '<div class="trace-card bg-slate-800 rounded-lg p-3 mb-2 border-l-4 border-indigo-500">' +

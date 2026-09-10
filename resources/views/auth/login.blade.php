@@ -1,9 +1,40 @@
 @extends('layout')
 @section('title', __('auth.login'))
+@push('head')
+<style>
+.auth-wrap{display:grid;grid-template-columns:1.05fr .95fr;min-height:100vh}
+@media (max-width:900px){.auth-wrap{grid-template-columns:1fr}.auth-aside{display:none}}
+.auth-aside{padding:48px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center;
+    border-inline-end:1px solid var(--line);background:rgba(6,10,20,.5);position:relative;overflow:hidden}
+.auth-aside::after{content:'';position:absolute;inset:auto -20% -40% -20%;height:60%;
+    background:radial-gradient(30rem 18rem at 40% 50%,rgba(34,211,238,.16),transparent 70%)}
+.auth-brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-size:17px;font-weight:600;
+    color:var(--text);margin-bottom:8px}
+.auth-brand b{color:var(--accent);font-weight:600}
+.auth-brand .side-mark{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;color:#04060d;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px -6px rgba(34,211,238,.8)}
+.auth-h{font-size:30px;font-weight:700;line-height:1.15;letter-spacing:-.03em;
+    background:linear-gradient(96deg,var(--text) 20%,var(--accent) 62%,var(--accent-2));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;max-width:16ch}
+.auth-p{color:var(--muted);font-size:14px;line-height:1.6;max-width:44ch}
+.auth-list{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.auth-list li{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--text)}
+.auth-tick{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent)}
+.auth-engines{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.auth-engines span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+.auth-side{display:flex;align-items:center;justify-content:center;padding:34px 22px}
+.auth-card{width:100%;max-width:400px}
+</style>
+@endpush
+
 @section('body')
 <div class="fixed top-4 right-4 z-10 flex items-center gap-1">@include('partials.lang-toggle')@include('partials.theme-toggle')</div>
-<div class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow p-8">
+<div class="auth-wrap">
+@include('partials.auth-aside')
+<div class="auth-side"><div class="auth-card">
+    <div class="bg-white rounded-2xl shadow p-8">
         <h1 class="text-2xl font-bold mb-1">{{ __('auth.login') }}</h1>
         <p class="text-slate-500 mb-6">{{ __('common.app_title') }}</p>
 
@@ -46,6 +77,5 @@
         <p class="text-center text-sm text-slate-500 mt-6">
             {{ __('auth.no_account') }} <a href="/register" class="text-indigo-600 font-medium">{{ __('auth.register') }}</a>
         </p>
-    </div>
-</div>
+    </div></div></div>
 @endsection

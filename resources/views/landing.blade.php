@@ -18,11 +18,11 @@
     </header>
 
     {{-- Hero --}}
-    <section class="max-w-4xl mx-auto px-4 text-center pt-16 pb-10">
-        <div class="inline-block text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full px-3 py-1 mb-5">
+    <section class="max-w-4xl mx-auto px-4 text-center pt-14 pb-8">
+        <div class="hero-badge inline-block font-medium rounded-full px-4 py-1.5 mb-6">
             {{ __('landing.badge') }}
         </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
+        <h1 class="hero-title text-4xl md:text-5xl font-extrabold leading-[1.1] max-w-3xl mx-auto">
             {!! __('landing.hero') !!}
         </h1>
         <p class="text-lg text-slate-500 mt-5 max-w-2xl mx-auto">
@@ -35,6 +35,39 @@
                 <a href="/register" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-6 py-3 font-medium">{{ __('landing.start_free') }}</a>
             @endauth
             <a href="#how" class="border border-slate-300 hover:bg-white rounded-lg px-6 py-3 font-medium">{{ __('landing.how_it_works') }}</a>
+        </div>
+    </section>
+
+    {{-- A console mock: what the platform actually does, at a glance --}}
+    <section class="max-w-4xl mx-auto px-4 -mt-2 mb-4">
+        <div class="mock">
+            <div class="mock-bar">
+                <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+                <span class="mock-title">{{ __('console.title') }}</span>
+            </div>
+            <div class="mock-body">
+                <div class="mock-q">{{ __('docs.example_question') }}</div>
+                @foreach ([['console.rewrite','groq'],['console.embedding','gemini'],['console.semantic','—'],['console.lexical','—'],['console.fusion','RRF'],['console.generate','claude']] as $i => [$k, $tag])
+                    <div class="mock-step" style="--i:{{ $i }}">
+                        <span class="mock-tick"></span>
+                        <span class="mock-label">{{ __($k) }}</span>
+                        <span class="mock-tag">{{ $tag }}</span>
+                    </div>
+                @endforeach
+                <div class="mock-a">{{ __('docs.example_answer') }} <span class="mock-cite">[#1]</span></div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Engines --}}
+    <section class="max-w-5xl mx-auto px-4 py-10">
+        <p class="text-center text-xs text-slate-400 mb-5" style="letter-spacing:.16em;text-transform:uppercase">
+            {{ __('landing.engines') }}
+        </p>
+        <div class="engines">
+            @foreach (['Groq','Gemini','Cerebras','OpenRouter','NVIDIA','Claude'] as $e)
+                <span class="engine">{{ $e }}</span>
+            @endforeach
         </div>
     </section>
 
@@ -70,7 +103,7 @@
 
             {{-- 1. Upload --}}
             <div class="reveal mb-20">
-                <div class="text-xs font-semibold text-indigo-600 mb-1">{{ __('landing.step', ['n' => 1]) }}</div>
+                <div class="step-tag mb-2">{{ __('landing.step', ['n' => 1]) }}</div>
                 <h3 class="text-xl font-bold mb-3">{{ __('landing.step1_title') }}</h3>
                 <p class="text-slate-600 mb-6 max-w-3xl">
                     {!! __('landing.step1_body') !!}
@@ -93,7 +126,7 @@
 
             {{-- 2. Agent creation --}}
             <div class="reveal mb-20">
-                <div class="text-xs font-semibold text-indigo-600 mb-1">{{ __('landing.step', ['n' => 2]) }}</div>
+                <div class="step-tag mb-2">{{ __('landing.step', ['n' => 2]) }}</div>
                 <h3 class="text-xl font-bold mb-3">{{ __('landing.step2_title') }}</h3>
                 <p class="text-slate-600 mb-6 max-w-3xl">
                     {!! __('landing.step2_body') !!}
@@ -115,7 +148,7 @@
 
             {{-- 3. Chat --}}
             <div class="reveal">
-                <div class="text-xs font-semibold text-indigo-600 mb-1">{{ __('landing.step', ['n' => 3]) }}</div>
+                <div class="step-tag mb-2">{{ __('landing.step', ['n' => 3]) }}</div>
                 <h3 class="text-xl font-bold mb-3">{{ __('landing.step3_title') }}</h3>
                 <p class="text-slate-600 mb-6 max-w-3xl">
                     {!! __('landing.step3_body') !!}
@@ -148,18 +181,65 @@
 </div>
 
 <style>
-.flow{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:nowrap;overflow-x:auto;padding:8px 4px}
-.flow-node{display:flex;flex-direction:column;align-items:center;gap:8px;flex:0 0 auto;width:78px}
-.flow-node span{font-size:11px;color:#64748b;text-align:center}
-.flow-dot{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;
-    background:#fff;border:2px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.04);animation:nodePulse 2.6s ease-in-out infinite;animation-delay:var(--d)}
-@keyframes nodePulse{0%,72%,100%{border-color:#e2e8f0;transform:scale(1)}82%{border-color:#6366f1;transform:scale(1.12);box-shadow:0 0 0 8px rgba(99,102,241,.12)}}
-.flow-link{flex:1;height:2px;background:#e2e8f0;margin-top:25px;position:relative;min-width:16px;border-radius:2px}
-.flow-packet{position:absolute;top:-2px;left:0;width:6px;height:6px;border-radius:50%;background:#6366f1;
-    box-shadow:0 0 8px #6366f1;animation:packet 2.6s ease-in-out infinite;animation-delay:var(--d)}
+.flow{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:nowrap;overflow-x:auto;padding:10px 4px}
+.flow-node{display:flex;flex-direction:column;align-items:center;gap:9px;flex:0 0 auto;width:80px}
+.flow-node span{font-size:11px;color:var(--dim);text-align:center;letter-spacing:.02em}
+.flow-dot{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;
+    background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(10px);
+    animation:nodePulse 2.6s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes nodePulse{
+    0%,72%,100%{border-color:var(--line);transform:scale(1);box-shadow:none}
+    82%{border-color:rgba(34,211,238,.75);transform:scale(1.1);box-shadow:0 0 0 6px rgba(34,211,238,.09),0 0 26px -4px rgba(34,211,238,.6)}}
+.flow-link{flex:1;height:2px;background:var(--line);margin-top:26px;position:relative;min-width:16px;border-radius:2px}
+.flow-packet{position:absolute;top:-2px;left:0;width:6px;height:6px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 12px var(--accent);animation:packet 2.6s ease-in-out infinite;animation-delay:var(--d)}
 @keyframes packet{0%,72%{left:0;opacity:0}74%{opacity:1}100%{left:100%;opacity:0}}
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
 .reveal.show{opacity:1;transform:none}
+
+/* Hero: gradient wordline + a scanning sweep across the headline */
+.hero-title{background:linear-gradient(96deg,var(--text) 18%,var(--accent) 52%,var(--accent-2) 88%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-badge{border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);color:var(--accent);
+    backdrop-filter:blur(10px);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px}
+.hero-badge::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);
+    margin-right:8px;vertical-align:middle;box-shadow:0 0 10px var(--accent);animation:blip 1.8s ease-in-out infinite}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.25}}
+.step-tag{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.18em;font-size:10px;
+    color:var(--accent)}
+.step-tag::before{content:'// '}
+
+/* console mock */
+.mock{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(8,13,26,.8);
+    box-shadow:0 40px 90px -40px rgba(34,211,238,.35),0 0 0 1px rgba(34,211,238,.08)}
+.mock-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.02)}
+.mock-dot{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.mock-dot:first-child{background:rgba(251,113,133,.6)}
+.mock-dot:nth-child(2){background:rgba(251,191,36,.6)}
+.mock-dot:nth-child(3){background:rgba(52,211,153,.6)}
+.mock-title{margin-inline-start:8px;font-size:11.5px;color:var(--dim);font-family:'JetBrains Mono',monospace}
+.mock-body{padding:16px 18px;display:flex;flex-direction:column;gap:7px}
+.mock-q{font-size:13.5px;color:var(--text);padding-bottom:6px}
+.mock-q::before{content:'> ';color:var(--accent);font-family:'JetBrains Mono',monospace}
+.mock-step{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);
+    opacity:0;animation:mockIn .5s ease forwards;animation-delay:calc(var(--i) * .16s + .2s)}
+.mock-tick{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);flex:0 0 auto}
+.mock-label{flex:1}
+.mock-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);
+    border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+.mock-a{margin-top:8px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;color:var(--text);
+    opacity:0;animation:mockIn .5s ease forwards;animation-delay:1.3s}
+.mock-cite{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px}
+@keyframes mockIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* engines */
+.engines{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.engine{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:7px 16px;background:rgba(255,255,255,.02);
+    transition:all .18s ease}
+.engine:hover{color:var(--accent);border-color:rgba(34,211,238,.45);box-shadow:0 0 20px -6px rgba(34,211,238,.6)}
 </style>
 <script>
 (function () {
