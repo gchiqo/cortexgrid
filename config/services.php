@@ -97,7 +97,10 @@ return [
             */
             'gemini' => [
                 'base_url' => env('GEMINI_OPENAI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta/openai'),
-                'key' => env('GEMINI_API_KEY'),
+                // A second key (a different Google project) keeps chat off the
+                // same free quota as embeddings. Falls back to the embeddings
+                // key when unset, so one key still works for both.
+                'key' => env('GEMINI_CHAT_API_KEY') ?: env('GEMINI_API_KEY'),
                 'model' => env('GEMINI_CHAT_MODEL', 'gemini-2.5-flash'),
                 'tiers' => [
                     'fast' => env('GEMINI_TIER_FAST', 'gemini-2.5-flash'),
