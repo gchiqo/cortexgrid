@@ -54,18 +54,24 @@ class Retriever
         }
 
         // --- lexical (BM25-ish) ---
-        $lexBindings = array_merge([$query, $tenantId, $query], $dsBindings);
-        $t0 = microtime(true);
-        $lexical = DB::select(
-            "select id, document_id, content, metadata,
-                    ts_rank(content_tsv, plainto_tsquery('simple', ?)) as score
-             from chunks
-             where tenant_id = ? and content_tsv @@ plainto_tsquery('simple', ?){$dsClause}
-             order by score desc
-             limit ".(int) $pool,
-            $lexBindings
-        );
-        $lexMs = (microtime(true) - $t0) * 1000;
+        $lexical = [];
+        $lexMs = 0.0;
+        $tsQuery = LexicalQuery::build($query);
+
+        if ($tsQuery !== null) {
+            $lexBindings = array_merge([$tsQuery, $tenantId, $tsQuery], $dsBindings);
+            $t0 = microtime(true);
+            $lexical = DB::select(
+                "select id, document_id, content, metadata,
+                        ts_rank(content_tsv, to_tsquery('simple', ?)) as score
+                 from chunks
+                 where tenant_id = ? and content_tsv @@ to_tsquery('simple', ?){$dsClause}
+                 order by score desc
+                 limit ".(int) $pool,
+                $lexBindings
+            );
+            $lexMs = (microtime(true) - $t0) * 1000;
+        }
 
         $fused = $this->fuse([$semantic, $lexical], $k);
 
