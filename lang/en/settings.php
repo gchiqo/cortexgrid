@@ -7,6 +7,7 @@ return [
 
     'provider' => [
         'groq' => 'Groq',
+        'gemini' => 'Google Gemini',
         'openrouter' => 'OpenRouter',
         'nvidia' => 'NVIDIA NIM',
         'cerebras' => 'Cerebras',
@@ -14,6 +15,7 @@ return [
     ],
     'hint' => [
         'groq' => 'Free and fast, no card required.',
+        'gemini' => 'Free tier, and it reuses the key already used for embeddings — nothing extra to register.',
         'openrouter' => 'Widest model choice, including ":free" ids. Free tier is about 50 requests a day, and not every free model supports tool calling.',
         'nvidia' => 'Free credits, including large models.',
         'cerebras' => 'Very fast inference, with a free tier.',

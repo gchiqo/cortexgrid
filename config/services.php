@@ -86,6 +86,26 @@ return [
                 ],
             ],
 
+            /*
+            | Gemini also speaks the OpenAI chat format, so it needs no driver
+            | of its own. Reuses GEMINI_API_KEY, which the app already has for
+            | embeddings — nothing extra to register.
+            |
+            | The Pro models are quota-locked on the free tier (429), and the
+            | "latest" aliases return 503 under load, so the flash models are
+            | the ones that actually answer.
+            */
+            'gemini' => [
+                'base_url' => env('GEMINI_OPENAI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta/openai'),
+                'key' => env('GEMINI_API_KEY'),
+                'model' => env('GEMINI_CHAT_MODEL', 'gemini-2.5-flash'),
+                'tiers' => [
+                    'fast' => env('GEMINI_TIER_FAST', 'gemini-2.5-flash'),
+                    'standard' => env('GEMINI_TIER_STANDARD', 'gemini-2.5-flash'),
+                    'max' => env('GEMINI_TIER_MAX', 'gemini-3-flash-preview'),
+                ],
+            ],
+
             'openrouter' => [
                 'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
                 'key' => env('OPENROUTER_API_KEY'),

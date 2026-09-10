@@ -84,11 +84,12 @@ changed later from **Dashboard → Settings** without editing files or redeployi
 ```env
 GEMINI_API_KEY=...                # https://aistudio.google.com/apikey  (required)
 
-LLM_PROVIDER=groq                 # groq | openrouter | nvidia | cerebras | anthropic
+LLM_PROVIDER=groq                 # groq | gemini | cerebras | openrouter | nvidia | anthropic
 GROQ_API_KEY=gsk_...              # https://console.groq.com/keys
+# LLM_PROVIDER=gemini             # answers using the GEMINI_API_KEY above — no extra signup
+# CEREBRAS_API_KEY=               # https://cloud.cerebras.ai
 # OPENROUTER_API_KEY=             # https://openrouter.ai/keys
 # NVIDIA_API_KEY=                 # https://build.nvidia.com
-# CEREBRAS_API_KEY=               # https://cloud.cerebras.ai
 # ANTHROPIC_API_KEY=sk-ant-...    # https://console.anthropic.com/  (paid)
 
 # optional:

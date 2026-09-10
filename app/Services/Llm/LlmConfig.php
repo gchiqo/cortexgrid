@@ -14,13 +14,14 @@ use App\Models\Setting;
 class LlmConfig
 {
     /** Providers that speak the OpenAI /chat/completions format. */
-    public const OPENAI_COMPATIBLE = ['groq', 'openrouter', 'nvidia', 'cerebras'];
+    public const OPENAI_COMPATIBLE = ['groq', 'gemini', 'cerebras', 'openrouter', 'nvidia'];
 
     public const TIERS = ['fast', 'standard', 'max'];
 
     /** Where an operator goes to create a key for each provider. */
     public const CONSOLE_URLS = [
         'groq' => 'https://console.groq.com/keys',
+        'gemini' => 'https://aistudio.google.com/apikey',
         'openrouter' => 'https://openrouter.ai/keys',
         'nvidia' => 'https://build.nvidia.com',
         'cerebras' => 'https://cloud.cerebras.ai',
