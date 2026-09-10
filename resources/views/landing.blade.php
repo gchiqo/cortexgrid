@@ -5,25 +5,27 @@
 <canvas id="net" class="net-canvas" aria-hidden="true"></canvas>
 <div class="min-h-screen">
     <header class="nav" id="nav">
-        <div class="nav-pill">
-            <a href="/" class="nav-brand">
-                <span class="nav-mark">CG</span>
-                <span>Cortex<b>Grid</b></span>
+        <div class="nav-in">
+            <a href="/" class="brand">
+                <span class="brand-mark"><i></i><i></i><i></i></span>
+                <span class="brand-word">Cortex<b>Grid</b></span>
             </a>
 
-            <a href="#how" class="nav-link">{{ __('landing.how_it_works') }}</a>
+            <nav class="links">
+                <a href="#how">{{ __('landing.how_it_works') }}</a>
+                <a href="#engines">{{ __('landing.engines') }}</a>
+            </nav>
 
-            <span class="nav-div"></span>
-
-            @include('partials.lang-toggle')
-            @include('partials.theme-toggle')
-
-            @auth
-                <a href="/dashboard" class="nav-cta">{{ __('dashboard.title') }}</a>
-            @else
-                <a href="/login" class="nav-link">{{ __('auth.login') }}</a>
-                <a href="/register" class="nav-cta">{{ __('landing.get_started') }}</a>
-            @endauth
+            <div class="acts">
+                @include('partials.lang-toggle')
+                @include('partials.theme-toggle')
+                @auth
+                    <a href="/dashboard" class="cta">{{ __('dashboard.title') }}<span class="cta-arrow">→</span></a>
+                @else
+                    <a href="/login" class="ghost">{{ __('auth.login') }}</a>
+                    <a href="/register" class="cta">{{ __('landing.get_started') }}<span class="cta-arrow">→</span></a>
+                @endauth
+            </div>
         </div>
     </header>
 
@@ -73,7 +75,7 @@
     </section>
 
     {{-- Engines --}}
-    <section class="max-w-5xl mx-auto px-4 py-10">
+    <section id="engines" class="max-w-5xl mx-auto px-4 py-10 scroll-mt-24">
         <p class="text-center text-xs text-slate-400 mb-5" style="letter-spacing:.16em;text-transform:uppercase">
             {{ __('landing.engines') }}
         </p>
@@ -317,8 +319,8 @@ html.js .stagger.show > *{opacity:1;transform:none}
 }
 
 /* The landing page runs a deeper ground than the app panel: more contrast
-   behind the canvas and the glowing hero, without touching the dashboard. */
-:root{
+   behind the canvas and the hero. Dark only — light has its own identity. */
+html:not(.light){
     --bg:            #080d16;
     --bg-2:          #0d1420;
     --panel:         rgba(24, 34, 52, .72);
@@ -330,46 +332,56 @@ html.js .stagger.show > *{opacity:1;transform:none}
     --code-bg:       rgba(6, 11, 20, .92);
     --input-bg:      rgba(13, 20, 33, .8);
 }
-html.light{
-    --bg:#eef2f9; --bg-2:#e3e9f4;
-    --panel:rgba(255,255,255,.86); --line:rgba(30,64,120,.14); --line-soft:rgba(30,64,120,.08);
-    --bar:rgba(255,255,255,.8); --surface:rgba(255,255,255,.78); --surface-solid:#fff;
-    --code-bg:rgba(15,23,42,.05); --input-bg:rgba(255,255,255,.9);
-}
 
-/* ---- floating nav ---- */
-.nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;justify-content:center;
-    padding:16px 16px 0;transition:transform .32s cubic-bezier(.2,.7,.2,1),padding .32s ease}
-.nav.up{transform:translateY(-130%)}
-.nav.small{padding-top:9px}
-.nav-pill{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 14px;border-radius:999px;
-    border:1px solid var(--line);background:rgba(10,16,27,.72);backdrop-filter:blur(18px) saturate(1.4);
-    -webkit-backdrop-filter:blur(18px) saturate(1.4);
-    box-shadow:0 18px 50px -24px #000, inset 0 1px 0 rgba(255,255,255,.05);
-    transition:border-color .3s ease,box-shadow .3s ease}
-html.light .nav-pill{background:rgba(255,255,255,.8)}
-.nav.small .nav-pill{border-color:rgba(34,211,238,.26);
-    box-shadow:0 18px 50px -24px #000,0 0 0 1px rgba(34,211,238,.1),inset 0 1px 0 rgba(255,255,255,.05)}
-.nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;font-size:14.5px;font-weight:600;
-    color:var(--text);letter-spacing:-.02em;padding-inline-end:6px}
-.nav-brand b{font-weight:600;color:var(--accent)}
-.nav-mark{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;
-    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#04060d;
+
+/* ---- header: nothing at rest, a thin bar once you move ---- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;transition:transform .34s cubic-bezier(.2,.7,.2,1)}
+.nav::after{content:'';position:absolute;inset:0;z-index:-1;opacity:0;
+    background:var(--nav-bg);backdrop-filter:blur(16px) saturate(1.35);-webkit-backdrop-filter:blur(16px) saturate(1.35);
+    border-bottom:1px solid var(--line);transition:opacity .3s ease}
+.nav.stuck::after{opacity:1}
+.nav.up{transform:translateY(-100%)}
+.nav-in{max-width:1180px;margin:0 auto;padding:20px 26px;display:flex;align-items:center;gap:26px;
+    transition:padding .3s ease}
+.nav.stuck .nav-in{padding:12px 26px}
+
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:15px;font-weight:600;
+    color:var(--text);letter-spacing:-.025em;margin-inline-end:auto}
+.brand b{font-weight:600;color:var(--accent)}
+/* three stacked bars that lean like a signal rising */
+.brand-mark{display:flex;align-items:flex-end;gap:2.5px;height:19px}
+.brand-mark i{width:3.5px;border-radius:2px;background:linear-gradient(180deg,var(--accent),var(--accent-2));
+    box-shadow:0 0 9px rgba(34,211,238,.5)}
+.brand-mark i:nth-child(1){height:8px;animation:bar 2.4s ease-in-out infinite}
+.brand-mark i:nth-child(2){height:14px;animation:bar 2.4s ease-in-out .28s infinite}
+.brand-mark i:nth-child(3){height:19px;animation:bar 2.4s ease-in-out .56s infinite}
+@keyframes bar{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.55)}}
+
+.links{display:flex;align-items:center;gap:4px}
+.links a{position:relative;font-size:13.5px;color:var(--muted);text-decoration:none;padding:8px 12px;
+    transition:color .16s ease}
+.links a::after{content:'';position:absolute;left:12px;right:12px;bottom:3px;height:1px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));transform:scaleX(0);transform-origin:left;
+    transition:transform .24s cubic-bezier(.2,.7,.2,1)}
+.links a:hover{color:var(--text)}
+.links a:hover::after{transform:scaleX(1)}
+
+.acts{display:flex;align-items:center;gap:8px}
+.ghost{font-size:13.5px;color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:9px;
+    transition:all .16s ease}
+.ghost:hover{color:var(--text);background:var(--hover)}
+.cta{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;text-decoration:none;
+    padding:9px 17px;border-radius:10px;color:var(--on-accent);
     background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 5px 16px -5px rgba(34,211,238,.85)}
-.nav-link{font-size:13.5px;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;
-    transition:all .16s ease;white-space:nowrap}
-.nav-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
-.nav-div{width:1px;height:20px;background:var(--line);margin:0 2px}
-.nav-cta{font-size:13.5px;font-weight:600;color:#04060d;text-decoration:none;padding:8px 17px;border-radius:999px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));white-space:nowrap;
-    box-shadow:0 8px 24px -8px rgba(34,211,238,.8);transition:filter .16s ease,box-shadow .16s ease}
-.nav-cta:hover{filter:brightness(1.12);box-shadow:0 12px 30px -8px rgba(34,211,238,.95)}
-.nav .js-lang-toggle,.nav .js-theme-toggle{border-radius:999px}
-@media (max-width:640px){
-    .nav-pill{gap:5px;padding-inline-start:11px}
-    .nav-link{display:none}
-    .nav-brand span:not(.nav-mark){display:none}
+    box-shadow:var(--cta-shadow);transition:box-shadow .2s ease,transform .2s ease}
+.cta:hover{transform:translateY(-1px);box-shadow:var(--cta-shadow-hover)}
+.cta-arrow{transition:transform .2s ease}
+.cta:hover .cta-arrow{transform:translateX(3px)}
+@media (max-width:760px){
+    .links{display:none}
+    .brand-word{display:none}
+    .nav-in{padding:14px 18px;gap:12px}
+}
 }
 </style>
 @php($__demoQ = (array) __('landing.demo_questions'))
@@ -462,6 +474,15 @@ html.light .nav-pill{background:rgba(255,255,255,.8)}
             mouse = { x: -9999, y: -9999 };
 
         function rnd(a, b) { return a + Math.random() * (b - a); }
+        function light() { return document.documentElement.classList.contains('light'); }
+        // Ink on paper in light, bioluminescence on dark.
+        function ink() {
+            return light()
+                ? { axon: 'rgba(60,96,140,.20)', dend: '60,96,140', dendA: .10, dendB: .13,
+                    soma: 'rgba(52,88,132,.42)', hot: 'rgba(11,139,168,.95)', pulse: '11,139,168' }
+                : { axon: 'rgba(134,186,238,.17)', dend: '152,198,244', dendA: .075, dendB: .10,
+                    soma: 'rgba(150,196,240,.5)', hot: 'rgba(120,235,250,.95)', pulse: '34,211,238' };
+        }
 
         // One dendrite: a tapering branch that forks as it goes.
         function grow(x, y, angle, len, width, depth, out) {
@@ -514,9 +535,10 @@ html.light .nav-pill{background:rgba(255,255,255,.8)}
             sctx.clearRect(0, 0, w, h);
             sctx.lineCap = 'round';
 
+            var C = ink();
             axons.forEach(function (ax) {
                 var A = neurons[ax.a], B = neurons[ax.b];
-                sctx.strokeStyle = 'rgba(134,186,238,.17)';
+                sctx.strokeStyle = C.axon;
                 sctx.lineWidth = 0.9;
                 sctx.beginPath();
                 sctx.moveTo(A.x, A.y);
@@ -526,7 +548,7 @@ html.light .nav-pill{background:rgba(255,255,255,.8)}
 
             neurons.forEach(function (n) {
                 n.seg.forEach(function (g) {
-                    sctx.strokeStyle = 'rgba(152,198,244,' + (0.075 + g.w * 0.10) + ')';
+                    sctx.strokeStyle = 'rgba(' + C.dend + ',' + (C.dendA + g.w * C.dendB) + ')';
                     sctx.lineWidth = g.w;
                     sctx.beginPath();
                     sctx.moveTo(g.x, g.y);
@@ -567,7 +589,11 @@ html.light .nav-pill{background:rgba(255,255,255,.8)}
                            speed: rnd(0.005, 0.011) });
         }
 
-        var tick = 0;
+        var tick = 0, C2 = ink();
+        // Repaint the cached structure when the theme flips.
+        new MutationObserver(function () { C2 = ink(); paintStill(); })
+            .observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
         (function frame() {
             ctx.clearRect(0, 0, w, h);
             ctx.drawImage(still, 0, 0, w, h);
@@ -585,12 +611,12 @@ html.light .nav-pill{background:rgba(255,255,255,.8)}
                 var glow = Math.max(n.fire, near ? (1 - md / 190) * 0.75 : 0);
                 if (glow > 0.01) {
                     var g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 34 + glow * 30);
-                    g.addColorStop(0, 'rgba(34,211,238,' + (0.26 * glow) + ')');
-                    g.addColorStop(1, 'rgba(34,211,238,0)');
+                    g.addColorStop(0, 'rgba(' + C2.pulse + ',' + (0.26 * glow) + ')');
+                    g.addColorStop(1, 'rgba(' + C2.pulse + ',0)');
                     ctx.fillStyle = g;
                     ctx.beginPath(); ctx.arc(n.x, n.y, 34 + glow * 30, 0, 6.283); ctx.fill();
                 }
-                ctx.fillStyle = glow > 0.05 ? 'rgba(120,235,250,.95)' : 'rgba(150,196,240,.5)';
+                ctx.fillStyle = glow > 0.05 ? C2.hot : C2.soma;
                 ctx.beginPath(); ctx.arc(n.x, n.y, n.r + glow * 1.6, 0, 6.283); ctx.fill();
             });
 
@@ -606,12 +632,12 @@ html.light .nav-pill{background:rgba(255,255,255,.8)}
                 var pt = pointOn(ax, sg.t),
                     tail = pointOn(ax, Math.max(0, Math.min(1, sg.t - 0.055 * sg.dir)));
                 var lg = ctx.createLinearGradient(tail.x, tail.y, pt.x, pt.y);
-                lg.addColorStop(0, 'rgba(34,211,238,0)');
-                lg.addColorStop(1, 'rgba(120,235,250,.85)');
+                lg.addColorStop(0, 'rgba(' + C2.pulse + ',0)');
+                lg.addColorStop(1, C2.hot);
                 ctx.strokeStyle = lg; ctx.lineWidth = 1.7; ctx.lineCap = 'round';
                 ctx.beginPath(); ctx.moveTo(tail.x, tail.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
 
-                ctx.fillStyle = 'rgba(180,245,255,.95)';
+                ctx.fillStyle = C2.hot;
                 ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.9, 0, 6.283); ctx.fill();
             }
 

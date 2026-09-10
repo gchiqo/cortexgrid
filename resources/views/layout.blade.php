@@ -43,6 +43,11 @@
         --code-bg:       rgba(20, 29, 45, .92);
         --input-bg:      rgba(25, 35, 53, .85);
         --overlay:       rgba(16, 23, 36, .76);
+        --nav-bg:        rgba(9, 14, 24, .74);
+        --hover:         rgba(255, 255, 255, .05);
+        --on-accent:     #04060d;
+        --cta-shadow:       0 8px 24px -8px rgba(34, 211, 238, .75);
+        --cta-shadow-hover: 0 12px 30px -8px rgba(34, 211, 238, .95);
         --accent:    #22d3ee;
         --accent-2:  #a78bfa;
         --accent-3:  #34d399;
@@ -51,26 +56,71 @@
         --glow:      0 0 0 1px rgba(34,211,238,.16), 0 8px 32px -8px rgba(34,211,238,.22);
         --radius:    14px;
     }
+    /* ------------------------------------------------------------------
+       Light is not the dark theme with white swapped in. Glass becomes
+       solid paper, neon glow becomes real elevation, and the accent darkens
+       so it holds contrast against white.
+       ------------------------------------------------------------------ */
     html.light {
-        --bg:        #eef2f9;
-        --bg-2:      #e3e9f4;
-        --panel:     var(--surface);
-        --panel-2:   rgba(255,255,255,.95);
-        --line:      rgba(30, 64, 120, .14);
-        --line-soft: rgba(30, 64, 120, .08);
-        --text:      #0d1628;
-        --muted:     #4a5b78;
-        --dim:       #6b7c98;
-        --accent:    #0891b2;
-        --accent-2:  #7c3aed;
-        --glow:      0 0 0 1px rgba(8,145,178,.14), 0 8px 26px -10px rgba(8,145,178,.28);
-        --bar:           rgba(255,255,255,.8);
-        --surface:       rgba(255,255,255,.78);
+        --bg:        #f2f6fc;
+        --bg-2:      #e7eef8;
+        --panel:     #ffffff;
+        --panel-2:   #ffffff;
+        --line:      #dde5f0;
+        --line-soft: #eaf0f8;
+        --text:      #0e1a2b;
+        --muted:     #52627b;
+        --dim:       #8393aa;
+        --accent:    #0b8ba8;
+        --accent-2:  #6544e8;
+        --accent-3:  #0e9c74;
+        --danger:    #d6455d;
+        --warn:      #b06a06;
+
+        /* layered elevation, not a ring of light */
+        --glow: 0 1px 2px rgba(14,26,43,.05), 0 12px 30px -16px rgba(14,26,43,.28);
+
+        --bar:           rgba(255,255,255,.85);
+        --surface:       #ffffff;
         --surface-solid: #ffffff;
-        --code-bg:       rgba(15,23,42,.05);
-        --input-bg:      rgba(255,255,255,.9);
-        --overlay:       rgba(226,232,240,.7);
+        --code-bg:       #0e1a2b;
+        --input-bg:      #ffffff;
+        --overlay:       rgba(203,213,228,.72);
+        --nav-bg:        rgba(255,255,255,.88);
+        --hover:         rgba(14,26,43,.05);
+        --on-accent:     #ffffff;
+        --cta-shadow:       0 6px 18px -8px rgba(11,139,168,.55);
+        --cta-shadow-hover: 0 12px 26px -10px rgba(11,139,168,.7);
     }
+
+    /* Light-mode corrections: the dark theme leans on glow, which reads as
+       smudge on paper. Swap it for crisp edges and soft shadow. */
+    html.light body::after {
+        background:
+            radial-gradient(40rem 24rem at 16% 4%, rgba(11,139,168,.10), transparent 66%),
+            radial-gradient(36rem 22rem at 84% 0%, rgba(101,68,232,.09), transparent 66%);
+    }
+    html.light .bg-white, html.light .bg-slate-50, html.light .bg-slate-100 {
+        backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    html.light a.rounded-xl:hover, html.light a.shadow-sm:hover, html.light .hover\:shadow:hover {
+        border-color: rgba(11,139,168,.4) !important;
+        box-shadow: 0 2px 4px rgba(14,26,43,.05), 0 18px 38px -18px rgba(14,26,43,.4) !important;
+    }
+    html.light .bg-indigo-600, html.light .bg-slate-800 { box-shadow: var(--cta-shadow); }
+    html.light .hover\:bg-indigo-700:hover, html.light .bg-indigo-600:hover, html.light .bg-slate-800:hover {
+        box-shadow: var(--cta-shadow-hover);
+    }
+    html.light .js-theme-toggle:hover, html.light .js-lang-toggle:hover { box-shadow: none; }
+    html.light code { background: rgba(11,139,168,.09) !important; color: #0a6d84 !important; }
+    html.light pre code { color: #d7e6f2 !important; }
+    html.light table tbody tr:hover { background: rgba(11,139,168,.05); }
+    html.light input:focus, html.light textarea:focus, html.light select:focus {
+        border-color: rgba(11,139,168,.65) !important;
+        box-shadow: 0 0 0 3px rgba(11,139,168,.13) !important;
+    }
+    html.light ::-webkit-scrollbar-thumb { background: rgba(14,26,43,.18); }
+    html.light ::selection { background: rgba(11,139,168,.22); }
 
     html, body { background: var(--bg); }
     body {
@@ -156,7 +206,7 @@
     /* --- Accent actions ------------------------------------------ */
     .bg-indigo-600, .bg-slate-800 {
         background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
-        color: #04060d !important;
+        color: var(--on-accent) !important;
         border: 0 !important;
         box-shadow: 0 6px 22px -8px rgba(34,211,238,.6);
         font-weight: 600;
@@ -166,7 +216,7 @@
         box-shadow: 0 10px 30px -8px rgba(34,211,238,.75);
     }
     .bg-indigo-600, .bg-slate-800 { transition: filter .16s ease, box-shadow .16s ease; }
-    .bg-emerald-600 { background: linear-gradient(135deg, var(--accent-3), #22d3ee) !important; color:#04060d !important; }
+    .bg-emerald-600 { background: linear-gradient(135deg, var(--accent-3), var(--accent)) !important; color: var(--on-accent) !important; }
     /* bg-slate-900 is only ever a <pre> in this app — a code surface, not a button. */
     .bg-slate-900 { background: var(--code-bg) !important; border: 1px solid var(--line); }
     .text-slate-100, .text-slate-200, .text-slate-300 { color: #cfe0f2 !important; }
